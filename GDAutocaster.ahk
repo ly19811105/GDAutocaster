@@ -25,10 +25,10 @@ If (!FileExist(config_name))
     ExitApp
 }
 
-IniRead, window_identifier, % config_name, general, window_identifier, ahk_exe Grim Dawn.exe
-if (!Configured(window_identifier))
+IniRead, game_window_id, % config_name, general, game_window_id, ahk_exe Grim Dawn.exe
+if (!Configured(game_window_id))
 {
-    MsgBox, Missing "window_identifier" in the config, i.e. window_identifier=ahk_exe Grim Dawn.exe in [general] section.
+    MsgBox, Missing "game_window_id" in the config, i.e. game_window_id=ahk_exe Grim Dawn.exe in [general] section.
     ExitApp
 }
 
@@ -84,8 +84,8 @@ IniRead, camera_sleep, % config_name, camera, delay, 40
 
 if Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
 {
-    AddHotkey("*" . counter_clockwise, Func("Counterclock").Bind(window_identifier, camera_sleep, rotation_key, angle))
-    AddHotkey("*" . clockwise, Func("Clock").Bind(window_identifier, camera_sleep, rotation_key, angle))
+    AddHotkey("*" . counter_clockwise, Func("Counterclock").Bind(game_window_id, camera_sleep, rotation_key, angle))
+    AddHotkey("*" . clockwise, Func("Clock").Bind(game_window_id, camera_sleep, rotation_key, angle))
 }
 
 IniRead, capslock_remap, % config_name, general, capslock_remap
@@ -154,9 +154,9 @@ Loop, 9
 SetTimer, MainLoop, 1000
 MainLoop()
 {
-    global window_identifier, suspend_key, hotkeys_suspended_by_user
+    global game_window_id, suspend_key, hotkeys_suspended_by_user
 
-    if (!WinActive(window_identifier))
+    if (!WinActive(game_window_id))
     {
         if (!A_IsSuspended)
             Suspend, On
@@ -196,15 +196,15 @@ Return
 
 ToggleTimer(key)
 {
-    global areTimersToggled, window_identifier
-    if (WinActive(window_identifier))
+    global areTimersToggled, game_window_id
+    if (WinActive(game_window_id))
         areTimersToggled[key] ^= true
 }
 
 PressButton(key, hold_keys, not_hold_keys)
 {
-    global window_identifier, hold_allowed, areTimersToggled, autocasting_allowed
-    if (!WinActive(window_identifier) or !autocasting_allowed)
+    global game_window_id, hold_allowed, areTimersToggled, autocasting_allowed
+    if (!WinActive(game_window_id) or !autocasting_allowed)
         return
     
     if (hold_allowed and ((not_hold_keys.Length() > 0) and HeldTogether(not_hold_keys)))
@@ -225,8 +225,8 @@ HeldTogether(keys)
 
 MasterToggle()
 {
-    global areTimersToggled, timers_to_toggle, window_identifier
-    if (!WinActive(window_identifier))
+    global areTimersToggled, timers_to_toggle, game_window_id
+    if (!WinActive(game_window_id))
         return
     
     areTimersOn := AreTimersOn() 
@@ -264,15 +264,15 @@ AreTimersOn()
 
 MasterHold()
 {
-    global hold_allowed, window_identifier
-    if (WinActive(window_identifier))
+    global hold_allowed, game_window_id
+    if (WinActive(game_window_id))
         hold_allowed := !hold_allowed
 }
 
 Master()
 {
-    global hold_allowed, window_identifier
-    if (WinActive(window_identifier))
+    global hold_allowed, game_window_id
+    if (WinActive(game_window_id))
         hold_allowed := !MasterToggle()
 }
 
@@ -309,8 +309,8 @@ Rotate(camera_sleep, rotation_key, angle)
 
 HoldToHide()
 {
-    global window_identifier, gd_toggle_hide_key, hold_to_hide_key
-    if (!WinActive(window_identifier))
+    global game_window_id, gd_toggle_hide_key, hold_to_hide_key
+    if (!WinActive(game_window_id))
         return
     
     Send {%gd_toggle_hide_key%}
@@ -318,22 +318,22 @@ HoldToHide()
     Send {%gd_toggle_hide_key%}
 }
 
-Counterclock(window_identifier, camera_sleep, rotation_key, angle)
+Counterclock(game_window_id, camera_sleep, rotation_key, angle)
 {
-    if(WinActive(window_identifier))
+    if(WinActive(game_window_id))
         Rotate(camera_sleep, rotation_key, angle)
 }
 
-Clock(window_identifier, camera_sleep, rotation_key, angle)
+Clock(game_window_id, camera_sleep, rotation_key, angle)
 {
-    if(WinActive(window_identifier))
+    if(WinActive(game_window_id))
         Rotate(camera_sleep, rotation_key, -angle)
 }
 
 CapslockAction()
 {
-    global window_identifier, capslock_remap
-    if(WinActive(window_identifier))
+    global game_window_id, capslock_remap
+    if(WinActive(game_window_id))
         Send {%capslock_remap%}
 }
 
@@ -360,8 +360,8 @@ HotkeyFunction(key)
 
 BlockAutocasting(duration)
 {
-    global autocasting_allowed, window_identifier
-    if (WinActive(window_identifier))
+    global autocasting_allowed, game_window_id
+    if (WinActive(game_window_id))
     {
         autocasting_allowed := false
         SetTimer, BlockAutocastingOff, -%duration%
@@ -385,8 +385,8 @@ Configured(keys*)
 
 ComboPress(delay, keys)
 {
-    global window_identifier
-    if(!WinActive(window_identifier))
+    global game_window_id
+    if(!WinActive(game_window_id))
         return
 
     keys := keys.Clone()
@@ -399,8 +399,8 @@ ComboPress(delay, keys)
 
 ComboTimer(delay, keys)
 {   
-    global window_identifier
-    if (!WinActive(window_identifier) or (keys.Length() = 0))
+    global game_window_id
+    if (!WinActive(game_window_id) or (keys.Length() = 0))
         return
     
     key := keys.RemoveAt(1)
@@ -410,8 +410,8 @@ ComboTimer(delay, keys)
 
 ComboHold(combo_key, combo_keys)
 {
-    global window_identifier
-    if (!WinActive(window_identifier))
+    global game_window_id
+    if (!WinActive(game_window_id))
         return
     
     KeyWait, %combo_key%, T0.05
@@ -424,8 +424,8 @@ ComboHold(combo_key, combo_keys)
 
 ComboHoldUp(combo_keys)
 {
-    global window_identifier
-    if (!WinActive(window_identifier))
+    global game_window_id
+    if (!WinActive(game_window_id))
         return
         
     for not_used, key in combo_keys
@@ -434,8 +434,8 @@ ComboHoldUp(combo_keys)
 
 ComboHoldDouble(combo_key, combo_keys, double_press_time_gap)
 {
-    global window_identifier, just_pressed
-    if (!WinActive(window_identifier))
+    global game_window_id, just_pressed
+    if (!WinActive(game_window_id))
         return
         
     if (!just_pressed)
