@@ -50,7 +50,7 @@ for not_used, key in skill_key_list
     if Configured(toggle_key)
     {
         areTimersToggled[key] := false
-        AddHotkey("*" . toggle_key, Func("ToggleTimer").Bind(key))
+        AddHotkey(toggle_key, Func("ToggleTimer").Bind(key))
         timers_to_toggle.Push(key)
     }    
     
