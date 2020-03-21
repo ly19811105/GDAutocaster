@@ -16,9 +16,7 @@ hotkeys_suspended_by_user := false
 hotkeyDictionary := {}
 just_pressed := false
 
-script_name := SubStr(A_ScriptName, 1, -4)
-config_name := % script_name . ".ini"
-
+config_name := % StrSplit(A_ScriptName, ".")[1] . ".ini"
 If (!FileExist(config_name))
 {
     MsgBox, %config_name% not found
