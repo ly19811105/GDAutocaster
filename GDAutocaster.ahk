@@ -8,13 +8,15 @@ SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
 Menu, Tray, Icon , *, -1, 1
 
+#Include HotkeysCollector.ahk
+
 areTimersToggled := {}
 timers_to_toggle := []
 hold_allowed := true
 autocasting_allowed := true
 hotkeys_suspended_by_user := false
-hotkeyDictionary := {}
 just_pressed := false
+hotkeys_collector := new HotkeysCollector()
 
 config_name := % StrSplit(A_ScriptName, ".")[1] . ".ini"
 If (!FileExist(config_name))
@@ -48,7 +50,7 @@ for not_used, key in skill_key_list
     if Configured(toggle_key)
     {
         areTimersToggled[key] := false
-        AddHotkey(toggle_key, Func("ToggleTimer").Bind(key))
+        hotkeys_collector.AddHotkey(toggle_key, Func("ToggleTimer").Bind(key))
         timers_to_toggle.Push(key)
     }    
     
@@ -62,13 +64,13 @@ for not_used, key in skill_key_list
 IniRead, master_toggle, % config_name, autocasting, master_toggle
 IniRead, master_hold, % config_name, autocasting, master_hold
 if (Configured(master_toggle) and master_hold != master_toggle)
-    AddHotkey(master_toggle, Func("MasterToggle"))
+    hotkeys_collector.AddHotkey(master_toggle, Func("MasterToggle"))
    
 if (Configured(master_hold) and master_hold != master_toggle)
-    AddHotkey(master_hold, Func("MasterHold"))
+    hotkeys_collector.AddHotkey(master_hold, Func("MasterHold"))
    
 if (Configured(master_hold) and master_hold = master_toggle)
-    AddHotkey(master_hold, Func("Master"))
+    hotkeys_collector.AddHotkey(master_hold, Func("Master"))
 
 IniRead, suspend_key, % config_name, general, suspend_key
 if Configured(suspend_key)
@@ -82,24 +84,24 @@ IniRead, camera_sleep, % config_name, camera, delay, 40
 
 if Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
 {
-    AddHotkey("*" . counter_clockwise, Func("Counterclock").Bind(game_window_id, camera_sleep, rotation_key, angle))
-    AddHotkey("*" . clockwise, Func("Clock").Bind(game_window_id, camera_sleep, rotation_key, angle))
+    hotkeys_collector.AddHotkey("*" . counter_clockwise, Func("Counterclock").Bind(game_window_id, camera_sleep, rotation_key, angle))
+    hotkeys_collector.AddHotkey("*" . clockwise, Func("Clock").Bind(game_window_id, camera_sleep, rotation_key, angle))
 }
 
 IniRead, capslock_remap, % config_name, general, capslock_remap
 if Configured(capslock_remap)
-    AddHotkey("Capslock", Func("CapslockAction"))
+    hotkeys_collector.AddHotkey("Capslock", Func("CapslockAction"))
 
 IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
 IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
 if Configured(hold_to_hide_key, gd_toggle_hide_key)
-    AddHotkey("~*" . hold_to_hide_key, Func("HoldToHide"))
+    hotkeys_collector.AddHotkey("~*" . hold_to_hide_key, Func("HoldToHide"))
     
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
 IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, 100
 temp_block_keys := Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
 for not_used, key in temp_block_keys
-    AddHotkey("*" . key, Func("BlockAutocasting").Bind(temp_block_duration))
+    hotkeys_collector.AddHotkey("*" . key, Func("BlockAutocasting").Bind(temp_block_duration))
     
 IniRead, combo_delay, % config_name, combo presses, delay, 200
 Loop, 9
@@ -112,7 +114,7 @@ Loop, 9
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
     combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
-    AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys))
+    hotkeys_collector.AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys))
 }
 
 Loop, 9
@@ -141,12 +143,12 @@ Loop, 9
             ExitApp
         }    
         
-        AddHotkey("*" . combo_key, Func("ComboHoldDouble").Bind(combo_key, combo_keys, double_press_time_gap))
+        hotkeys_collector.AddHotkey("*" . combo_key, Func("ComboHoldDouble").Bind(combo_key, combo_keys, double_press_time_gap))
     }
     else
-        AddHotkey("*" . combo_key, Func("ComboHold").Bind(combo_key, combo_keys))
+        hotkeys_collector.AddHotkey("*" . combo_key, Func("ComboHold").Bind(combo_key, combo_keys))
 
-    AddHotkey("*" . combo_key . " UP", Func("ComboHoldUp").Bind(combo_keys))
+    hotkeys_collector.AddHotkey("*" . combo_key . " UP", Func("ComboHoldUp").Bind(combo_keys))
 }
 
 SetTimer, MainLoop, 1000
@@ -333,27 +335,6 @@ CapslockAction()
     global game_window_id, capslock_remap
     if(WinActive(game_window_id))
         Send {%capslock_remap%}
-}
-
-AddHotkey(key, function)
-{
-    global hotkeyDictionary
-    
-    if (!hotkeyDictionary.HasKey(key))
-    {
-        hotkeyDictionary[key] := [function]
-        fn := Func("HotkeyFunction").Bind(key)
-        Hotkey, %key%, %fn%, On
-    }
-    else
-        hotkeyDictionary[key].Push(function)
-}
-
-HotkeyFunction(key)
-{
-    global hotkeyDictionary
-    For not_used, function in hotkeyDictionary[key]
-        function.Call()
 }
 
 BlockAutocasting(duration)
