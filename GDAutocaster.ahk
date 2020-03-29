@@ -8,6 +8,7 @@ SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
 Menu, Tray, Icon , *, -1, 1
 
+#Include CommonFunctions.ahk
 #Include HotkeysCollector.ahk
 
 areTimersToggled := {}
@@ -351,15 +352,6 @@ BlockAutocastingOff()
 {
     global autocasting_allowed
     autocasting_allowed := true
-}
-
-Configured(keys*)
-{
-    for not_used, key in keys
-        if (key = "ERROR" or key = "")
-            return false
-        
-    return true
 }
 
 ComboPress(delay, keys)
