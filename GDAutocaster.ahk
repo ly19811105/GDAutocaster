@@ -8,6 +8,7 @@ SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
 Menu, Tray, Icon , *, -1, 1
 
+#Include ComboHolds.ahk
 #Include CommonFunctions.ahk
 #Include HotkeysCollector.ahk
 
@@ -16,7 +17,6 @@ timers_to_toggle := []
 hold_allowed := true
 autocasting_allowed := true
 hotkeys_suspended_by_user := false
-just_pressed := false
 hotkeys_collector := new HotkeysCollector()
 
 config_name := % StrSplit(A_ScriptName, ".")[1] . ".ini"
@@ -118,39 +118,7 @@ Loop, 9
     hotkeys_collector.AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys))
 }
 
-Loop, 9
-{
-    IniRead, combo_str, % config_name, combo holds, combo%A_INDEX%
-    IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, 0
-    
-    if (double_press = "true")
-        double_press := 1
-    
-    if (double_press = "false")
-        double_press := 0
-    
-    if (!Configured(combo_str, double_press))
-        continue
-        
-    combo_keys := StrSplit(combo_str, [":", ","])
-    combo_key := combo_keys.RemoveAt(1)
-
-    if (double_press)
-    {
-        IniRead, double_press_time_gap, % config_name, combo holds, double_press%A_INDEX%_time_gap, 250
-        if (!Configured(double_press_time_gap))
-        {
-            MsgBox, Missing "double_press_time_gap" in the config, i.e. double_press_time_gap=250 in [combo holds] section.
-            ExitApp
-        }    
-        
-        hotkeys_collector.AddHotkey("*" . combo_key, Func("ComboHoldDouble").Bind(combo_key, combo_keys, double_press_time_gap))
-    }
-    else
-        hotkeys_collector.AddHotkey("*" . combo_key, Func("ComboHold").Bind(combo_key, combo_keys))
-
-    hotkeys_collector.AddHotkey("*" . combo_key . " UP", Func("ComboHoldUp").Bind(combo_keys))
-}
+new ComboHolds(config_name, hotkeys_collector)
 
 SetTimer, MainLoop, 1000
 MainLoop()
@@ -377,51 +345,5 @@ ComboTimer(delay, keys)
     key := keys.RemoveAt(1)
     Send {%key%}
     SetTimer,, -%delay% 
-}
-
-ComboHold(combo_key, combo_keys)
-{
-    global game_window_id
-    if (!WinActive(game_window_id))
-        return
-    
-    KeyWait, %combo_key%, T0.05
-    if ErrorLevel
-    {
-        for not_used, key in combo_keys
-            Send {%key% down}
-    }
-}
-
-ComboHoldUp(combo_keys)
-{
-    global game_window_id
-    if (!WinActive(game_window_id))
-        return
-        
-    for not_used, key in combo_keys
-        Send {%key% up}
-}
-
-ComboHoldDouble(combo_key, combo_keys, double_press_time_gap)
-{
-    global game_window_id, just_pressed
-    if (!WinActive(game_window_id))
-        return
-        
-    if (!just_pressed)
-    {
-        just_pressed := true    
-        SetTimer, ComboHoldDoubleTimer, -%double_press_time_gap%
-    }
-    else
-        ComboHold(combo_key, combo_keys)
-
-}
-
-ComboHoldDoubleTimer()
-{
-    global just_pressed
-    just_pressed := false
 }
 
