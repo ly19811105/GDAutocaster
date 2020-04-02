@@ -8,6 +8,7 @@ SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
 Menu, Tray, Icon , *, -1, 1
 
+#Include CenterCasts.ahk
 #Include ComboHolds.ahk
 #Include CommonFunctions.ahk
 #Include HotkeysCollector.ahk
@@ -32,6 +33,8 @@ if (!Configured(game_window_id))
     MsgBox, Missing "game_window_id" in the config, i.e. game_window_id=ahk_exe Grim Dawn.exe in [general] section.
     ExitApp
 }
+
+new CenterCasts(config_name, hotkeys_collector)
 
 IniRead, skill_key_list, % config_name, autocasting, skill_key_list, 0,1,2,3,4,5,6,7,8,9
 skill_key_list := Configured(skill_key_list) ? StrSplit(skill_key_list, ",") : []
