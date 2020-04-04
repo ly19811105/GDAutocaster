@@ -112,13 +112,21 @@ Loop, 9
 {
     IniRead, combo_str, % config_name, combo presses, combo%A_INDEX%
     IniRead, combo_delay_override, % config_name, combo presses, delay%A_INDEX%
-    if (!Configured(combo_str) or (!Configured(combo_delay) and !Configured(combo_delay_override)))
+    IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, false
+    
+    if (initial_delay = "false")
+        initial_delay := 0
+        
+    if (initial_delay = "true")
+        initial_delay := 1
+    
+    if (!Configured(combo_str, initial_delay) or (!Configured(combo_delay) and !Configured(combo_delay_override)))
         continue
     
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
     combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
-    hotkeys_collector.AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys))
+    hotkeys_collector.AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay))
 }
 
 new ComboHolds(config_name, hotkeys_collector)
@@ -325,15 +333,19 @@ BlockAutocastingOff()
     autocasting_allowed := true
 }
 
-ComboPress(delay, keys)
+ComboPress(delay, keys, initial_delay)
 {
     global game_window_id
     if(!WinActive(game_window_id))
         return
 
     keys := keys.Clone()
-    first_key := keys.RemoveAt(1)
-    Send {%first_key%}
+    
+    if (!initial_delay)
+    {
+        first_key := keys.RemoveAt(1)
+        Send {%first_key%}
+    }
     
     fn := Func("ComboTimer").Bind(delay, keys)
     SetTimer, %fn%, -%delay%
