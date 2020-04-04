@@ -33,12 +33,12 @@ class ComboHolds
                     ExitApp
                 }    
                 
-                hotkeys_collector.AddHotkey("*" . combo_key, ObjBindMethod(this, "ComboHoldDouble", combo_key, combo_keys, double_press_time_gap))
+                hotkeys_collector.AddHotkey("*$" . combo_key, ObjBindMethod(this, "ComboHoldDouble", combo_key, combo_keys, double_press_time_gap))
             }
             else
-                hotkeys_collector.AddHotkey("*" . combo_key, ObjBindMethod(this, "ComboHold", combo_key, combo_keys))
+                hotkeys_collector.AddHotkey("*$" . combo_key, ObjBindMethod(this, "ComboHold", combo_key, combo_keys))
 
-            hotkeys_collector.AddHotkey("*" . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys))
+            hotkeys_collector.AddHotkey("*$" . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys))
         }
     }
     

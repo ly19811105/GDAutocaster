@@ -12,7 +12,7 @@ class CenterCasts
                 continue
                 
             keys := StrSplit(cast_str, ":")
-            hotkeys_collector.AddHotkey("*" . keys[1], ObjBindMethod(this, "CenterCast", keys[2]))
+            hotkeys_collector.AddHotkey("*$" . keys[1], ObjBindMethod(this, "CenterCast", keys[2]))
         }
     }
     
