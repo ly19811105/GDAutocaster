@@ -11,6 +11,7 @@ class ComboHolds
         {
             IniRead, combo_str, % config_name, combo holds, combo%A_INDEX%
             IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, 0
+            IniRead, delay, % config_name, combo holds, delay%A_INDEX%, 0.05
             
             if (double_press = "true")
                 double_press := 1
@@ -18,7 +19,7 @@ class ComboHolds
             if (double_press = "false")
                 double_press := 0
             
-            if (!Configured(combo_str, double_press))
+            if (!Configured(combo_str, double_press, delay))
                 continue
                 
             combo_keys := StrSplit(combo_str, [":", ","])
@@ -33,22 +34,22 @@ class ComboHolds
                     ExitApp
                 }    
                 
-                hotkeys_collector.AddHotkey("*$" . combo_key, ObjBindMethod(this, "ComboHoldDouble", combo_key, combo_keys, double_press_time_gap))
+                hotkeys_collector.AddHotkey("*$" . combo_key, ObjBindMethod(this, "ComboHoldDouble", combo_key, combo_keys, double_press_time_gap, delay))
             }
             else
-                hotkeys_collector.AddHotkey("*$" . combo_key, ObjBindMethod(this, "ComboHold", combo_key, combo_keys))
+                hotkeys_collector.AddHotkey("*$" . combo_key, ObjBindMethod(this, "ComboHold", combo_key, combo_keys, delay))
 
             hotkeys_collector.AddHotkey("*$" . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys))
         }
     }
     
-    ComboHold(combo_key, combo_keys)
+    ComboHold(combo_key, combo_keys, delay)
     {
         global game_window_id
         if (!WinActive(game_window_id))
             return
         
-        KeyWait, %combo_key%, T0.05
+        KeyWait, %combo_key%, T%delay%
         if ErrorLevel
         {
             for not_used, key in combo_keys
@@ -66,7 +67,7 @@ class ComboHolds
             Send {%key% up}
     }
 
-    ComboHoldDouble(combo_key, combo_keys, double_press_time_gap)
+    ComboHoldDouble(combo_key, combo_keys, double_press_time_gap, delay)
     {
         global game_window_id
         if (!WinActive(game_window_id))
@@ -79,7 +80,7 @@ class ComboHolds
             SetTimer, %fn%, -%double_press_time_gap%
         }
         else
-            this.ComboHold(combo_key, combo_keys)
+            this.ComboHold(combo_key, combo_keys, delay)
 
     }
 
