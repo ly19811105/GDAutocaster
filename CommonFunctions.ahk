@@ -6,3 +6,14 @@ Configured(keys*)
         
     return true
 }
+
+StrToBool(str_bool)
+{
+    if (str_bool = "true")
+        return 1
+        
+    if (str_bool = "false")
+        return 0
+        
+    return str_bool
+}

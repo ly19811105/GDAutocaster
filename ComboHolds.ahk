@@ -10,14 +10,10 @@ class ComboHolds
         Loop, 9
         {
             IniRead, combo_str, % config_name, combo holds, combo%A_INDEX%
-            IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, 0
             IniRead, delay, % config_name, combo holds, delay%A_INDEX%, 0.05
             
-            if (double_press = "true")
-                double_press := 1
-            
-            if (double_press = "false")
-                double_press := 0
+            IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, 0
+            double_press := StrToBool(double_press)
             
             if (!Configured(combo_str, double_press, delay))
                 continue

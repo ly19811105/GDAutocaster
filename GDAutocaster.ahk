@@ -112,13 +112,9 @@ Loop, 9
 {
     IniRead, combo_str, % config_name, combo presses, combo%A_INDEX%
     IniRead, combo_delay_override, % config_name, combo presses, delay%A_INDEX%
-    IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, false
     
-    if (initial_delay = "false")
-        initial_delay := 0
-        
-    if (initial_delay = "true")
-        initial_delay := 1
+    IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, false
+    initial_delay := StrToBool(initial_delay)
     
     if (!Configured(combo_str, initial_delay) or (!Configured(combo_delay) and !Configured(combo_delay_override)))
         continue
