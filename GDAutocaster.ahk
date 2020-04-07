@@ -34,8 +34,6 @@ if (!Configured(game_window_id))
     ExitApp
 }
 
-new CenterCasts(config_name, hotkeys_collector)
-
 IniRead, skill_key_list, % config_name, autocasting, skill_key_list, 0,1,2,3,4,5,6,7,8,9
 skill_key_list := Configured(skill_key_list) ? StrSplit(skill_key_list, ",") : []
 for not_used, key in skill_key_list
@@ -125,6 +123,7 @@ Loop, 9
     hotkeys_collector.AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay))
 }
 
+new CenterCasts(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 
 SetTimer, MainLoop, 1000
