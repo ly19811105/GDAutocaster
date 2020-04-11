@@ -97,7 +97,10 @@ if Configured(capslock_remap)
 IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
 IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
 if Configured(hold_to_hide_key, gd_toggle_hide_key)
-    hotkeys_collector.AddHotkey("~*" . hold_to_hide_key, Func("HoldToHide"))
+{
+    hotkeys_collector.AddHotkey("~*" . hold_to_hide_key, Func("HoldToHide").Bind(gd_toggle_hide_key, 1))
+    hotkeys_collector.AddHotkey(hold_to_hide_key . " UP", Func("HoldToHide").Bind(gd_toggle_hide_key, 0))
+}
     
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
 IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, 100
@@ -282,15 +285,18 @@ Rotate(camera_sleep, rotation_key, angle)
     MouseMove, xpos, ypos, 0
 }
 
-HoldToHide()
+HoldToHide(gd_toggle_hide_key, hiding)
 {
-    global game_window_id, gd_toggle_hide_key, hold_to_hide_key
+    global game_window_id
     if (!WinActive(game_window_id))
+        return
+        
+    static already_hidden := false
+    if (already_hidden and hiding)
         return
     
     Send {%gd_toggle_hide_key%}
-    KeyWait, %hold_to_hide_key%
-    Send {%gd_toggle_hide_key%}
+    already_hidden ^= 1
 }
 
 Counterclock(game_window_id, camera_sleep, rotation_key, angle)
