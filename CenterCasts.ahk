@@ -3,6 +3,8 @@
 
 class CenterCasts
 {
+    spam_prevention := []
+
     __New(config_name, hotkeys_collector)
     {
         Loop, 9
@@ -15,19 +17,24 @@ class CenterCasts
             
             if (!Configured(cast_str, inq_seal, initial_delay, delay))
                 continue
-                
+              
             keys := StrSplit(cast_str, [":", ","])
             key := keys.RemoveAt(1)
             
-            hotkeys_collector.AddHotkey("*$" . key, ObjBindMethod(this, "CenterCast", keys, inq_seal, initial_delay, delay))
+            hotkeys_collector.AddHotkey("~*$" . key, ObjBindMethod(this, "CenterCast", keys, inq_seal, initial_delay, delay, A_INDEX))
+            hotkeys_collector.AddHotkey("~*$" . key . " UP", ObjBindMethod(this, "CenterCastUP", A_INDEX))
+            
+            this.spam_prevention.Push(0)
         }
     }
     
-    CenterCast(keys, inq_seal, initial_delay, delay)
+    CenterCast(keys, inq_seal, initial_delay, delay, index)
     {
         global game_window_id
-        if (!WinActive(game_window_id))
+        if (!WinActive(game_window_id) or this.spam_prevention[index])
             return
+    
+        this.spam_prevention[index] := 1
     
         keys := keys.Clone()
         if (initial_delay > 0)
@@ -98,5 +105,10 @@ class CenterCasts
             MouseMove, xpos, ypos, 0
             BlockInput, MouseMoveOff
         }
+    }
+    
+    CenterCastUP(index)
+    {
+        this.spam_prevention[index] := 0
     }
 }
