@@ -19,6 +19,8 @@ hold_allowed := true
 autocasting_allowed := true
 hotkeys_suspended_by_user := false
 hotkeys_collector := new HotkeysCollector()
+toggle_pending := false
+already_hidden := false
 
 config_name := % StrSplit(A_ScriptName, ".")[1] . ".ini"
 If (!FileExist(config_name))
@@ -96,10 +98,11 @@ if Configured(capslock_remap)
 
 IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
 IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
-if Configured(hold_to_hide_key, gd_toggle_hide_key)
+IniRead, show_delay, % config_name, hiding items, show_delay, 1000
+if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
 {
-    hotkeys_collector.AddHotkey("~*" . hold_to_hide_key, Func("HoldToHide").Bind(gd_toggle_hide_key, 1))
-    hotkeys_collector.AddHotkey(hold_to_hide_key . " UP", Func("HoldToHide").Bind(gd_toggle_hide_key, 0))
+    hotkeys_collector.AddHotkey("~*" . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
+    hotkeys_collector.AddHotkey(hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
 }
     
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
@@ -285,18 +288,41 @@ Rotate(camera_sleep, rotation_key, angle)
     MouseMove, xpos, ypos, 0
 }
 
-HoldToHide(gd_toggle_hide_key, hiding)
+
+
+HoldToHideItems(hiding, show_delay)
 {
-    global game_window_id
+    global game_window_id, toggle_pending, already_hidden
     if (!WinActive(game_window_id))
         return
         
-    static already_hidden := false
     if (already_hidden and hiding)
         return
+        
+    if (hiding)
+    {
+        if (toggle_pending)
+        {
+            SetTimer, ToggleItemDisplay, Off
+            toggle_pending := false
+        }
+        else
+            ToggleItemDisplay()
+    }
+    else
+    {
+        toggle_pending := true
+        SetTimer, ToggleItemDisplay, -%show_delay%
+    }
     
+    already_hidden := hiding
+}
+
+ToggleItemDisplay()
+{
+    global toggle_pending, gd_toggle_hide_key
     Send {%gd_toggle_hide_key%}
-    already_hidden ^= 1
+    toggle_pending := false
 }
 
 Counterclock(game_window_id, camera_sleep, rotation_key, angle)
