@@ -102,8 +102,8 @@ IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
 IniRead, show_delay, % config_name, hiding items, show_delay, 1000
 if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
 {
-    hotkeys_collector.AddHotkey("~*" . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
-    hotkeys_collector.AddHotkey(hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
+    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
+    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
 }
     
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
