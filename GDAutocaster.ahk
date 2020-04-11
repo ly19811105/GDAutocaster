@@ -21,6 +21,7 @@ hotkeys_suspended_by_user := false
 hotkeys_collector := new HotkeysCollector()
 toggle_pending := false
 already_hidden := false
+combo_presses_spam_protection := []
 
 config_name := % StrSplit(A_ScriptName, ".")[1] . ".ini"
 If (!FileExist(config_name))
@@ -126,7 +127,10 @@ Loop, 9
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
     combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
-    hotkeys_collector.AddHotkey("~*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay))
+    hotkeys_collector.AddHotkey("~*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay, A_INDEX))
+    hotkeys_collector.AddHotkey("~*$" . combo_key . " UP", Func("ComboPressUP").Bind(A_INDEX))
+    
+    combo_presses_spam_protection.Push(0)
 }
 
 new CenterCasts(config_name, hotkeys_collector)
@@ -360,11 +364,13 @@ BlockAutocastingOff()
     autocasting_allowed := true
 }
 
-ComboPress(delay, keys, initial_delay)
+ComboPress(delay, keys, initial_delay, index)
 {
-    global game_window_id
-    if(!WinActive(game_window_id))
+    global game_window_id, combo_presses_spam_protection
+    if(!WinActive(game_window_id) or combo_presses_spam_protection[index])
         return
+        
+    combo_presses_spam_protection[index] := 1
 
     keys := keys.Clone()
     
@@ -387,5 +393,11 @@ ComboTimer(delay, keys)
     key := keys.RemoveAt(1)
     Send {%key%}
     SetTimer,, -%delay% 
+}
+
+ComboPressUP(index)
+{
+    global combo_presses_spam_protection
+    combo_presses_spam_protection[index] := 0
 }
 
