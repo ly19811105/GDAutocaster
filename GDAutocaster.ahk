@@ -126,7 +126,7 @@ Loop, 9
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
     combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
-    hotkeys_collector.AddHotkey("*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay))
+    hotkeys_collector.AddHotkey("~*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay))
 }
 
 new CenterCasts(config_name, hotkeys_collector)
