@@ -108,17 +108,19 @@ Loop, 9
 {
     IniRead, combo_str, % config_name, combo presses, combo%A_INDEX%
     IniRead, combo_delay_override, % config_name, combo presses, delay%A_INDEX%
-    
     IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, false
-    initial_delay := StrToBool(initial_delay)
+    IniRead, stop_on_release, % config_name, combo presses, stop_on_release%A_INDEX%, false
     
-    if (!Configured(combo_str, initial_delay) or (!Configured(combo_delay) and !Configured(combo_delay_override)))
+    initial_delay := StrToBool(initial_delay)
+    stop_on_release := StrToBool(stop_on_release)
+    
+    if (!Configured(combo_str, initial_delay, stop_on_release) or (!Configured(combo_delay) and !Configured(combo_delay_override)))
         continue
     
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
     combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
-    hotkeys_collector.AddHotkey("~*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay, A_INDEX))
+    hotkeys_collector.AddHotkey("~*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
     hotkeys_collector.AddHotkey("~*$" . combo_key . " UP", Func("ComboPressUP").Bind(A_INDEX))
     
     combo_presses_spam_protection.Push(0)
@@ -364,7 +366,7 @@ BlockAutocastingOff()
     autocasting_allowed := true
 }
 
-ComboPress(delay, keys, initial_delay, index)
+ComboPress(delay, keys, initial_delay, index, key, stop_on_release)
 {
     global game_window_id, combo_presses_spam_protection
     if(!WinActive(game_window_id) or combo_presses_spam_protection[index])
@@ -380,14 +382,14 @@ ComboPress(delay, keys, initial_delay, index)
         Send {%first_key%}
     }
     
-    fn := Func("ComboTimer").Bind(delay, keys)
+    fn := Func("ComboTimer").Bind(delay, keys, key, stop_on_release)
     SetTimer, %fn%, -%delay%
 }
 
-ComboTimer(delay, keys)
+ComboTimer(delay, keys, key, stop_on_release)
 {   
     global game_window_id
-    if (!WinActive(game_window_id) or (keys.Length() = 0))
+    if (!WinActive(game_window_id) or (keys.Length() = 0) or (stop_on_release and !GetKeyState(key, "P")))
         return
     
     key := keys.RemoveAt(1)
