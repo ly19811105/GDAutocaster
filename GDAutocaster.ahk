@@ -97,15 +97,6 @@ IniRead, capslock_remap, % config_name, general, capslock_remap
 if Configured(capslock_remap)
     hotkeys_collector.AddHotkey("Capslock", Func("CapslockAction"))
 
-IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
-IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
-IniRead, show_delay, % config_name, hiding items, show_delay, 1000
-if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
-{
-    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
-    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
-}
-    
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
 IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, 100
 temp_block_keys := Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
@@ -136,6 +127,15 @@ Loop, 9
 new CenterCasts(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 
+IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
+IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
+IniRead, show_delay, % config_name, hiding items, show_delay, 1000
+if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
+{
+    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
+    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
+}
+    
 SetTimer, MainLoop, 1000
 MainLoop()
 {
