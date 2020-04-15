@@ -12,6 +12,7 @@ Menu, Tray, Icon , *, -1, 1
 #Include ComboHolds.ahk
 #Include CommonFunctions.ahk
 #Include HotkeysCollector.ahk
+#Include PeriodicCasts.ahk
 
 areTimersToggled := {}
 timers_to_toggle := []
@@ -128,6 +129,7 @@ Loop, 9
 
 new CenterCasts(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
+new PeriodicCasts(config_name, hotkeys_collector)
 
 IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
 IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
@@ -165,21 +167,6 @@ MainLoop()
         }
     }
 }
-
-/*
-kluczyk
-f::
-    WinGetActiveStats, Title, Width, Height, X, Y
-    MouseGetPos, xpos, ypos
-    BlockInput, MouseMove
-    MouseMove, 1270, 230, 0
-    Sleep, 50 ;Sleep, 25 lowered it, needs testing in specific case
-    Click
-    Sleep, 50 ;not needed in most cases, test it
-    MouseMove, xpos, ypos, 0
-    BlockInput, MouseMoveOff
-Return
-*/
 
 ToggleTimer(key)
 {
@@ -293,8 +280,6 @@ Rotate(camera_sleep, rotation_key, angle)
     Send {%rotation_key% up}
     MouseMove, xpos, ypos, 0
 }
-
-
 
 HoldToHideItems(hiding, show_delay)
 {
