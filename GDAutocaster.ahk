@@ -11,6 +11,7 @@ Menu, Tray, Icon , *, -1, 1
 #Include CenterCasts.ahk
 #Include ComboHolds.ahk
 #Include CommonFunctions.ahk
+#Include Defaults.ahk
 #Include HotkeysCollector.ahk
 #Include PeriodicCasts.ahk
 
@@ -24,25 +25,25 @@ toggle_pending := false
 already_hidden := false
 combo_presses_spam_protection := []
 
-config_name := % StrSplit(A_ScriptName, ".")[1] . ".ini"
+config_name := % StrSplit(A_ScriptName, ".")[1] . "." . _CONFIG_FILE_EXTENSION
 If (!FileExist(config_name))
 {
     MsgBox, %config_name% not found
     ExitApp
 }
 
-IniRead, game_window_id, % config_name, general, game_window_id, ahk_exe Grim Dawn.exe
+IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
 if (!Configured(game_window_id))
 {
     MsgBox, Missing "game_window_id" in the config, i.e. game_window_id=ahk_exe Grim Dawn.exe in [general] section.
     ExitApp
 }
 
-IniRead, skill_key_list, % config_name, autocasting, skill_key_list, 0,1,2,3,4,5,6,7,8,9
-skill_key_list := Configured(skill_key_list) ? StrSplit(skill_key_list, ",") : []
-for not_used, key in skill_key_list
+IniRead, pressed_buttons, % config_name, autocasting, pressed_buttons, % _AUTOCASTING_PRESSED_BUTTONS
+pressed_buttons := Configured(pressed_buttons) ? StrSplit(pressed_buttons, ",") : []
+for not_used, key in pressed_buttons
 {
-    IniRead, delay, % config_name, % key, delay, 100
+    IniRead, delay, % config_name, % key, delay, % _AUTOCASTING_DELAY
     IniRead, toggle_key, % config_name, % key, toggle_key
     IniRead, hold_keys_str, % config_name, % key, hold_keys
     IniRead, not_hold_keys_str, % config_name, % key, not_hold_keys
@@ -56,7 +57,7 @@ for not_used, key in skill_key_list
     if Configured(toggle_key)
     {
         areTimersToggled[key] := false
-        hotkeys_collector.AddHotkey("$" . toggle_key, Func("ToggleTimer").Bind(key))
+        hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . toggle_key, Func("ToggleTimer").Bind(key))
         timers_to_toggle.Push(key)
     }    
     
@@ -82,11 +83,11 @@ IniRead, suspend_key, % config_name, general, suspend_key
 if Configured(suspend_key)
     Hotkey, %suspend_key%, SuspendHotkeys
     
-IniRead, angle, % config_name, camera, angle, 60
+IniRead, angle, % config_name, camera, angle, % _CAMERA_ANGLE
 IniRead, counter_clockwise, % config_name, camera, counter_clockwise
 IniRead, clockwise, % config_name, camera, clockwise
 IniRead, rotation_key, % config_name, camera, rotation_key
-IniRead, camera_sleep, % config_name, camera, delay, 40
+IniRead, camera_sleep, % config_name, camera, delay, % _CAMERA_DELAY
 
 if Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
 {
@@ -99,18 +100,18 @@ if Configured(capslock_remap)
     hotkeys_collector.AddHotkey("Capslock", Func("CapslockAction"))
 
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
-IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, 100
+IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, % _AUTOCASTING_TEMPORARY_BLOCK_DURATION
 temp_block_keys := Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
 for not_used, key in temp_block_keys
-    hotkeys_collector.AddHotkey("*" . key, Func("BlockAutocasting").Bind(temp_block_duration))
+    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key, Func("BlockAutocasting").Bind(temp_block_duration))
     
-IniRead, combo_delay, % config_name, combo presses, delay, 200
-Loop, 9
+IniRead, combo_delay, % config_name, combo presses, delay, % _COMBOS_IN_BETWEEN_DELAY
+Loop, %_MAX_NUMBER_OF_COMBINATIONS%
 {
     IniRead, combo_str, % config_name, combo presses, combo%A_INDEX%
     IniRead, combo_delay_override, % config_name, combo presses, delay%A_INDEX%
-    IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, false
-    IniRead, stop_on_release, % config_name, combo presses, stop_on_release%A_INDEX%, false
+    IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, % _COMBOS_INITIAL_DELAY
+    IniRead, stop_on_release, % config_name, combo presses, stop_on_release%A_INDEX%, % _COMBOS_STOP_ON_RELEASE
     
     initial_delay := StrToBool(initial_delay)
     stop_on_release := StrToBool(stop_on_release)
@@ -121,8 +122,11 @@ Loop, 9
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
     combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
-    hotkeys_collector.AddHotkey("~*$" . combo_key, Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
-    hotkeys_collector.AddHotkey("~*$" . combo_key . " UP", Func("ComboPressUP").Bind(A_INDEX))
+    
+    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
+        , Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
+    
+    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key . " UP", Func("ComboPressUP").Bind(A_INDEX))
     
     combo_presses_spam_protection.Push(0)
 }
@@ -133,14 +137,14 @@ new PeriodicCasts(config_name, hotkeys_collector)
 
 IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
 IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
-IniRead, show_delay, % config_name, hiding items, show_delay, 1000
+IniRead, show_delay, % config_name, hiding items, show_delay, % _HOLD_TO_HIDE_ITEMS_TIME_BUFFER
 if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
 {
-    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
-    hotkeys_collector.AddHotkey("~*$" . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
+    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
+    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
 }
     
-SetTimer, MainLoop, 1000
+SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
 {
     global game_window_id, suspend_key, hotkeys_suspended_by_user

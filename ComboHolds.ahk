@@ -1,4 +1,5 @@
 #Include CommonFunctions.ahk
+#Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
 class ComboHolds
@@ -8,14 +9,14 @@ class ComboHolds
     
     __New(config_name, hotkeys_collector)
     {
-        Loop, 9
+        Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             this.hold_states.Push(false)
             
             IniRead, combo_str, % config_name, combo holds, combo%A_INDEX%
-            IniRead, delay, % config_name, combo holds, delay%A_INDEX%, 150
+            IniRead, delay, % config_name, combo holds, delay%A_INDEX%, % _COMBO_HOLDS_DELAY_FROM_PRESS_TO_HOLD
             
-            IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, 0
+            IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, % _COMBO_HOLDS_HOLD_ON_DOUBLE_PRESS
             double_press := StrToBool(double_press)
             
             if (!Configured(combo_str, double_press, delay))
@@ -26,19 +27,16 @@ class ComboHolds
 
             if (double_press)
             {
-                IniRead, double_press_time_gap, % config_name, combo holds, double_press%A_INDEX%_time_gap, 250
+                IniRead, double_press_time_gap, % config_name, combo holds, double_press%A_INDEX%_time_gap, % _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP
                 if (!Configured(double_press_time_gap))
-                {
-                    MsgBox, Missing "double_press_time_gap" in the config, i.e. double_press_time_gap=250 in [combo holds] section.
-                    ExitApp
-                }    
+                    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
+                        , ObjBindMethod(this, "ComboHoldDouble", combo_keys, double_press_time_gap, delay, A_INDEX))
                 
-                hotkeys_collector.AddHotkey("~*$" . combo_key, ObjBindMethod(this, "ComboHoldDouble", combo_keys, double_press_time_gap, delay, A_INDEX))
             }
             else
-                hotkeys_collector.AddHotkey("~*$" . combo_key, ObjBindMethod(this, "ComboHold", combo_keys, delay, A_INDEX))
+                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key, ObjBindMethod(this, "ComboHold", combo_keys, delay, A_INDEX))
 
-            hotkeys_collector.AddHotkey("~*$" . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX))
+            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX))
         }
     }
     
@@ -96,4 +94,3 @@ class ComboHolds
             Send {%key% down}
     }
 }
-
