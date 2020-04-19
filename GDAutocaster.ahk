@@ -24,6 +24,7 @@ hotkeys_collector := new HotkeysCollector()
 toggle_pending := false
 already_hidden := false
 combo_presses_spam_protection := []
+hotkeys_inactive_fix := false
 
 config_name := % StrSplit(A_ScriptName, ".")[1] . "." . _CONFIG_FILE_EXTENSION
 If (!FileExist(config_name))
@@ -147,7 +148,10 @@ if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
 SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
 {
-    global game_window_id, suspend_key, hotkeys_suspended_by_user
+    global game_window_id
+    global suspend_key
+    global hotkeys_suspended_by_user
+    global hotkeys_inactive_fix
 
     if (!WinActive(game_window_id))
     {
@@ -156,9 +160,18 @@ MainLoop()
         
         if Configured(suspend_key)
             Hotkey, %suspend_key%, Off
+            
+        hotkeys_inactive_fix := false
     }    
     else
     {
+        if (!hotkeys_inactive_fix)
+        {
+            Suspend, On
+            Suspend, Off
+            hotkeys_inactive_fix := true
+        }
+        
         if Configured(suspend_key)
         {
             Hotkey, %suspend_key%, On
