@@ -28,7 +28,7 @@ class ComboHolds
             if (double_press)
             {
                 IniRead, double_press_time_gap, % config_name, combo holds, double_press%A_INDEX%_time_gap, % _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP
-                if (!Configured(double_press_time_gap))
+                if (Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
                         , ObjBindMethod(this, "ComboHoldDouble", combo_keys, double_press_time_gap, delay, A_INDEX))
                 
