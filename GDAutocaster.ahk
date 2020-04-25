@@ -281,7 +281,16 @@ CalculateX(angle, width)
 
 Rotate(camera_sleep, rotation_key, angle)
 {
-    WinGetActiveStats, Title, Width, Height, X, Y
+    static resolution_read := false
+    static Width
+    static Height
+    
+    if (!resolution_read)
+    {
+        WinGetActiveStats, Title, Width, Height, X, Y
+        resolution_read := true
+    }
+
     MouseGetPos, xpos, ypos 
     BlockInput, MouseMove
     MouseMove, CalculateX(angle, Width), Height-1, 0
