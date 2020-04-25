@@ -290,6 +290,8 @@ Rotate(camera_sleep, rotation_key, angle)
         WinGetActiveStats, Title, Width, Height, X, Y
         resolution_read := true
     }
+    
+    SetKeyDelay, -1
 
     MouseGetPos, xpos, ypos 
     BlockInput, MouseMove
