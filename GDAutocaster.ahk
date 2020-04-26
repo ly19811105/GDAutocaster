@@ -262,9 +262,11 @@ MasterHold()
 
 Master()
 {
-    global hold_allowed, game_window_id
-    if (WinActive(game_window_id))
+    global hold_allowed, game_window_id, areTimersToggled
+    if (WinActive(game_window_id) and areTimersToggled.Length() > 0)
         hold_allowed := !MasterToggle()
+    else
+        MasterHold()
 }
 
 SuspendHotkeys()
