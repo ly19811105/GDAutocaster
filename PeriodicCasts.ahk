@@ -12,7 +12,7 @@ class PeriodicCasts
         {
             IniRead, cast_str, % config_name, periodic casts, cast%A_INDEX%
             IniRead, delay, % config_name, periodic casts, delay%A_INDEX%, % _PERIODIC_CASTS_IN_BETWEEN_DELAY
-            if (!Configured(cast_str, delay))
+            if (!Common.Configured(cast_str, delay))
                 continue
             
             cast_str := StrSplit(cast_str, ":")

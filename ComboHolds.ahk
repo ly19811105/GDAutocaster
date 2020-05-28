@@ -17,9 +17,9 @@ class ComboHolds
             IniRead, delay, % config_name, combo holds, delay%A_INDEX%, % _COMBO_HOLDS_DELAY_FROM_PRESS_TO_HOLD
             
             IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, % _COMBO_HOLDS_HOLD_ON_DOUBLE_PRESS
-            double_press := StrToBool(double_press)
+            double_press := Common.StrToBool(double_press)
             
-            if (!Configured(combo_str, double_press, delay))
+            if (!Common.Configured(combo_str, double_press, delay))
                 continue
                 
             combo_keys := StrSplit(combo_str, [":", ","])
@@ -28,7 +28,7 @@ class ComboHolds
             if (double_press)
             {
                 IniRead, double_press_time_gap, % config_name, combo holds, double_press%A_INDEX%_time_gap, % _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP
-                if (Configured(double_press_time_gap))
+                if (Common.Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
                         , ObjBindMethod(this, "ComboHoldDouble", combo_keys, double_press_time_gap, delay, A_INDEX))
                 

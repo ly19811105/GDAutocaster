@@ -14,9 +14,9 @@ class CenterCasts
             IniRead, closer_not_center, % config_name, center casts, closer_not_center, % _CENTER_CASTS_CLOSER_NOT_CENTER
             IniRead, initial_delay, % config_name, center casts, initial_delay, % _CENTER_CASTS_INITIAL_DELAY
             IniRead, delay, % config_name, center casts, delay, % _CENTER_CASTS_DELAY
-            closer_not_center := StrToBool(closer_not_center)
+            closer_not_center := Common.StrToBool(closer_not_center)
             
-            if (!Configured(cast_str, closer_not_center, initial_delay, delay))
+            if (!Common.Configured(cast_str, closer_not_center, initial_delay, delay))
                 continue
               
             keys := StrSplit(cast_str, [":", ","])

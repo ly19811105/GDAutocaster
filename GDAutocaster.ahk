@@ -34,14 +34,14 @@ If (!FileExist(config_name))
 }
 
 IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
-if (!Configured(game_window_id))
+if (!Common.Configured(game_window_id))
 {
     MsgBox, Missing "game_window_id" in the config, i.e. game_window_id=ahk_exe Grim Dawn.exe in [general] section.
     ExitApp
 }
 
 IniRead, pressed_buttons, % config_name, autocasting, pressed_buttons, % _AUTOCASTING_PRESSED_BUTTONS
-pressed_buttons := Configured(pressed_buttons) ? StrSplit(pressed_buttons, ",") : []
+pressed_buttons := Common.Configured(pressed_buttons) ? StrSplit(pressed_buttons, ",") : []
 for not_used, key in pressed_buttons
 {
     IniRead, delay, % config_name, % key, delay, % _AUTOCASTING_DELAY
@@ -49,20 +49,20 @@ for not_used, key in pressed_buttons
     IniRead, hold_keys_str, % config_name, % key, hold_keys
     IniRead, not_hold_keys_str, % config_name, % key, not_hold_keys
     
-    hold_keys := Configured(hold_keys_str) ? StrSplit(hold_keys_str, ",") : [] 
-    not_hold_keys := Configured(not_hold_keys_str) ? StrSplit(not_hold_keys_str, ",") : []
+    hold_keys := Common.Configured(hold_keys_str) ? StrSplit(hold_keys_str, ",") : [] 
+    not_hold_keys := Common.Configured(not_hold_keys_str) ? StrSplit(not_hold_keys_str, ",") : []
     
-    if (!Configured(delay))
+    if (!Common.Configured(delay))
         continue
     
-    if Configured(toggle_key)
+    if Common.Configured(toggle_key)
     {
         areTimersToggled[key] := false
         hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . toggle_key, Func("ToggleTimer").Bind(key))
         timers_to_toggle.Push(key)
     }    
     
-    if (Configured(toggle_key) or (hold_keys.Length() > 0))
+    if (Common.Configured(toggle_key) or (hold_keys.Length() > 0))
     {
         fn := Func("PressButton").Bind(key, hold_keys, not_hold_keys)
         SetTimer, %fn%, %delay% 
@@ -71,17 +71,17 @@ for not_used, key in pressed_buttons
 
 IniRead, master_toggle, % config_name, autocasting, master_toggle
 IniRead, master_hold, % config_name, autocasting, master_hold
-if (Configured(master_toggle) and master_hold != master_toggle)
+if (Common.Configured(master_toggle) and master_hold != master_toggle)
     hotkeys_collector.AddHotkey(master_toggle, Func("MasterToggle"))
    
-if (Configured(master_hold) and master_hold != master_toggle)
+if (Common.Configured(master_hold) and master_hold != master_toggle)
     hotkeys_collector.AddHotkey(master_hold, Func("MasterHold"))
    
-if (Configured(master_hold) and master_hold = master_toggle)
+if (Common.Configured(master_hold) and master_hold = master_toggle)
     hotkeys_collector.AddHotkey(master_hold, Func("Master"))
 
 IniRead, suspend_key, % config_name, general, suspend_key
-if Configured(suspend_key)
+if Common.Configured(suspend_key)
     Hotkey, %suspend_key%, SuspendHotkeys
     
 IniRead, angle, % config_name, camera, angle, % _CAMERA_ANGLE
@@ -90,19 +90,19 @@ IniRead, clockwise, % config_name, camera, clockwise
 IniRead, rotation_key, % config_name, camera, rotation_key
 IniRead, camera_sleep, % config_name, camera, delay, % _CAMERA_DELAY
 
-if Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
+if Common.Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
 {
     hotkeys_collector.AddHotkey("*" . counter_clockwise, Func("Counterclock").Bind(game_window_id, camera_sleep, rotation_key, angle))
     hotkeys_collector.AddHotkey("*" . clockwise, Func("Clock").Bind(game_window_id, camera_sleep, rotation_key, angle))
 }
 
 IniRead, capslock_remap, % config_name, general, capslock_remap
-if Configured(capslock_remap)
+if Common.Configured(capslock_remap)
     hotkeys_collector.AddHotkey("Capslock", Func("CapslockAction"))
 
 IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
 IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, % _AUTOCASTING_TEMPORARY_BLOCK_DURATION
-temp_block_keys := Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
+temp_block_keys := Common.Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
 for not_used, key in temp_block_keys
     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key, Func("BlockAutocasting").Bind(temp_block_duration))
     
@@ -114,15 +114,15 @@ Loop, %_MAX_NUMBER_OF_COMBINATIONS%
     IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, % _COMBOS_INITIAL_DELAY
     IniRead, stop_on_release, % config_name, combo presses, stop_on_release%A_INDEX%, % _COMBOS_STOP_ON_RELEASE
     
-    initial_delay := StrToBool(initial_delay)
-    stop_on_release := StrToBool(stop_on_release)
+    initial_delay := Common.StrToBool(initial_delay)
+    stop_on_release := Common.StrToBool(stop_on_release)
     
-    if (!Configured(combo_str, initial_delay, stop_on_release) or (!Configured(combo_delay) and !Configured(combo_delay_override)))
+    if (!Common.Configured(combo_str, initial_delay, stop_on_release) or (!Common.Configured(combo_delay) and !Common.Configured(combo_delay_override)))
         continue
     
     combo_keys := StrSplit(combo_str, [":", ","])
     combo_key := combo_keys.RemoveAt(1)
-    combo_delay_override := Configured(combo_delay_override) ? combo_delay_override : combo_delay
+    combo_delay_override := Common.Configured(combo_delay_override) ? combo_delay_override : combo_delay
     
     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
         , Func("ComboPress").Bind(combo_delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
@@ -139,7 +139,7 @@ new PeriodicCasts(config_name, hotkeys_collector)
 IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
 IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
 IniRead, show_delay, % config_name, hiding items, show_delay, % _HOLD_TO_HIDE_ITEMS_TIME_BUFFER
-if Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
+if Common.Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
 {
     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
@@ -158,7 +158,7 @@ MainLoop()
         if (!A_IsSuspended)
             Suspend, On
         
-        if Configured(suspend_key)
+        if Common.Configured(suspend_key)
             Hotkey, %suspend_key%, Off
             
         hotkeys_inactive_fix := false
@@ -172,7 +172,7 @@ MainLoop()
             hotkeys_inactive_fix := true
         }
         
-        if Configured(suspend_key)
+        if Common.Configured(suspend_key)
         {
             Hotkey, %suspend_key%, On
             if (!hotkeys_suspended_by_user)
