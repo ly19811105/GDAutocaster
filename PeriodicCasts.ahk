@@ -12,17 +12,18 @@ class PeriodicCasts
         {
             IniRead, cast_str, % config_name, periodic casts, cast%A_INDEX%
             IniRead, delay, % config_name, periodic casts, delay%A_INDEX%, % _PERIODIC_CASTS_IN_BETWEEN_DELAY
-            if (!Common.Configured(cast_str, delay))
+            IniRead, initial_delay, % config_name, periodic casts, initial_delay%A_INDEX%, % _PERIODIC_CASTS_INITIAL_DELAY
+            if (!Common.Configured(cast_str, delay, initial_delay))
                 continue
             
             cast_str := StrSplit(cast_str, ":")
             held_keys_str := cast_str.RemoveAt(1)
             held_keys := StrSplit(held_keys_str, ",")
             pressed_keys := StrSplit(cast_str[1], ",")
-            first_key := held_keys.RemoveAt(1)
+            first_key := held_keys[1]
             
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                , ObjBindMethod(this, "PeriodicCast", first_key, pressed_keys, delay, held_keys, A_INDEX))
+                , ObjBindMethod(this, "PeriodicCast", pressed_keys, delay, held_keys, A_INDEX, initial_delay))
                 
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key . " UP"
                 , ObjBindMethod(this, "PeriodicCastUP", A_INDEX))    
@@ -32,35 +33,51 @@ class PeriodicCasts
 
     }
     
-    PeriodicCast(first_key, pressed_keys, delay, held_keys, index)
+    PeriodicCast(pressed_keys, delay, held_keys, index, initial_delay)
     {
         global game_window_id
         if(!WinActive(game_window_id) or this.spam_prevention[index])
             return
             
         this.spam_prevention[index] := 1
-            
-        for not_used, key in held_keys
-            if (!GetKeyState(key, "P"))
-                return
-
-        for not_used, key in pressed_keys
-            Send {%key%}
         
-        fn := ObjBindMethod(this, "PeriodicCastTimer", first_key, pressed_keys)
+        if (!Common.Pressed(held_keys))
+            return
+        
+        if (initial_delay = 0)
+        {
+            Common.PressButtons(pressed_keys)
+            
+            fn := ObjBindMethod(this, "PeriodicCastTimer", pressed_keys, held_keys)
+            SetTimer, %fn%, %delay%
+        }
+        else
+        {
+            fn := ObjBindMethod(this, "PeriodicCastInitialTimer", pressed_keys, held_keys)
+            SetTimer, %fn%, -%initial_delay%
+        }
+    }
+    
+    PeriodicCastInitialTimer(pressed_keys, held_keys)
+    {
+        if (!Common.Pressed(held_keys))
+            Return
+        
+        Common.PressButtons(pressed_keys)
+        
+        fn := ObjBindMethod(this, "PeriodicCastTimer", pressed_keys, held_keys)
         SetTimer, %fn%, %delay%
     }
     
-    PeriodicCastTimer(first_key, pressed_keys)
+    PeriodicCastTimer(pressed_keys, held_keys)
     {
-        if (!GetKeyState(first_key, "P"))
+        if (!Common.Pressed(held_keys))
         {
             SetTimer,, Off
             Return
         }
         
-        for not_used, key in pressed_keys
-            Send {%key%}
+        Common.PressButtons(pressed_keys)
     }
     
     PeriodicCastUP(index)

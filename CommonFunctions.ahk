@@ -19,4 +19,19 @@ class Common
             
         return str_bool
     }
+    
+    Pressed(keys)
+    {
+        for not_used, key in keys
+            if (!GetKeyState(key, "P"))
+                return false
+        
+        return true
+    }
+    
+    PressButtons(pressed_keys)
+    {
+        for not_used, key in pressed_keys
+            Send % key
+    }
 }
