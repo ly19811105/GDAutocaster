@@ -53,12 +53,12 @@ class PeriodicCasts
         }
         else
         {
-            fn := ObjBindMethod(this, "PeriodicCastInitialTimer", pressed_keys, held_keys)
+            fn := ObjBindMethod(this, "PeriodicCastInitialTimer", pressed_keys, held_keys, delay)
             SetTimer, %fn%, -%initial_delay%
         }
     }
     
-    PeriodicCastInitialTimer(pressed_keys, held_keys)
+    PeriodicCastInitialTimer(pressed_keys, held_keys, delay)
     {
         if (!Common.Pressed(held_keys))
             Return
