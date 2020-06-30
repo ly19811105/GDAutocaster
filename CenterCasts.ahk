@@ -14,6 +14,7 @@ class CenterCasts
             IniRead, closer_not_center, % config_name, center casts, closer_not_center, % _CENTER_CASTS_CLOSER_NOT_CENTER
             IniRead, initial_delay, % config_name, center casts, initial_delay, % _CENTER_CASTS_INITIAL_DELAY
             IniRead, delay, % config_name, center casts, delay, % _CENTER_CASTS_DELAY
+            IniRead, delay_after_cursor, % config_name, center casts, delay_after_cursor, %_CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR%
             closer_not_center := Common.StrToBool(closer_not_center)
             
             if (!Common.Configured(cast_str, closer_not_center, initial_delay, delay))
@@ -23,7 +24,7 @@ class CenterCasts
             key := keys.RemoveAt(1)
             
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key
-                , ObjBindMethod(this, "CenterCast", keys, closer_not_center, initial_delay, delay, A_INDEX))
+                , ObjBindMethod(this, "CenterCast", keys, closer_not_center, initial_delay, delay, A_INDEX, delay_after_cursor))
             
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key . " UP"
                 , ObjBindMethod(this, "CenterCastUP", A_INDEX))
@@ -32,7 +33,7 @@ class CenterCasts
         }
     }
     
-    CenterCast(keys, closer_not_center, initial_delay, delay, index)
+    CenterCast(keys, closer_not_center, initial_delay, delay, index, delay_after_cursor)
     {
         global game_window_id
         if (!WinActive(game_window_id) or this.spam_prevention[index])
@@ -47,10 +48,10 @@ class CenterCasts
             SetTimer, %fn%, -%initial_delay%
         }
         else
-            this.CenterCast2(keys, closer_not_center, delay)
+            this.CenterCast2(keys, closer_not_center, delay, delay_after_cursor)
     }
     
-    CenterCast2(keys, closer_not_center, delay)
+    CenterCast2(keys, closer_not_center, delay, delay_after_cursor)
     {
         static resolution_read := false
         static Width
@@ -82,7 +83,7 @@ class CenterCasts
             MouseMove, Width/2, Height/2, 0
         }
     
-        Sleep, %_CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR%
+        Sleep, %delay_after_cursor%
         key := keys.RemoveAt(1)
         Send {%key%}
         
