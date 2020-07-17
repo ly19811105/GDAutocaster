@@ -8,13 +8,17 @@ class PeriodicCasts
 
     __New(config_name, hotkeys_collector)
     {
+        IniRead, delay, % config_name, periodic casts, delay, % _PERIODIC_CASTS_IN_BETWEEN_DELAY
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             IniRead, cast_str, % config_name, periodic casts, cast%A_INDEX%
-            IniRead, delay, % config_name, periodic casts, delay%A_INDEX%, % _PERIODIC_CASTS_IN_BETWEEN_DELAY
+            IniRead, delay%A_INDEX%, % config_name, periodic casts, delay%A_INDEX%
             IniRead, initial_delay, % config_name, periodic casts, initial_delay%A_INDEX%, % _PERIODIC_CASTS_INITIAL_DELAY
-            if (!Common.Configured(cast_str, delay, initial_delay))
+            if (!Common.Configured(cast_str, initial_delay))
                 continue
+                
+            if (!Common.Configured(delay%A_INDEX%))
+                delay%A_INDEX% := delay
             
             cast_str := StrSplit(cast_str, ":")
             held_keys_str := cast_str.RemoveAt(1)
@@ -23,7 +27,7 @@ class PeriodicCasts
             first_key := held_keys[1]
             
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                , ObjBindMethod(this, "PeriodicCast", pressed_keys, delay, held_keys, A_INDEX, initial_delay))
+                , ObjBindMethod(this, "PeriodicCast", pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
                 
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key . " UP"
                 , ObjBindMethod(this, "PeriodicCastUP", A_INDEX))    
