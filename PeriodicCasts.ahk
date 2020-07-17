@@ -5,6 +5,7 @@
 class PeriodicCasts
 {
     spam_prevention := []
+    just_pressed := []
 
     __New(config_name, hotkeys_collector)
     {
@@ -12,27 +13,39 @@ class PeriodicCasts
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             IniRead, cast_str, % config_name, periodic casts, cast%A_INDEX%
-            IniRead, delay%A_INDEX%, % config_name, periodic casts, delay%A_INDEX%
+            IniRead, delay%A_INDEX%, % config_name, periodic casts, delay%A_INDEX%, % delay
             IniRead, initial_delay, % config_name, periodic casts, initial_delay%A_INDEX%, % _PERIODIC_CASTS_INITIAL_DELAY
-            if (!Common.Configured(cast_str, initial_delay))
+            IniRead, double_press, % config_name, periodic casts, double_press%A_INDEX%, % _PERIODIC_CASTS_DOUBLE_PRESS 
+            Common.StrToBool(double_press)
+            
+            if (!Common.Configured(cast_str, initial_delay, delay%A_INDEX%, double_press))
                 continue
                 
-            if (!Common.Configured(delay%A_INDEX%))
-                delay%A_INDEX% := delay
-            
             cast_str := StrSplit(cast_str, ":")
             held_keys_str := cast_str.RemoveAt(1)
             held_keys := StrSplit(held_keys_str, ",")
             pressed_keys := StrSplit(cast_str[1], ",")
             first_key := held_keys[1]
             
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                , ObjBindMethod(this, "PeriodicCast", pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+            if (!double_press)
+            {
+                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
+                    , ObjBindMethod(this, "PeriodicCast", pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+            }
+            else
+            {
+                IniRead, double_press_time_gap, % config_name, periodic casts, double_press%A_INDEX%_time_gap, % _PERIODIC_CASTS_DOUBLE_PRESS_TIME_GAP
+                
+                if (Common.Configured(double_press_time_gap))
+                    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
+                        , ObjBindMethod(this, "PeriodicCastDouble", double_press_time_gap, pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+            }
                 
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key . " UP"
                 , ObjBindMethod(this, "PeriodicCastUP", A_INDEX))    
             
             this.spam_prevention.Push(0)
+            this.just_pressed.Push(false)
         }
 
     }
@@ -87,5 +100,26 @@ class PeriodicCasts
     PeriodicCastUP(index)
     {
         this.spam_prevention[index] := 0
+    }
+    
+    PeriodicCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay)
+    {
+        global game_window_id
+        if (!WinActive(game_window_id))
+            return
+            
+        if (!this.just_pressed[index])
+        {
+            this.just_pressed[index] := true
+            fn := ObjBindMethod(this, "PeriodicCastDoubleTimer", index)
+            SetTimer, %fn%, -%double_press_time_gap%
+        }
+        else
+            this.PeriodicCast(pressed_keys, delay, held_keys, index, initial_delay)
+    }
+    
+    PeriodicCastDoubleTimer(index)
+    {
+        this.just_pressed[index] := false
     }
 }
