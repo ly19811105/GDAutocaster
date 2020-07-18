@@ -9,6 +9,7 @@ SetTitleMatchMode, 3
 Menu, Tray, Icon , *, -1, 1
 
 #Include CenterCasts.ahk
+#Include Clicker.ahk
 #Include ComboHolds.ahk
 #Include CommonFunctions.ahk
 #Include Defaults.ahk
@@ -133,6 +134,7 @@ Loop, %_MAX_NUMBER_OF_COMBINATIONS%
 }
 
 new CenterCasts(config_name, hotkeys_collector)
+new Clicker(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 new PeriodicCasts(config_name, hotkeys_collector)
 

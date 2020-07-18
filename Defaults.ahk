@@ -33,3 +33,5 @@ global _CAMERA_ANGLE := 60
 global _CAMERA_DELAY := 40
 
 global _HOLD_TO_HIDE_ITEMS_TIME_BUFFER := 1000
+
+global _CLICKER_DELAY := 50
