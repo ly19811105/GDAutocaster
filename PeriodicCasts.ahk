@@ -16,7 +16,7 @@ class PeriodicCasts
             IniRead, delay%A_INDEX%, % config_name, periodic casts, delay%A_INDEX%, % delay
             IniRead, initial_delay, % config_name, periodic casts, initial_delay%A_INDEX%, % _PERIODIC_CASTS_INITIAL_DELAY
             IniRead, double_press, % config_name, periodic casts, double_press%A_INDEX%, % _PERIODIC_CASTS_DOUBLE_PRESS 
-            Common.StrToBool(double_press)
+            double_press := Common.StrToBool(double_press)
             
             if (!Common.Configured(cast_str, initial_delay, delay%A_INDEX%, double_press))
                 continue
