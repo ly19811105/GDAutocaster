@@ -83,7 +83,17 @@ class CenterCasts
             MouseMove, Width/2, Height/2, 0
         }
     
-        Sleep, %delay_after_cursor%
+        if (delay_after_cursor > 0)
+        {
+            fn := ObjBindMethod(this, "CenterCast2b", keys, xpos, ypos, delay)
+            SetTimer, %fn%, -%delay_after_cursor%
+        }
+        else
+            this.CenterCast2b(keys, xpos, ypos, delay)
+    }
+    
+    CenterCast2b(keys, xpos, ypos, delay)
+    {
         key := keys.RemoveAt(1)
         Send {%key%}
         
