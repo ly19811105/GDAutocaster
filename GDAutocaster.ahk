@@ -27,6 +27,8 @@ toggle_pending := false
 already_hidden := false
 hotkeys_inactive_fix := false
 
+Menu, Tray, Add, Reload, ReloadMenuAction   
+
 if (A_Args.Length() > 0)
     for _, value in A_Args  ; For each parameter:
         if (value = "no_dialog")
@@ -34,6 +36,7 @@ if (A_Args.Length() > 0)
 
 if (config_name = "")
     FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
+
 
 If (!FileExist(config_name))
 {
@@ -167,6 +170,11 @@ MainLoop()
             Suspend, Off
         }
     }
+}
+
+ReloadMenuAction()
+{
+    Reload
 }
 
 ToggleTimer(key)
