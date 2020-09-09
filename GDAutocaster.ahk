@@ -27,10 +27,10 @@ toggle_pending := false
 already_hidden := false
 hotkeys_inactive_fix := false
 
-config_name := % StrSplit(A_ScriptName, ".")[1] . "." . _CONFIG_FILE_EXTENSION
+FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
 If (!FileExist(config_name))
 {
-    MsgBox, %config_name% not found
+    MsgBox, %config_name% config file not found
     ExitApp
 }
 
