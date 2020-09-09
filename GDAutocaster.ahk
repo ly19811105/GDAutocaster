@@ -27,7 +27,14 @@ toggle_pending := false
 already_hidden := false
 hotkeys_inactive_fix := false
 
-FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
+if (A_Args.Length() > 0)
+    for _, value in A_Args  ; For each parameter:
+        if (value = "no_dialog")
+            config_name := % StrSplit(A_ScriptName, ".")[1] . "." . _CONFIG_FILE_EXTENSION
+
+if (config_name = "")
+    FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
+
 If (!FileExist(config_name))
 {
     MsgBox, %config_name% config file not found
