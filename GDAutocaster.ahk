@@ -6,7 +6,6 @@
 #KeyHistory 50
 SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
-Menu, Tray, Icon , *, -1, 1
 
 #Include CenterCasts.ahk
 #Include Clicker.ahk
@@ -27,8 +26,11 @@ toggle_pending := false
 already_hidden := false
 hotkeys_inactive_fix := false
 
+Menu, Tray, Icon , *, -1, 1
+Menu, Tray, NoStandard
 Menu, Tray, Add, Load Config, LoadConfigAction
 Menu, Tray, Add, Restart, RestartAction
+Menu, Tray, Add, Exit, ExitAction
 
 if (A_Args.Length() > 0)
 {   
@@ -180,6 +182,11 @@ RestartAction()
 {
     global config_name
     Run, %A_ScriptFullPath% "%config_name%"
+}
+
+ExitAction()
+{
+    ExitApp
 }
 
 ToggleTimer(key)
