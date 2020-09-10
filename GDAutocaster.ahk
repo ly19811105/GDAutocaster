@@ -27,16 +27,15 @@ toggle_pending := false
 already_hidden := false
 hotkeys_inactive_fix := false
 
-Menu, Tray, Add, Reload, ReloadMenuAction   
+Menu, Tray, Add, Load Config, LoadConfigAction
+Menu, Tray, Add, Restart, RestartAction
 
 if (A_Args.Length() > 0)
-    for _, value in A_Args  ; For each parameter:
-        if (value = "no_dialog")
-            config_name := % StrSplit(A_ScriptName, ".")[1] . "." . _CONFIG_FILE_EXTENSION
-
-if (config_name = "")
+{   
+    config_name := A_Args[1]
+}
+else
     FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
-
 
 If (!FileExist(config_name))
 {
@@ -172,9 +171,15 @@ MainLoop()
     }
 }
 
-ReloadMenuAction()
+LoadConfigAction()
 {
-    Reload
+    Run % A_ScriptFullPath
+}
+
+RestartAction()
+{
+    global config_name
+    Run, %A_ScriptFullPath% "%config_name%"
 }
 
 ToggleTimer(key)
