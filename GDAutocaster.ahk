@@ -45,6 +45,13 @@ If (!FileExist(config_name))
     ExitApp
 }
 
+Menu, Tray, Insert, Load Config, ConfigName
+Menu, Tray, Insert, Load Config
+Menu, Tray, Disable, ConfigName
+Menu, Tray, Default, ConfigName
+SplitPath, config_name,,,, config_shortname
+Menu, Tray, Rename, ConfigName, % config_shortname
+
 IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
 if (!Common.Configured(game_window_id))
 {
@@ -173,14 +180,25 @@ MainLoop()
     }
 }
 
+ConfigName()
+{
+}
+
 LoadConfigAction()
 {
     Run % A_ScriptFullPath
+    ExitApp
 }
 
 RestartAction()
 {
     global config_name
+    if (config_name = "")
+    {
+        LoadConfigAction()
+        ExitApp
+    }
+    
     Run, %A_ScriptFullPath% "%config_name%"
 }
 
