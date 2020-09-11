@@ -44,7 +44,7 @@ class CenterCasts
         keys := keys.Clone()
         if (initial_delay > 0)
         {
-            fn := ObjBindMethod(this, "CenterCast2", keys, closer_not_center, delay)
+            fn := ObjBindMethod(this, "CenterCast2", keys, closer_not_center, delay, delay_after_cursor)
             SetTimer, %fn%, -%initial_delay%
         }
         else
