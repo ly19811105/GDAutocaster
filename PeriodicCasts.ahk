@@ -25,7 +25,7 @@ class PeriodicCasts
             held_keys_str := cast_str.RemoveAt(1)
             held_keys := StrSplit(held_keys_str, ",")
             pressed_keys := StrSplit(cast_str[1], ",")
-            first_key := held_keys[1]
+            first_key := held_keys[held_keys.Length()]
             
             if (!double_press)
             {
