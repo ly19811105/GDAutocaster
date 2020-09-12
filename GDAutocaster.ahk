@@ -7,6 +7,7 @@
 SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
 
+#include Camera.ahk
 #Include CenterCasts.ahk
 #Include Clicker.ahk
 #Include Combos.ahk
@@ -102,18 +103,6 @@ if (Common.Configured(master_hold) and master_hold = master_toggle)
 IniRead, suspend_key, % config_name, general, suspend_key
 if Common.Configured(suspend_key)
     Hotkey, %suspend_key%, SuspendHotkeys
-    
-IniRead, angle, % config_name, camera, angle, % _CAMERA_ANGLE
-IniRead, counter_clockwise, % config_name, camera, counter_clockwise
-IniRead, clockwise, % config_name, camera, clockwise
-IniRead, rotation_key, % config_name, camera, rotation_key
-IniRead, camera_sleep, % config_name, camera, delay, % _CAMERA_DELAY
-
-if Common.Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
-{
-    hotkeys_collector.AddHotkey("*" . counter_clockwise, Func("Counterclock").Bind(game_window_id, camera_sleep, rotation_key, angle))
-    hotkeys_collector.AddHotkey("*" . clockwise, Func("Clock").Bind(game_window_id, camera_sleep, rotation_key, angle))
-}
 
 IniRead, capslock_remap, % config_name, general, capslock_remap
 if Common.Configured(capslock_remap)
@@ -124,7 +113,8 @@ IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, %
 temp_block_keys := Common.Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
 for not_used, key in temp_block_keys
     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key, Func("BlockAutocasting").Bind(temp_block_duration))
-    
+
+new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
 new Clicker(config_name, hotkeys_collector)
 new Combos(config_name, hotkeys_collector)
@@ -298,41 +288,6 @@ SuspendHotkeys()
     hotkeys_suspended_by_user ^= true
 }
 
-CalculateX(angle, width)
-{
-    return (Abs(angle) - angle) * width/360
-}
-
-Rotate(camera_sleep, rotation_key, angle)
-{
-    static resolution_read := false
-    static Width
-    static Height
-    
-    if (!resolution_read)
-    {
-        WinGetActiveStats, Title, Width, Height, X, Y
-        resolution_read := true
-    }
-    
-    SetKeyDelay, -1
-
-    MouseGetPos, xpos, ypos 
-    BlockInput, MouseMove
-    MouseMove, CalculateX(angle, Width), Height-1, 0
-    
-    Sleep, %camera_sleep%
-    
-    Send {%rotation_key% down}
-    MouseMove, CalculateX(-angle, Width), Height-1, 0
-    BlockInput, MouseMoveOff
-    
-    Sleep, %camera_sleep%
-    
-    Send {%rotation_key% up}
-    MouseMove, xpos, ypos, 0
-}
-
 HoldToHideItems(hiding, show_delay)
 {
     global game_window_id, toggle_pending, already_hidden
@@ -366,18 +321,6 @@ ToggleItemDisplay()
     global toggle_pending, gd_toggle_hide_key
     Send {%gd_toggle_hide_key%}
     toggle_pending := false
-}
-
-Counterclock(game_window_id, camera_sleep, rotation_key, angle)
-{
-    if(WinActive(game_window_id))
-        Rotate(camera_sleep, rotation_key, angle)
-}
-
-Clock(game_window_id, camera_sleep, rotation_key, angle)
-{
-    if(WinActive(game_window_id))
-        Rotate(camera_sleep, rotation_key, -angle)
 }
 
 CapslockAction()
