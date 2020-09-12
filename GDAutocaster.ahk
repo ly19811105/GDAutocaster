@@ -12,7 +12,7 @@ SetTitleMatchMode, 3
 #Include Clicker.ahk
 #Include Combos.ahk
 #Include ComboHolds.ahk
-#Include CommonFunctions.ahk
+#Include Common.ahk
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 #Include PeriodicCasts.ahk

@@ -1,4 +1,4 @@
-#Include CommonFunctions.ahk
+#Include Common.ahk
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
