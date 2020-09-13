@@ -15,13 +15,12 @@ SetTitleMatchMode, 3
 #Include ComboHolds.ahk
 #Include Common.ahk
 #Include Defaults.ahk
+#Include HideItems.ahk
 #Include HotkeysCollector.ahk
 #Include PeriodicCasts.ahk
 
 hotkeys_suspended_by_user := false
 hotkeys_collector := new HotkeysCollector()
-toggle_pending := false
-already_hidden := false
 hotkeys_inactive_fix := false
 
 Menu, Tray, Icon , *, -1, 1
@@ -71,16 +70,8 @@ new CenterCasts(config_name, hotkeys_collector)
 new Clicker(config_name, hotkeys_collector)
 new Combos(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
+new HideItems(config_name, hotkeys_collector)
 new PeriodicCasts(config_name, hotkeys_collector)
-
-IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
-IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
-IniRead, show_delay, % config_name, hiding items, show_delay, % _HOLD_TO_HIDE_ITEMS_TIME_BUFFER
-if Common.Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
-{
-    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key, Func("HoldToHideItems").Bind(1, show_delay))
-    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key . " UP", Func("HoldToHideItems").Bind(0, show_delay))
-}
     
 SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
@@ -154,41 +145,6 @@ SuspendHotkeys()
     Suspend
     global hotkeys_suspended_by_user
     hotkeys_suspended_by_user ^= true
-}
-
-HoldToHideItems(hiding, show_delay)
-{
-    global game_window_id, toggle_pending, already_hidden
-    if (!WinActive(game_window_id))
-        return
-        
-    if (already_hidden and hiding)
-        return
-        
-    if (hiding)
-    {
-        if (toggle_pending)
-        {
-            SetTimer, ToggleItemDisplay, Off
-            toggle_pending := false
-        }
-        else
-            ToggleItemDisplay()
-    }
-    else
-    {
-        toggle_pending := true
-        SetTimer, ToggleItemDisplay, -%show_delay%
-    }
-    
-    already_hidden := hiding
-}
-
-ToggleItemDisplay()
-{
-    global toggle_pending, gd_toggle_hide_key
-    Send {%gd_toggle_hide_key%}
-    toggle_pending := false
 }
 
 CapslockAction()
