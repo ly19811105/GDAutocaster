@@ -18,16 +18,9 @@ SetTitleMatchMode, 3
 #Include HideItems.ahk
 #Include HotkeysCollector.ahk
 #Include PeriodicCasts.ahk
+#include Tray.ahk
 
-hotkeys_suspended_by_user := false
-hotkeys_collector := new HotkeysCollector()
-hotkeys_inactive_fix := false
-
-Menu, Tray, Icon , *, -1, 1
-Menu, Tray, NoStandard
-Menu, Tray, Add, Load Config, LoadConfigAction
-Menu, Tray, Add, Restart, RestartAction
-Menu, Tray, Add, Exit, ExitAction
+tray := new Tray()
 
 if (A_Args.Length() > 0)
 {   
@@ -42,12 +35,7 @@ If (!FileExist(config_name))
     ExitApp
 }
 
-Menu, Tray, Insert, Load Config, ConfigName
-Menu, Tray, Insert, Load Config
-Menu, Tray, Disable, ConfigName
-Menu, Tray, Default, ConfigName
-SplitPath, config_name,,,, config_shortname
-Menu, Tray, Rename, ConfigName, % config_shortname
+tray.DisplayConfigName()
 
 IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
 if (!Common.Configured(game_window_id))
@@ -60,6 +48,7 @@ IniRead, suspend_key, % config_name, general, suspend_key
 if Common.Configured(suspend_key)
     Hotkey, %suspend_key%, SuspendHotkeys
 
+hotkeys_collector := new HotkeysCollector()
 new Autocasting(config_name, hotkeys_collector)
 new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
@@ -68,8 +57,11 @@ new Combos(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
 new PeriodicCasts(config_name, hotkeys_collector)
-    
+
+hotkeys_suspended_by_user := false
+hotkeys_inactive_fix := false
 SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
+
 MainLoop()
 {
     global game_window_id
@@ -107,33 +99,6 @@ MainLoop()
             Suspend, Off
         }
     }
-}
-
-ConfigName()
-{
-}
-
-LoadConfigAction()
-{
-    Run % A_ScriptFullPath
-    ExitApp
-}
-
-RestartAction()
-{
-    global config_name
-    if (config_name = "")
-    {
-        LoadConfigAction()
-        ExitApp
-    }
-    
-    Run, %A_ScriptFullPath% "%config_name%"
-}
-
-ExitAction()
-{
-    ExitApp
 }
 
 SuspendHotkeys()
