@@ -17,20 +17,26 @@ class Combos
             IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, % _COMBOS_INITIAL_DELAY
             IniRead, stop_on_release, % config_name, combo presses, stop_on_release%A_INDEX%, % _COMBOS_STOP_ON_RELEASE
             IniRead, double_press, % config_name, combo presses, double_press%A_INDEX%, % _COMBOS_DOUBLE_PRESS
+            IniRead, key_native_function, % config_name, combo presses, key_native_function%A_INDEX%, % _COMBOS_KEY_NATIVE_FUNCTION
             
             double_press := Common.StrToBool(double_press)
             initial_delay := Common.StrToBool(initial_delay)
             stop_on_release := Common.StrToBool(stop_on_release)
+            key_native_function := Common.StrToBool(key_native_function)
             
-            if (!Common.Configured(combo_str, initial_delay, stop_on_release, delay_override, double_press))
+            if (!Common.Configured(combo_str, initial_delay
+                , stop_on_release, delay_override
+                , double_press, key_native_function))
                 continue
             
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
             
+            hotkey_modifiers := key_native_function ? _HOTKEY_MODIFIERS : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
+            
             if (!double_press)
             {
-                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
+                hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
                     , ObjBindMethod(this, "ComboPress", delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
             }
             else
@@ -38,11 +44,11 @@ class Combos
                 IniRead, double_press_time_gap, % config_name, combo presses, double_press%A_INDEX%_time_gap, % _COMBOS_DOUBLE_PRESS_TIME_GAP
                 
                 if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key
+                    hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
                         , ObjBindMethod(this, "ComboDouble", double_press_time_gap, delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
             }
                 
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key . " UP", ObjBindMethod(this, "ComboPressUP", A_INDEX))
+            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP", ObjBindMethod(this, "ComboPressUP", A_INDEX))
             this.spam_protection.Push(0)
             this.just_pressed.Push(false)
         }
