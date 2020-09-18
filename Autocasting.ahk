@@ -44,13 +44,13 @@ class Autocasting
         IniRead, master_toggle, % config_name, autocasting, master_toggle
         IniRead, master_hold, % config_name, autocasting, master_hold
         if (Common.Configured(master_toggle) and master_hold != master_toggle)
-            hotkeys_collector.AddHotkey(master_toggle, ObjBindMethod(this, "MasterToggle"))
+            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_toggle, ObjBindMethod(this, "MasterToggle"))
            
         if (Common.Configured(master_hold) and master_hold != master_toggle)
-            hotkeys_collector.AddHotkey(master_hold, ObjBindMethod(this, "MasterHold"))
+            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "MasterHold"))
            
         if (Common.Configured(master_hold) and master_hold = master_toggle)
-            hotkeys_collector.AddHotkey(master_hold, ObjBindMethod(this, "Master"))
+            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "Master"))
             
         IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
         IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, % _AUTOCASTING_TEMPORARY_BLOCK_DURATION
