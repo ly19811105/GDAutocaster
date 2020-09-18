@@ -46,7 +46,7 @@ if (!Common.Configured(game_window_id))
 
 IniRead, suspend_key, % config_name, general, suspend_key
 if Common.Configured(suspend_key)
-    Hotkey, %suspend_key%, SuspendHotkeys
+    Hotkey, $%suspend_key%, SuspendHotkeys
 
 hotkeys_collector := new HotkeysCollector()
 new Autocasting(config_name, hotkeys_collector)
@@ -75,7 +75,7 @@ MainLoop()
             Suspend, On
         
         if Common.Configured(suspend_key)
-            Hotkey, %suspend_key%, Off
+            Hotkey, $%suspend_key%, Off
             
         hotkeys_inactive_fix := false
     }    
@@ -90,7 +90,7 @@ MainLoop()
         
         if Common.Configured(suspend_key)
         {
-            Hotkey, %suspend_key%, On
+            Hotkey, $%suspend_key%, On
             if (!hotkeys_suspended_by_user)
                 Suspend, Off
         }
