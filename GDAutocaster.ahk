@@ -59,7 +59,7 @@ new HideItems(config_name, hotkeys_collector)
 new PeriodicCasts(config_name, hotkeys_collector)
 
 hotkeys_suspended_by_user := false
-hotkeys_inactive_fix := false
+hotkeys_inactive_fix := WinActive(game_window_id)
 SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 
 MainLoop()
@@ -68,6 +68,7 @@ MainLoop()
     global suspend_key
     global hotkeys_suspended_by_user
     global hotkeys_inactive_fix
+    global tray
 
     if (!WinActive(game_window_id))
     {
@@ -83,9 +84,8 @@ MainLoop()
     {
         if (!hotkeys_inactive_fix)
         {
-            Suspend, On
-            Suspend, Off
-            hotkeys_inactive_fix := true
+            fn := ObjBindMethod(tray, "RestartAction")
+            SetTimer, %fn%, -3000
         }
         
         if Common.Configured(suspend_key)
