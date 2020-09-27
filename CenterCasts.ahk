@@ -5,6 +5,7 @@
 class CenterCasts
 {
     spam_prevention := []
+    mouse_moving := false
 
     __New(config_name, hotkeys_collector)
     {
@@ -36,7 +37,10 @@ class CenterCasts
     CenterCast(keys, closer_not_center, initial_delay, delay, index, delay_after_cursor)
     {
         global game_window_id
-        if (!WinActive(game_window_id) or this.spam_prevention[index])
+        
+        if (!WinActive(game_window_id)
+        or this.spam_prevention[index]
+        or this.mouse_moving)
             return
     
         this.spam_prevention[index] := 1
@@ -44,15 +48,20 @@ class CenterCasts
         keys := keys.Clone()
         if (initial_delay > 0)
         {
-            fn := ObjBindMethod(this, "CenterCast2", keys, closer_not_center, delay, delay_after_cursor)
+            fn := ObjBindMethod(this, "CenterCast2", keys, closer_not_center, index, delay, delay_after_cursor)
             SetTimer, %fn%, -%initial_delay%
         }
         else
-            this.CenterCast2(keys, closer_not_center, delay, delay_after_cursor)
+            this.CenterCast2(keys, closer_not_center, index, delay, delay_after_cursor)
     }
     
-    CenterCast2(keys, closer_not_center, delay, delay_after_cursor)
+    CenterCast2(keys, closer_not_center, index, delay, delay_after_cursor)
     {
+        if (this.mouse_moving)
+            return
+            
+        this.mouse_moving := true
+    
         static resolution_read := false
         static Width
         static Height
@@ -85,14 +94,14 @@ class CenterCasts
     
         if (delay_after_cursor > 0)
         {
-            fn := ObjBindMethod(this, "CenterCast2b", keys, xpos, ypos, delay)
+            fn := ObjBindMethod(this, "CenterCast2b", keys, xpos, ypos, delay, index)
             SetTimer, %fn%, -%delay_after_cursor%
         }
         else
-            this.CenterCast2b(keys, xpos, ypos, delay)
+            this.CenterCast2b(keys, xpos, ypos, delay, index)
     }
     
-    CenterCast2b(keys, xpos, ypos, delay)
+    CenterCast2b(keys, xpos, ypos, delay, index)
     {
         key := keys.RemoveAt(1)
         Send {%key%}
@@ -101,15 +110,16 @@ class CenterCasts
         {
             MouseMove, xpos, ypos, 0
             BlockInput, MouseMoveOff
+            this.mouse_moving := false
         }
         else
         {
-            fn := ObjBindMethod(this, "CenterCast3", keys, xpos, ypos)
+            fn := ObjBindMethod(this, "CenterCast3", keys, xpos, ypos, index)
             SetTimer, %fn%, %delay%
         }
     }
     
-    CenterCast3(keys, xpos, ypos)
+    CenterCast3(keys, xpos, ypos, index)
     {
         key := keys.RemoveAt(1)
         Send {%key%}
@@ -119,6 +129,7 @@ class CenterCasts
             SetTimer,, Off
             MouseMove, xpos, ypos, 0
             BlockInput, MouseMoveOff
+            this.mouse_moving := false
         }
     }
     

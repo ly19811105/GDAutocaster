@@ -6,6 +6,7 @@ class ComboHolds
 {
     just_pressed := false
     hold_states := []
+    spam_prevention := []
     
     __New(config_name, hotkeys_collector)
     {
@@ -37,14 +38,20 @@ class ComboHolds
                 hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key, ObjBindMethod(this, "ComboHold", combo_keys, delay, A_INDEX))
 
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX))
+            
+            this.spam_prevention.Push(0)
         }
     }
     
     ComboHold(combo_keys, delay, index)
     {
         global game_window_id
-        if (!WinActive(game_window_id))
+        
+        if (!WinActive(game_window_id)
+        or this.spam_prevention[index])
             return
+            
+        this.spam_prevention[index] := true
         
         this.hold_states[index] := true
         fn := ObjBindMethod(this, "StillHeld", index, combo_keys)
@@ -61,6 +68,8 @@ class ComboHolds
         
         for not_used, key in combo_keys
             Send {%key% up}
+            
+        this.spam_prevention[index] := false
     }
 
     ComboHoldDouble(combo_keys, double_press_time_gap, delay, index)

@@ -6,6 +6,7 @@ class Combos
 {
     spam_protection := []
     just_pressed := []
+    combo_in_progress := []
     
     __New(config_name, hotkeys_collector)
     {
@@ -51,16 +52,21 @@ class Combos
             hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP", ObjBindMethod(this, "ComboPressUP", A_INDEX))
             this.spam_protection.Push(0)
             this.just_pressed.Push(false)
+            this.combo_in_progress.Push(false)
         }
     }
     
     ComboPress(delay, keys, initial_delay, index, key, stop_on_release)
     {
         global game_window_id
-        if(!WinActive(game_window_id) or this.spam_protection[index])
+        
+        if(!WinActive(game_window_id)
+        or this.spam_protection[index]
+        or this.combo_in_progress[index])
             return
             
         this.spam_protection[index] := 1
+        this.combo_in_progress[index] := true
 
         keys := keys.Clone()
         
@@ -70,15 +76,21 @@ class Combos
             Send {%first_key%}
         }
         
-        fn := ObjBindMethod(this, "ComboTimer", delay, keys, key, stop_on_release)
+        fn := ObjBindMethod(this, "ComboTimer", delay, keys, key, stop_on_release, index)
         SetTimer, %fn%, -%delay%
     }
 
-    ComboTimer(delay, keys, key, stop_on_release)
+    ComboTimer(delay, keys, key, stop_on_release, index)
     {   
         global game_window_id
-        if (!WinActive(game_window_id) or (keys.Length() = 0) or (stop_on_release and !GetKeyState(key, "P")))
+        
+        if (!WinActive(game_window_id)
+        or (keys.Length() = 0)
+        or (stop_on_release and !GetKeyState(key, "P")))
+        {
+            this.combo_in_progress[index] := false
             return
+        }
         
         key := keys.RemoveAt(1)
         Send {%key%}
