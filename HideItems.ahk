@@ -4,58 +4,56 @@
 
 class HideItems
 {
-    toggle_pending := false
-    already_hidden := false
+    hidden := false
 
     __New(config_name, hotkeys_collector)
     {
-        IniRead, hold_to_hide_key, % config_name, hiding items, hold_to_hide_key
-        IniRead, gd_toggle_hide_key, % config_name, hiding items, gd_toggle_hide_key
-        IniRead, show_delay, % config_name, hiding items, show_delay, % _HOLD_TO_HIDE_ITEMS_TIME_BUFFER
+        IniRead, hiding_buttons_str, % config_name, hide items, hiding_buttons
+        IniRead, ingame_hide_button, % config_name, hide items, ingame_hide_button
+        IniRead, hide_duration, % config_name, hide items, hide_duration, % _HIDE_ITEMS_DURATION
         
-        if Common.Configured(hold_to_hide_key, gd_toggle_hide_key, show_delay)
-        {
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key
-                , ObjBindMethod(this, "HoldToHideItems", 1, show_delay, gd_toggle_hide_key))
-            
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . hold_to_hide_key . " UP"
-                , ObjBindMethod(this, "HoldToHideItems", 0, show_delay, gd_toggle_hide_key))
-        }
+        hiding_buttons := StrSplit(hiding_buttons_str, [","])
+        
+        if Common.Configured(hiding_buttons, ingame_hide_button, hide_duration)
+            for not_used, key in hiding_buttons
+                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key
+                    , ObjBindMethod(this, "Hide", ingame_hide_button, hide_duration))
+        
+        this.showFunction := ObjBindMethod(this, "Show", hiding_buttons, ingame_hide_button, hide_duration)
     }
     
-    HoldToHideItems(hiding, show_delay, gd_toggle_hide_key)
+    Hide(ingame_hide_button, hide_duration)
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
-            return
-            
-        if (this.already_hidden and hiding)
-            return
-            
-        if (hiding)
+        if (!this.hidden)
         {
-            if (this.toggle_pending)
-            {
-                fn := ObjBindMethod(this, "ToggleItemDisplay", gd_toggle_hide_key)
-                SetTimer, %fn%, Off
-                this.toggle_pending := false
-            }
-            else
-                this.ToggleItemDisplay(gd_toggle_hide_key)
+            Send {%ingame_hide_button%}
+            this.hidden := true
+        }
+        
+        fn := this.showFunction
+        SetTimer, %fn%, -%hide_duration%
+    }
+    
+    Show(hiding_buttons, ingame_hide_button, hide_duration)
+    {
+        any_button_pressed := false
+        
+        for not_used, key in hiding_buttons
+        if (GetKeyState(key, "P"))
+        {
+            any_button_pressed := true
+            break
+        }
+        
+        if (any_button_pressed)
+        {
+            fn := this.showFunction
+            SetTimer, %fn%, -%hide_duration%
         }
         else
         {
-            this.toggle_pending := true
-            fn := ObjBindMethod(this, "ToggleItemDisplay", gd_toggle_hide_key)
-            SetTimer, %fn%, -%show_delay%
+            Send {%ingame_hide_button%}
+            this.hidden := false
         }
-        
-        this.already_hidden := hiding
-    }
-
-    ToggleItemDisplay(gd_toggle_hide_key)
-    {
-        Send {%gd_toggle_hide_key%}
-        this.toggle_pending := false
     }
 }
