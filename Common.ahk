@@ -32,6 +32,6 @@ class Common
     PressButtons(pressed_keys)
     {
         for not_used, key in pressed_keys
-            Send % key
+            Send {%key%}
     }
 }
