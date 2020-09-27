@@ -7,7 +7,6 @@ class Autocasting
     areTimersToggled := {}
     timers_to_toggle := []
     hold_allowed := true
-    autocasting_allowed := true
     
     __New(config_name, hotkeys_collector)
     {
@@ -51,13 +50,6 @@ class Autocasting
            
         if (Common.Configured(master_hold) and master_hold = master_toggle)
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "Master"))
-            
-        IniRead, temp_block_str, % config_name, autocasting, temp_block_keys
-        IniRead, temp_block_duration, % config_name, autocasting, temp_block_duration, % _AUTOCASTING_TEMPORARY_BLOCK_DURATION
-        temp_block_keys := Common.Configured(temp_block_str, temp_block_duration) ? StrSplit(temp_block_str, ",") : []
-        
-        for not_used, key in temp_block_keys
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key, ObjBindMethod(this, "BlockAutocasting", temp_block_duration))
     }
     
     ToggleTimer(key)
@@ -70,7 +62,7 @@ class Autocasting
     PressButton(key, hold_keys, not_hold_keys)
     {
         global game_window_id
-        if (!WinActive(game_window_id) or !this.autocasting_allowed)
+        if (!WinActive(game_window_id))
             return
         
         if (this.hold_allowed and ((not_hold_keys.Length() > 0) and Common.Pressed(not_hold_keys)))
@@ -132,21 +124,5 @@ class Autocasting
             this.hold_allowed := !this.MasterToggle()
         else
             this.MasterHold()
-    }
-    
-    BlockAutocasting(duration)
-    {
-        global game_window_id
-        if (WinActive(game_window_id))
-        {
-            this.autocasting_allowed := false
-            fn := ObjBindMethod(this, "BlockAutocastingOff")
-            SetTimer, %fn%, -%duration%
-        }
-    }
-
-    BlockAutocastingOff()
-    {
-        this.autocasting_allowed := true
     }
 }
