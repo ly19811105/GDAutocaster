@@ -23,11 +23,11 @@ SetTitleMatchMode, 3
 tray := new Tray()
 
 if (A_Args.Length() > 0)
-{   
     config_name := A_Args[1]
-}
 else
     FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
+
+autocasting_right_away := (A_Args.Length() > 1)
 
 If (!FileExist(config_name))
 {
@@ -49,7 +49,7 @@ if Common.Configured(suspend_key)
     Hotkey, $%suspend_key%, SuspendHotkeys
 
 hotkeys_collector := new HotkeysCollector()
-new Autocasting(config_name, hotkeys_collector)
+autocasting := new Autocasting(config_name, hotkeys_collector, autocasting_right_away)
 new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
 new Clicker(config_name, hotkeys_collector)

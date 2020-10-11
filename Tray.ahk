@@ -38,14 +38,18 @@ class Tray
     
     RestartAction()
     {
-        global config_name
+        global config_name, autocasting
+        
         if (config_name = "")
         {
             this.LoadConfigAction()
             ExitApp
         }
         
-        Run, %A_ScriptFullPath% "%config_name%"
+        if (autocasting.AreTimersOn())
+            Run, %A_ScriptFullPath% "%config_name%" autocasting_on_toggle_right_away
+        else
+            Run, %A_ScriptFullPath% "%config_name%"
     }
 
     ExitAction()

@@ -8,7 +8,7 @@ class Autocasting
     timers_to_toggle := []
     hold_allowed := true
     
-    __New(config_name, hotkeys_collector)
+    __New(config_name, hotkeys_collector, autocasting_right_away)
     {
         IniRead, pressed_buttons, % config_name, autocasting, pressed_buttons, % _AUTOCASTING_PRESSED_BUTTONS
         pressed_buttons := Common.Configured(pressed_buttons) ? StrSplit(pressed_buttons, ",") : []
@@ -43,13 +43,21 @@ class Autocasting
         IniRead, master_toggle, % config_name, autocasting, master_toggle
         IniRead, master_hold, % config_name, autocasting, master_hold
         if (Common.Configured(master_toggle) and master_hold != master_toggle)
+        {
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_toggle, ObjBindMethod(this, "MasterToggle"))
+            if (autocasting_right_away)
+                this.MasterToggle()
+        }
            
         if (Common.Configured(master_hold) and master_hold != master_toggle)
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "MasterHold"))
            
         if (Common.Configured(master_hold) and master_hold = master_toggle)
+        {
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "Master"))
+            if (autocasting_right_away)
+                this.Master()
+        }
     }
     
     ToggleTimer(key)
