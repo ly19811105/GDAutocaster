@@ -73,7 +73,7 @@ class Autocasting
         if (!WinActive(game_window_id))
             return
         
-        if (this.hold_allowed and ((not_hold_keys.Length() > 0) and Common.Pressed(not_hold_keys)))
+        if (this.hold_allowed and ((not_hold_keys.Length() > 0) and Common.AnyPressed(not_hold_keys)))
             return
         
         if (this.areTimersToggled[key] or (this.hold_allowed and (hold_keys.Length() > 0) and Common.Pressed(hold_keys)))

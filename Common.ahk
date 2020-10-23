@@ -34,4 +34,13 @@ class Common
         for not_used, key in pressed_keys
             Send {%key%}
     }
+    
+    AnyPressed(keys)
+    {
+        for not_used, key in keys
+            if (GetKeyState(key, "P"))
+                return true
+        
+        return false
+    }
 }
