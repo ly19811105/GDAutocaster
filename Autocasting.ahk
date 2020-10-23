@@ -6,7 +6,6 @@ class Autocasting
 {
     areTimersToggled := {}
     timers_to_toggle := []
-    hold_allowed := true
     
     __New(config_name, hotkeys_collector, autocasting_right_away)
     {
@@ -17,46 +16,27 @@ class Autocasting
         {
             IniRead, delay, % config_name, % key, delay, % _AUTOCASTING_DELAY
             IniRead, toggle_key, % config_name, % key, toggle_key
-            IniRead, hold_keys_str, % config_name, % key, hold_keys
             IniRead, not_hold_keys_str, % config_name, % key, not_hold_keys
             
-            hold_keys := Common.Configured(hold_keys_str) ? StrSplit(hold_keys_str, ",") : [] 
             not_hold_keys := Common.Configured(not_hold_keys_str) ? StrSplit(not_hold_keys_str, ",") : []
             
-            if (!Common.Configured(delay))
-                continue
-            
-            if Common.Configured(toggle_key)
+            if (Common.Configured(delay, toggle_key))
             {
                 this.areTimersToggled[key] := false
                 hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . toggle_key, ObjBindMethod(this, "ToggleTimer", key))
                 this.timers_to_toggle.Push(key)
-            }    
-            
-            if (Common.Configured(toggle_key) or (hold_keys.Length() > 0))
-            {
-                fn := ObjBindMethod(this, "PressButton", key, hold_keys, not_hold_keys)
+                
+                fn := ObjBindMethod(this, "PressButton", key, not_hold_keys)
                 SetTimer, %fn%, %delay% 
             }
         }
         
         IniRead, master_toggle, % config_name, autocasting, master_toggle
-        IniRead, master_hold, % config_name, autocasting, master_hold
-        if (Common.Configured(master_toggle) and master_hold != master_toggle)
+        if (Common.Configured(master_toggle))
         {
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_toggle, ObjBindMethod(this, "MasterToggle"))
             if (autocasting_right_away)
                 this.MasterToggle()
-        }
-           
-        if (Common.Configured(master_hold) and master_hold != master_toggle)
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "MasterHold"))
-           
-        if (Common.Configured(master_hold) and master_hold = master_toggle)
-        {
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . master_hold, ObjBindMethod(this, "Master"))
-            if (autocasting_right_away)
-                this.Master()
         }
     }
     
@@ -67,16 +47,13 @@ class Autocasting
             this.areTimersToggled[key] ^= true
     }
 
-    PressButton(key, hold_keys, not_hold_keys)
+    PressButton(key, not_hold_keys)
     {
         global game_window_id
-        if (!WinActive(game_window_id))
-            return
         
-        if (this.hold_allowed and ((not_hold_keys.Length() > 0) and Common.AnyPressed(not_hold_keys)))
-            return
-        
-        if (this.areTimersToggled[key] or (this.hold_allowed and (hold_keys.Length() > 0) and Common.Pressed(hold_keys)))
+        if (WinActive(game_window_id)
+        and this.areTimersToggled[key]
+        and (not_hold_keys.Length() = 0 or !Common.AnyPressed(not_hold_keys)))
             send {%key%}
     }
     
@@ -116,21 +93,5 @@ class Autocasting
                 return true
         
         return false
-    }
-
-    MasterHold()
-    {
-        global game_window_id
-        if (WinActive(game_window_id))
-            this.hold_allowed := !this.hold_allowed
-    }
-
-    Master()
-    {
-        global game_window_id
-        if (WinActive(game_window_id) and this.areTimersToggled.Length() > 0)
-            this.hold_allowed := !this.MasterToggle()
-        else
-            this.MasterHold()
     }
 }
