@@ -38,7 +38,7 @@ class Tray
     
     RestartAction()
     {
-        global config_name, autocasting
+        global config_name, autocast_by_toggle
         
         if (config_name = "")
         {
@@ -46,8 +46,8 @@ class Tray
             ExitApp
         }
         
-        if (autocasting.AreTimersOn())
-            Run, %A_ScriptFullPath% "%config_name%" autocasting_on_toggle_right_away
+        if (autocast_by_toggle.AreTimersOn())
+            Run, %A_ScriptFullPath% "%config_name%" any_argument_starts_autocasting
         else
             Run, %A_ScriptFullPath% "%config_name%"
     }

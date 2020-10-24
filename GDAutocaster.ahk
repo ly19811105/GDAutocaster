@@ -7,7 +7,7 @@
 SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, 3
 
-#include Autocasting.ahk
+#include AutocastByToggle.ahk
 #include Camera.ahk
 #Include CenterCasts.ahk
 #Include Clicker.ahk
@@ -27,7 +27,7 @@ if (A_Args.Length() > 0)
 else
     FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
 
-autocasting_right_away := (A_Args.Length() > 1)
+autocast_right_away := (A_Args.Length() > 1)
 
 If (!FileExist(config_name))
 {
@@ -49,7 +49,7 @@ if Common.Configured(suspend_key)
     Hotkey, $%suspend_key%, SuspendHotkeys
 
 hotkeys_collector := new HotkeysCollector()
-autocasting := new Autocasting(config_name, hotkeys_collector, autocasting_right_away)
+autocast_by_toggle := new AutocastByToggle(config_name, hotkeys_collector, autocast_right_away)
 new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
 new Clicker(config_name, hotkeys_collector)
