@@ -5,6 +5,7 @@
 class AutocastByToggle
 {
     are_timers_toggled := {}
+    timers := {}
     timers_to_toggle := []
     
     __New(config_name, hotkeys_collector, autocast_right_away)
@@ -17,6 +18,7 @@ class AutocastByToggle
             IniRead, delay%A_INDEX%, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, delay%A_INDEX%, % delay
             IniRead, toggle_key, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, toggle_key%A_INDEX%
             IniRead, not_hold_keys_str, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, not_hold_keys%A_INDEX%
+            IniRead, reset_key, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, reset_key%A_INDEX%
             
             not_hold_keys := Common.Configured(not_hold_keys_str) ? StrSplit(not_hold_keys_str, ",") : []
             
@@ -27,9 +29,12 @@ class AutocastByToggle
                 
                 if (Common.Configured(toggle_key))
                     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . toggle_key, ObjBindMethod(this, "ToggleTimer", key))
+                    
+                if (Common.Configured(reset_key))
+                    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . reset_key, ObjBindMethod(this, "ResetTimer", key))
                 
-                fn := ObjBindMethod(this, "PressButton", key, not_hold_keys)
-                SetTimer, %fn%, % delay%A_INDEX% 
+                timer := this.timers[key] := ObjBindMethod(this, "PressButton", key, not_hold_keys)
+                SetTimer, %timer%, % delay%A_INDEX% 
             }
         }
         
@@ -95,5 +100,12 @@ class AutocastByToggle
                 return true
         
         return false
+    }
+    
+    ResetTimer(key)
+    {
+        timer := this.timers[key]
+        SetTimer, %timer%, Off
+        SetTimer, %timer%, On
     }
 }
