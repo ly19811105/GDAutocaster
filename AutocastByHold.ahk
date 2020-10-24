@@ -2,20 +2,20 @@
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class PeriodicCasts
+class AutocastByHold
 {
     spam_prevention := []
     just_pressed := []
 
     __New(config_name, hotkeys_collector)
     {
-        IniRead, delay, % config_name, periodic casts, delay, % _PERIODIC_CASTS_IN_BETWEEN_DELAY
+        IniRead, delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, delay, % _AUTOCAST_BY_HOLD_IN_BETWEEN_DELAY
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
-            IniRead, cast_str, % config_name, periodic casts, cast%A_INDEX%
-            IniRead, delay%A_INDEX%, % config_name, periodic casts, delay%A_INDEX%, % delay
-            IniRead, initial_delay, % config_name, periodic casts, initial_delay%A_INDEX%, % _PERIODIC_CASTS_INITIAL_DELAY
-            IniRead, double_press, % config_name, periodic casts, double_press%A_INDEX%, % _PERIODIC_CASTS_DOUBLE_PRESS 
+            IniRead, cast_str, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, cast%A_INDEX%
+            IniRead, delay%A_INDEX%, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, delay%A_INDEX%, % delay
+            IniRead, initial_delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, initial_delay%A_INDEX%, % _AUTOCAST_BY_HOLD_INITIAL_DELAY
+            IniRead, double_press, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, double_press%A_INDEX%, % _AUTOCAST_BY_HOLD_DOUBLE_PRESS 
             double_press := Common.StrToBool(double_press)
             
             if (!Common.Configured(cast_str, initial_delay, delay%A_INDEX%, double_press))
@@ -30,19 +30,19 @@ class PeriodicCasts
             if (!double_press)
             {
                 hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                    , ObjBindMethod(this, "PeriodicCast", pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+                    , ObjBindMethod(this, "HoldCast", pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
             }
             else
             {
-                IniRead, double_press_time_gap, % config_name, periodic casts, double_press%A_INDEX%_time_gap, % _PERIODIC_CASTS_DOUBLE_PRESS_TIME_GAP
+                IniRead, double_press_time_gap, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, double_press%A_INDEX%_time_gap, % _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP
                 
                 if (Common.Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                        , ObjBindMethod(this, "PeriodicCastDouble", double_press_time_gap, pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+                        , ObjBindMethod(this, "HoldCastDouble", double_press_time_gap, pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
             }
                 
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key . " UP"
-                , ObjBindMethod(this, "PeriodicCastUP", A_INDEX))    
+                , ObjBindMethod(this, "HoldCastUP", A_INDEX))    
             
             this.spam_prevention.Push(0)
             this.just_pressed.Push(false)
@@ -50,7 +50,7 @@ class PeriodicCasts
 
     }
     
-    PeriodicCast(pressed_keys, delay, held_keys, index, initial_delay)
+    HoldCast(pressed_keys, delay, held_keys, index, initial_delay)
     {
         global game_window_id
         if(!WinActive(game_window_id) or this.spam_prevention[index])
@@ -65,28 +65,28 @@ class PeriodicCasts
         {
             Common.PressButtons(pressed_keys)
             
-            fn := ObjBindMethod(this, "PeriodicCastTimer", pressed_keys, held_keys)
+            fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys)
             SetTimer, %fn%, %delay%
         }
         else
         {
-            fn := ObjBindMethod(this, "PeriodicCastInitialTimer", pressed_keys, held_keys, delay)
+            fn := ObjBindMethod(this, "HoldCastInitialTimer", pressed_keys, held_keys, delay)
             SetTimer, %fn%, -%initial_delay%
         }
     }
     
-    PeriodicCastInitialTimer(pressed_keys, held_keys, delay)
+    HoldCastInitialTimer(pressed_keys, held_keys, delay)
     {
         if (!Common.Pressed(held_keys))
             Return
         
         Common.PressButtons(pressed_keys)
         
-        fn := ObjBindMethod(this, "PeriodicCastTimer", pressed_keys, held_keys)
+        fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys)
         SetTimer, %fn%, %delay%
     }
     
-    PeriodicCastTimer(pressed_keys, held_keys)
+    HoldCastTimer(pressed_keys, held_keys)
     {
         if (!Common.Pressed(held_keys))
         {
@@ -97,12 +97,12 @@ class PeriodicCasts
         Common.PressButtons(pressed_keys)
     }
     
-    PeriodicCastUP(index)
+    HoldCastUP(index)
     {
         this.spam_prevention[index] := 0
     }
     
-    PeriodicCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay)
+    HoldCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay)
     {
         global game_window_id
         if (!WinActive(game_window_id))
@@ -111,14 +111,14 @@ class PeriodicCasts
         if (!this.just_pressed[index])
         {
             this.just_pressed[index] := true
-            fn := ObjBindMethod(this, "PeriodicCastDoubleTimer", index)
+            fn := ObjBindMethod(this, "HoldCastDoubleTimer", index)
             SetTimer, %fn%, -%double_press_time_gap%
         }
         else
-            this.PeriodicCast(pressed_keys, delay, held_keys, index, initial_delay)
+            this.HoldCast(pressed_keys, delay, held_keys, index, initial_delay)
     }
     
-    PeriodicCastDoubleTimer(index)
+    HoldCastDoubleTimer(index)
     {
         this.just_pressed[index] := false
     }
