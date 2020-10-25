@@ -46,8 +46,8 @@ class Tray
             ExitApp
         }
         
-        if (autocast_by_toggle.AreTimersOn())
-            Run, %A_ScriptFullPath% "%config_name%" any_argument_starts_autocasting
+        if (autocast_by_toggle.any_timer_on)
+            Run, %A_ScriptFullPath% "%config_name%" any_argument_starts_autocast_by_toggle
         else
             Run, %A_ScriptFullPath% "%config_name%"
     }
