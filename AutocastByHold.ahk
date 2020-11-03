@@ -15,10 +15,16 @@ class AutocastByHold
             IniRead, cast_str, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, cast%A_INDEX%
             IniRead, delay%A_INDEX%, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, delay%A_INDEX%, % delay
             IniRead, initial_delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, initial_delay%A_INDEX%, % _AUTOCAST_BY_HOLD_INITIAL_DELAY
-            IniRead, double_press, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, double_press%A_INDEX%, % _AUTOCAST_BY_HOLD_DOUBLE_PRESS 
+            IniRead, double_press, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, double_press%A_INDEX%, % _AUTOCAST_BY_HOLD_DOUBLE_PRESS
+            IniRead, inner_delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, inner_delay%A_INDEX%, % _AUTOCAST_BY_HOLD_INNER_DELAY
+            
             double_press := Common.StrToBool(double_press)
             
-            if (!Common.Configured(cast_str, initial_delay, delay%A_INDEX%, double_press))
+            if (!Common.Configured(cast_str
+                , initial_delay
+                , delay%A_INDEX%
+                , double_press
+                , inner_delay))
                 continue
                 
             cast_str := StrSplit(cast_str, ":")
@@ -30,15 +36,35 @@ class AutocastByHold
             if (!double_press)
             {
                 hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                    , ObjBindMethod(this, "HoldCast", pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+                    , ObjBindMethod(this
+                        , "HoldCast"
+                        , pressed_keys
+                        , delay%A_INDEX%
+                        , held_keys
+                        , A_INDEX
+                        , initial_delay
+                        , inner_delay))
             }
             else
             {
-                IniRead, double_press_time_gap, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, double_press%A_INDEX%_time_gap, % _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP
+                IniRead
+                    , double_press_time_gap
+                    , % config_name
+                    , % _AUTOCAST_BY_HOLD_SECTION_NAME
+                    , double_press%A_INDEX%_time_gap
+                    , % _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP
                 
                 if (Common.Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
-                        , ObjBindMethod(this, "HoldCastDouble", double_press_time_gap, pressed_keys, delay%A_INDEX%, held_keys, A_INDEX, initial_delay))
+                        , ObjBindMethod(this
+                            , "HoldCastDouble"
+                            , double_press_time_gap
+                            , pressed_keys
+                            , delay%A_INDEX%
+                            , held_keys
+                            , A_INDEX
+                            , initial_delay
+                            , inner_delay))
             }
                 
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key . " UP"
@@ -50,7 +76,7 @@ class AutocastByHold
 
     }
     
-    HoldCast(pressed_keys, delay, held_keys, index, initial_delay)
+    HoldCast(pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
     {
         global game_window_id
         if(!WinActive(game_window_id) or this.spam_prevention[index])
@@ -63,30 +89,30 @@ class AutocastByHold
         
         if (initial_delay = 0)
         {
-            Common.PressButtons(pressed_keys)
+            Common.PressButtons(pressed_keys, inner_delay)
             
-            fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys)
+            fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys, inner_delay)
             SetTimer, %fn%, %delay%
         }
         else
         {
-            fn := ObjBindMethod(this, "HoldCastInitialTimer", pressed_keys, held_keys, delay)
+            fn := ObjBindMethod(this, "HoldCastInitialTimer", pressed_keys, held_keys, delay, inner_delay)
             SetTimer, %fn%, -%initial_delay%
         }
     }
     
-    HoldCastInitialTimer(pressed_keys, held_keys, delay)
+    HoldCastInitialTimer(pressed_keys, held_keys, delay, inner_delay)
     {
         if (!Common.Pressed(held_keys))
             Return
         
-        Common.PressButtons(pressed_keys)
+        Common.PressButtons(pressed_keys, inner_delay)
         
-        fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys)
+        fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys, inner_delay)
         SetTimer, %fn%, %delay%
     }
     
-    HoldCastTimer(pressed_keys, held_keys)
+    HoldCastTimer(pressed_keys, held_keys, inner_delay)
     {
         if (!Common.Pressed(held_keys))
         {
@@ -94,7 +120,7 @@ class AutocastByHold
             Return
         }
         
-        Common.PressButtons(pressed_keys)
+        Common.PressButtons(pressed_keys, inner_delay)
     }
     
     HoldCastUP(index)
@@ -102,7 +128,7 @@ class AutocastByHold
         this.spam_prevention[index] := 0
     }
     
-    HoldCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay)
+    HoldCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
     {
         global game_window_id
         if (!WinActive(game_window_id))
@@ -115,7 +141,7 @@ class AutocastByHold
             SetTimer, %fn%, -%double_press_time_gap%
         }
         else
-            this.HoldCast(pressed_keys, delay, held_keys, index, initial_delay)
+            this.HoldCast(pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
     }
     
     HoldCastDoubleTimer(index)

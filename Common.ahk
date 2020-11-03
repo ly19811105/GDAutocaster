@@ -29,12 +29,35 @@ class Common
         return true
     }
     
-    PressButtons(pressed_keys)
+    PressButtons(pressed_keys, inner_delay := 0)
     {
-        for not_used, key in pressed_keys
-            Send {%key%}
+        if (inner_delay = 0)
+            for not_used, key in pressed_keys
+                Send {%key%}
+                
+        else if (pressed_keys.Length() > 0)
+        {
+            pressed_keys := pressed_keys.Clone()
+            first_key := pressed_keys.RemoveAt(1)
+            Send {%first_key%}
+            
+            fn := ObjBindMethod(Common, "PressButtonsTimer", pressed_keys, inner_delay)
+            SetTimer, %fn%, -%inner_delay%
+        }
     }
     
+    PressButtonsTimer(pressed_keys, inner_delay)
+    {
+        global game_window_id
+        if(!WinActive(game_window_id)
+        or (pressed_keys.Length() = 0))
+            return
+    
+        key := pressed_keys.RemoveAt(1)
+        Send {%key%}
+        SetTimer,, -%inner_delay% 
+    }
+        
     AnyPressed(keys)
     {
         for not_used, key in keys
