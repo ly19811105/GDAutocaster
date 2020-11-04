@@ -2,30 +2,43 @@
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class CenterCasts
+class CenterCasts extends Common.ConfigSection
 {
     spam_prevention := []
     mouse_moving := false
 
     __New(config_name, hotkeys_collector)
     {
+        Common.ConfigSection.__New(config_name, _CENTER_CASTS_SECTION_NAME)
+    
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
-            IniRead, cast_str, % config_name, center casts, cast%A_INDEX%
-            IniRead, closer_not_center, % config_name, center casts, closer_not_center, % _CENTER_CASTS_CLOSER_NOT_CENTER
-            IniRead, initial_delay, % config_name, center casts, initial_delay, % _CENTER_CASTS_INITIAL_DELAY
-            IniRead, delay, % config_name, center casts, delay, % _CENTER_CASTS_DELAY
-            IniRead, delay_after_cursor, % config_name, center casts, delay_after_cursor, %_CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR%
-            closer_not_center := Common.StrToBool(closer_not_center)
+            this.SectionRead(cast_str, "cast" . A_INDEX)
+            this.SectionRead(off_center, "off_center", _CENTER_CASTS_OFF_CENTER)
+            this.SectionRead(initial_delay, "initial_delay", _CENTER_CASTS_INITIAL_DELAY)
+            this.SectionRead(delay, "delay", _CENTER_CASTS_DELAY)
+            this.SectionRead(delay_after_cursor, "delay_after_cursor", _CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR)
+        
+            off_center := Common.StrToBool(off_center)
             
-            if (!Common.Configured(cast_str, closer_not_center, initial_delay, delay))
+            if (!Common.Configured(cast_str
+                , off_center
+                , initial_delay
+                , delay))
                 continue
               
             keys := StrSplit(cast_str, [":", ","])
             key := keys.RemoveAt(1)
             
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key
-                , ObjBindMethod(this, "CenterCast", keys, closer_not_center, initial_delay, delay, A_INDEX, delay_after_cursor))
+                , ObjBindMethod(this
+                    , "CenterCast"
+                    , keys
+                    , off_center
+                    , initial_delay
+                    , delay
+                    , A_INDEX
+                    , delay_after_cursor))
             
             hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key . " UP"
                 , ObjBindMethod(this, "CenterCastUP", A_INDEX))
@@ -34,7 +47,12 @@ class CenterCasts
         }
     }
     
-    CenterCast(keys, closer_not_center, initial_delay, delay, index, delay_after_cursor)
+    CenterCast(keys
+        , off_center
+        , initial_delay
+        , delay
+        , index
+        , delay_after_cursor)
     {
         global game_window_id
         
@@ -48,14 +66,25 @@ class CenterCasts
         keys := keys.Clone()
         if (initial_delay > 0)
         {
-            fn := ObjBindMethod(this, "CenterCast2", keys, closer_not_center, index, delay, delay_after_cursor)
+            fn := ObjBindMethod(this
+                , "CenterCast2"
+                , keys
+                , off_center
+                , index
+                , delay
+                , delay_after_cursor)
+                
             SetTimer, %fn%, -%initial_delay%
         }
         else
-            this.CenterCast2(keys, closer_not_center, index, delay, delay_after_cursor)
+            this.CenterCast2(keys
+                , off_center
+                , index
+                , delay
+                , delay_after_cursor)
     }
     
-    CenterCast2(keys, closer_not_center, index, delay, delay_after_cursor)
+    CenterCast2(keys, off_center, index, delay, delay_after_cursor)
     {
         if (this.mouse_moving)
             return
@@ -75,7 +104,7 @@ class CenterCasts
         
         MouseGetPos, xpos, ypos
         
-        if (closer_not_center)
+        if (off_center)
         {
             dist := sqrt((xpos - Width/2)**2 + (ypos - Height/2)**2)
             BlockInput, MouseMove
@@ -84,7 +113,8 @@ class CenterCasts
                 MouseMove, Width/2, Height/2, 0
             else
                 MouseMove, Width/2 + _CENTER_CASTS_DISTANCE * (xpos - Width/2) / dist
-                         , Height/2 + _CENTER_CASTS_DISTANCE * (ypos - Height/2) / dist, 0
+                         , Height/2 + _CENTER_CASTS_DISTANCE * (ypos - Height/2) / dist
+                         , 0
         }
         else
         {

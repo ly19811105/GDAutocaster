@@ -2,7 +2,7 @@
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class ComboHolds
+class ComboHolds extends Common.ConfigSection
 {
     just_pressed := false
     hold_states := []
@@ -10,37 +10,67 @@ class ComboHolds
     
     __New(config_name, hotkeys_collector)
     {
+        Common.ConfigSection.__New(config_name, _COMBO_HOLDS_SECTION_NAME)
+    
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             this.hold_states.Push(false)
+        
+            this.SectionRead(combo_str, "combo" . A_INDEX)
             
-            IniRead, combo_str, % config_name, combo holds, combo%A_INDEX%
-            IniRead, delay, % config_name, combo holds, delay%A_INDEX%, % _COMBO_HOLDS_DELAY_FROM_PRESS_TO_HOLD
-            IniRead, key_native_function, % config_name, combo holds, key_native_function%A_INDEX%, % _COMBO_HOLDS_KEY_NATIVE_FUNCTION
-            
-            IniRead, double_press, % config_name, combo holds, double_press%A_INDEX%, % _COMBO_HOLDS_HOLD_ON_DOUBLE_PRESS
+            this.SectionRead(delay
+                , "delay" . A_INDEX
+                , _COMBO_HOLDS_DELAY_FROM_PRESS_TO_HOLD)
+                
+            this.SectionRead(key_native_function
+                , "key_native_function" . A_INDEX
+                , _COMBO_HOLDS_KEY_NATIVE_FUNCTION)
+                
+            this.SectionRead(double_press
+                , "double_press" . A_INDEX
+                , _COMBO_HOLDS_HOLD_ON_DOUBLE_PRESS)
+
             double_press := Common.StrToBool(double_press)
             key_native_function := Common.StrToBool(key_native_function)
             
-            if (!Common.Configured(combo_str, double_press, delay, key_native_function))
+            if (!Common.Configured(combo_str
+                , double_press
+                , delay
+                , key_native_function))
                 continue
                 
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
-            hotkey_modifiers := key_native_function ? _HOTKEY_MODIFIERS : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
+            
+            hotkey_modifiers := key_native_function 
+                ? _HOTKEY_MODIFIERS 
+                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
 
             if (double_press)
             {
-                IniRead, double_press_time_gap, % config_name, combo holds, double_press%A_INDEX%_time_gap, % _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP
+                this.SectionRead(double_press_time_gap
+                    , "double_press" . A_INDEX . "_time_gap"
+                    , _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP)
+            
                 if (Common.Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
-                        , ObjBindMethod(this, "ComboHoldDouble", combo_keys, double_press_time_gap, delay, A_INDEX))
-                
+                        , ObjBindMethod(this
+                            , "ComboHoldDouble"
+                            , combo_keys
+                            , double_press_time_gap
+                            , delay
+                            , A_INDEX))
             }
             else
-                hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key, ObjBindMethod(this, "ComboHold", combo_keys, delay, A_INDEX))
+                hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
+                    , ObjBindMethod(this
+                        , "ComboHold"
+                        , combo_keys
+                        , delay
+                        , A_INDEX))
 
-            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP", ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX))
+            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP"
+                , ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX))
             
             this.spam_prevention.Push(0)
         }

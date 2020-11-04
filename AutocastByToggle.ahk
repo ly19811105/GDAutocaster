@@ -2,22 +2,24 @@
 #include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class AutocastByToggle
+class AutocastByToggle extends Common.ConfigSection
 {
     any_timer_on := 0
     timers := []
     
     __New(config_name, hotkeys_collector, autocast_right_away)
     {
-        IniRead, delay, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, delay, % _AUTOCAST_BY_TOGGLE_DELAY
+        Common.ConfigSection.__New(config_name, _AUTOCAST_BY_TOGGLE_SECTION_NAME)
+    
+        this.SectionRead(delay, "delay", _AUTOCAST_BY_TOGGLE_DELAY)
         
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
-            IniRead, cast_str, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, cast%A_INDEX%
-            IniRead, delay%A_INDEX%, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, delay%A_INDEX%, % delay
-            IniRead, not_hold_keys_str, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, not_hold_keys%A_INDEX%
-            IniRead, reset_key, % config_name, % _AUTOCAST_BY_TOGGLE_SECTION_NAME, reset_key%A_INDEX%
-            
+            this.SectionRead(cast_str, "cast" . A_INDEX)
+            this.SectionRead(delay%A_INDEX%, "delay" . A_INDEX, delay)
+            this.SectionRead(not_hold_keys_str, "not_hold_keys" . A_INDEX)
+            this.SectionRead(reset_key, "reset_key" . A_INDEX)
+        
             toggle_key := StrSplit(cast_str, ":")[1]
             key_pressed := StrSplit(cast_str, ":")[2]
             

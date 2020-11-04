@@ -2,7 +2,7 @@
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class Combos
+class Combos extends Common.ConfigSection
 {
     spam_protection := []
     just_pressed := []
@@ -10,53 +10,87 @@ class Combos
     
     __New(config_name, hotkeys_collector)
     {
-        IniRead, delay, % config_name, combo presses, delay, % _COMBOS_IN_BETWEEN_DELAY
+        Common.ConfigSection.__New(config_name, _COMBOS_SECTION_NAME)
+        
+        this.SectionRead(delay, "delay", _COMBOS_IN_BETWEEN_DELAY)
+        
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
-            IniRead, combo_str, % config_name, combo presses, combo%A_INDEX%
-            IniRead, delay_override, % config_name, combo presses, delay%A_INDEX%, % delay
-            IniRead, initial_delay, % config_name, combo presses, initial_delay%A_INDEX%, % _COMBOS_INITIAL_DELAY
-            IniRead, stop_on_release, % config_name, combo presses, stop_on_release%A_INDEX%, % _COMBOS_STOP_ON_RELEASE
-            IniRead, double_press, % config_name, combo presses, double_press%A_INDEX%, % _COMBOS_DOUBLE_PRESS
-            IniRead, key_native_function, % config_name, combo presses, key_native_function%A_INDEX%, % _COMBOS_KEY_NATIVE_FUNCTION
-            
+            this.SectionRead(combo_str, "combo" . A_INDEX)
+            this.SectionRead(delay_override, "delay" . A_INDEX, delay)
+            this.SectionRead(initial_delay, "initial_delay" . A_INDEX, _COMBOS_INITIAL_DELAY)
+            this.SectionRead(stop_on_release, "stop_on_release" . A_INDEX, _COMBOS_STOP_ON_RELEASE)
+            this.SectionRead(double_press, "double_press" . A_INDEX, _COMBOS_DOUBLE_PRESS)
+            this.SectionRead(key_native_function
+                , "key_native_function" . A_INDEX
+                , _COMBOS_KEY_NATIVE_FUNCTION)
+        
             double_press := Common.StrToBool(double_press)
             initial_delay := Common.StrToBool(initial_delay)
             stop_on_release := Common.StrToBool(stop_on_release)
             key_native_function := Common.StrToBool(key_native_function)
             
-            if (!Common.Configured(combo_str, initial_delay
-                , stop_on_release, delay_override
-                , double_press, key_native_function))
+            if (!Common.Configured(combo_str
+                , initial_delay
+                , stop_on_release
+                , delay_override
+                , double_press
+                , key_native_function))
                 continue
             
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
             
-            hotkey_modifiers := key_native_function ? _HOTKEY_MODIFIERS : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
+            hotkey_modifiers := key_native_function 
+                ? _HOTKEY_MODIFIERS 
+                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
             
             if (!double_press)
             {
                 hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
-                    , ObjBindMethod(this, "ComboPress", delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
+                    , ObjBindMethod(this
+                        , "ComboPress"
+                        , delay_override
+                        , combo_keys
+                        , initial_delay
+                        , A_INDEX
+                        , combo_key
+                        , stop_on_release))
             }
             else
             {
-                IniRead, double_press_time_gap, % config_name, combo presses, double_press%A_INDEX%_time_gap, % _COMBOS_DOUBLE_PRESS_TIME_GAP
-                
+                this.SectionRead(double_press_time_gap
+                    , "double_press" . A_INDEX . "_time_gap"
+                    , _COMBOS_DOUBLE_PRESS_TIME_GAP)
+            
                 if (Common.Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
-                        , ObjBindMethod(this, "ComboDouble", double_press_time_gap, delay_override, combo_keys, initial_delay, A_INDEX, combo_key, stop_on_release))
+                        , ObjBindMethod(this
+                            , "ComboDouble"
+                            , double_press_time_gap
+                            , delay_override
+                            , combo_keys
+                            , initial_delay
+                            , A_INDEX
+                            , combo_key
+                            , stop_on_release))
             }
                 
-            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP", ObjBindMethod(this, "ComboPressUP", A_INDEX))
+            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP"
+                , ObjBindMethod(this, "ComboPressUP", A_INDEX))
+                
             this.spam_protection.Push(0)
             this.just_pressed.Push(false)
             this.combo_in_progress.Push(false)
         }
     }
     
-    ComboPress(delay, keys, initial_delay, index, key, stop_on_release)
+    ComboPress(delay
+        , keys
+        , initial_delay
+        , index
+        , key
+        , stop_on_release)
     {
         global game_window_id
         
@@ -76,11 +110,22 @@ class Combos
             Send {%first_key%}
         }
         
-        fn := ObjBindMethod(this, "ComboTimer", delay, keys, key, stop_on_release, index)
+        fn := ObjBindMethod(this
+            , "ComboTimer"
+            , delay
+            , keys
+            , key
+            , stop_on_release
+            , index)
+            
         SetTimer, %fn%, -%delay%
     }
 
-    ComboTimer(delay, keys, key, stop_on_release, index)
+    ComboTimer(delay
+        , keys
+        , key
+        , stop_on_release
+        , index)
     {   
         global game_window_id
         
@@ -102,7 +147,13 @@ class Combos
         this.spam_protection[index] := 0
     }
     
-    ComboDouble(double_press_time_gap, delay, keys, initial_delay, index, key, stop_on_release)
+    ComboDouble(double_press_time_gap
+        , delay
+        , keys
+        , initial_delay
+        , index
+        , key
+        , stop_on_release)
     {
         global game_window_id
         if (!WinActive(game_window_id))
@@ -115,7 +166,12 @@ class Combos
             SetTimer, %fn%, -%double_press_time_gap%
         }
         else
-            this.ComboPress(delay, keys, initial_delay, index, key, stop_on_release)
+            this.ComboPress(delay
+                , keys
+                , initial_delay
+                , index
+                , key
+                , stop_on_release)
     }
     
     ComboDoubleTimer(index)

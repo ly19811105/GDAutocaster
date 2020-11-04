@@ -2,20 +2,37 @@
 #include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class Camera
+class Camera extends Common.ConfigSection
 {
   __New(config_name, hotkeys_collector)
     {
-        IniRead, angle, % config_name, camera, angle, % _CAMERA_ANGLE
-        IniRead, counter_clockwise, % config_name, camera, counter_clockwise
-        IniRead, clockwise, % config_name, camera, clockwise
-        IniRead, rotation_key, % config_name, camera, rotation_key
-        IniRead, camera_sleep, % config_name, camera, delay, % _CAMERA_DELAY
-
-        if Common.Configured(angle, counter_clockwise, clockwise, rotation_key, camera_sleep)
+        Common.ConfigSection.__New(config_name, _CAMERA_SECTION_NAME)
+    
+        this.SectionRead(angle, "angle", _CAMERA_ANGLE)
+        this.SectionRead(counter_clockwise, "counter_clockwise")
+        this.SectionRead(clockwise, "clockwise")
+        this.SectionRead(rotation_key, "rotation_key")
+        this.SectionRead(camera_sleep, "delay", _CAMERA_DELAY)
+    
+        if Common.Configured(angle
+            , counter_clockwise
+            , clockwise
+            , rotation_key
+            , camera_sleep)
         {
-            hotkeys_collector.AddHotkey("*" . counter_clockwise, ObjBindMethod(this, "Counterclock", camera_sleep, rotation_key, angle))
-            hotkeys_collector.AddHotkey("*" . clockwise, ObjBindMethod(this, "Clock", camera_sleep, rotation_key, angle))
+            hotkeys_collector.AddHotkey("*" . counter_clockwise
+                , ObjBindMethod(this
+                    , "Counterclock"
+                    , camera_sleep
+                    , rotation_key
+                    , angle))
+                    
+            hotkeys_collector.AddHotkey("*" . clockwise
+                , ObjBindMethod(this
+                    , "Clock"
+                    , camera_sleep
+                    , rotation_key
+                    , angle))
         }
     }
 

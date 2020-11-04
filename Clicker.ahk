@@ -2,13 +2,15 @@
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class Clicker
+class Clicker extends Common.ConfigSection
 {
     __New(config_name, hotkeys_collector)
     {
-        IniRead, coordX, % config_name, clicker, X 
-        IniRead, coordY, % config_name, clicker, Y
-        IniRead, button, % config_name, clicker, button
+        Common.ConfigSection.__New(config_name, _CLICKER_SECTION_NAME)
+    
+        this.SectionRead(coordX, "X")    
+        this.SectionRead(coordY, "Y")
+        this.SectionRead(button, "button")
         
         if (!Common.Configured(coordX, coordY, button))
             return

@@ -1,11 +1,13 @@
-#NoEnv
-#SingleInstance Force
-#MaxHotkeysPerInterval 1000 
-#MaxThreadsPerHotkey 1
 #HotkeyModifierTimeout -1
 #KeyHistory 50
-SetWorkingDir %A_ScriptDir%
+#MaxHotkeysPerInterval 1000 
+#MaxThreadsPerHotkey 1
+#NoEnv
+#SingleInstance Force
+#Warn ClassOverwrite
+
 SetTitleMatchMode, 3
+SetWorkingDir %A_ScriptDir%
 
 #Include AutocastByHold.ahk
 #include AutocastByToggle.ahk
@@ -20,7 +22,7 @@ SetTitleMatchMode, 3
 #Include HotkeysCollector.ahk
 #include Tray.ahk
 
-tray := new Tray()
+tray_instance := new Tray()
 
 if (A_Args.Length() > 0)
     config_name := A_Args[1]
@@ -35,7 +37,7 @@ If (!FileExist(config_name))
     ExitApp
 }
 
-tray.DisplayConfigName()
+tray_instance.DisplayConfigName()
 
 IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
 if (!Common.Configured(game_window_id))
@@ -68,7 +70,7 @@ MainLoop()
     global suspend_key
     global hotkeys_suspended_by_user
     global hotkeys_inactive_fix
-    global tray
+    global tray_instance
 
     if (!WinActive(game_window_id))
     {
@@ -84,7 +86,7 @@ MainLoop()
     {
         if (!hotkeys_inactive_fix)
         {
-            fn := ObjBindMethod(tray, "RestartAction")
+            fn := ObjBindMethod(tray_instance, "RestartAction")
             SetTimer, %fn%, -3000
         }
         

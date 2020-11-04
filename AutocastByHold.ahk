@@ -2,21 +2,24 @@
 #Include Defaults.ahk
 #Include HotkeysCollector.ahk
 
-class AutocastByHold
+class AutocastByHold extends Common.ConfigSection
 {
     spam_prevention := []
     just_pressed := []
 
     __New(config_name, hotkeys_collector)
     {
-        IniRead, delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, delay, % _AUTOCAST_BY_HOLD_IN_BETWEEN_DELAY
+        Common.ConfigSection.__New(config_name, _AUTOCAST_BY_HOLD_SECTION_NAME)
+        
+        this.SectionRead(delay, "delay", _AUTOCAST_BY_HOLD_IN_BETWEEN_DELAY)
+        
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
-            IniRead, cast_str, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, cast%A_INDEX%
-            IniRead, delay%A_INDEX%, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, delay%A_INDEX%, % delay
-            IniRead, initial_delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, initial_delay%A_INDEX%, % _AUTOCAST_BY_HOLD_INITIAL_DELAY
-            IniRead, double_press, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, double_press%A_INDEX%, % _AUTOCAST_BY_HOLD_DOUBLE_PRESS
-            IniRead, inner_delay, % config_name, % _AUTOCAST_BY_HOLD_SECTION_NAME, inner_delay%A_INDEX%, % _AUTOCAST_BY_HOLD_INNER_DELAY
+            this.SectionRead(cast_str, "cast" . A_INDEX)
+            this.SectionRead(delay%A_INDEX%, "delay" . A_INDEX, delay)
+            this.SectionRead(initial_delay, "initial_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INITIAL_DELAY)
+            this.SectionRead(double_press, "double_press" . A_INDEX, _AUTOCAST_BY_HOLD_DOUBLE_PRESS)
+            this.SectionRead(inner_delay, "inner_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INNER_DELAY)
             
             double_press := Common.StrToBool(double_press)
             
@@ -47,12 +50,9 @@ class AutocastByHold
             }
             else
             {
-                IniRead
-                    , double_press_time_gap
-                    , % config_name
-                    , % _AUTOCAST_BY_HOLD_SECTION_NAME
-                    , double_press%A_INDEX%_time_gap
-                    , % _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP
+                this.SectionRead(double_press_time_gap
+                    , "double_press" . A_INDEX . "_time_gap"
+                    , _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP)
                 
                 if (Common.Configured(double_press_time_gap))
                     hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key

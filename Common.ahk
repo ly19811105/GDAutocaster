@@ -1,5 +1,45 @@
 class Common
 {
+    class ConfigSection
+    {
+        __New(config_name, section_name)
+        {
+            this.config_name := config_name
+            this.section_name := section_name
+        }
+        
+        SectionRead(ByRef output_var, key, default_value = "ERROR")
+        {
+            IniRead
+                , output_var
+                , % this.config_name
+                , % this.section_name
+                , % key
+                , % default_value
+        }
+    }
+    
+    AnyPressed(keys)
+    {
+        for not_used, key in keys
+            if (GetKeyState(key, "P"))
+                return true
+        
+        return false
+    }
+    
+    PressButtonsTimer(pressed_keys, inner_delay)
+    {
+        global game_window_id
+        if(!WinActive(game_window_id)
+        or (pressed_keys.Length() = 0))
+            return
+    
+        key := pressed_keys.RemoveAt(1)
+        Send {%key%}
+        SetTimer,, -%inner_delay% 
+    }
+        
     Configured(keys*)
     {
         for not_used, key in keys
@@ -9,26 +49,6 @@ class Common
         return true
     }
 
-    StrToBool(str_bool)
-    {
-        if (str_bool = "true")
-            return 1
-            
-        if (str_bool = "false")
-            return 0
-            
-        return str_bool
-    }
-    
-    Pressed(keys)
-    {
-        for not_used, key in keys
-            if (!GetKeyState(key, "P"))
-                return false
-        
-        return true
-    }
-    
     PressButtons(pressed_keys, inner_delay := 0)
     {
         if (inner_delay = 0)
@@ -46,24 +66,23 @@ class Common
         }
     }
     
-    PressButtonsTimer(pressed_keys, inner_delay)
-    {
-        global game_window_id
-        if(!WinActive(game_window_id)
-        or (pressed_keys.Length() = 0))
-            return
-    
-        key := pressed_keys.RemoveAt(1)
-        Send {%key%}
-        SetTimer,, -%inner_delay% 
-    }
-        
-    AnyPressed(keys)
+    Pressed(keys)
     {
         for not_used, key in keys
-            if (GetKeyState(key, "P"))
-                return true
+            if (!GetKeyState(key, "P"))
+                return false
         
-        return false
+        return true
+    }
+    
+    StrToBool(str_bool)
+    {
+        if (str_bool = "true")
+            return 1
+            
+        if (str_bool = "false")
+            return 0
+            
+        return str_bool
     }
 }
