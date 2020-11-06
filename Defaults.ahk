@@ -17,7 +17,7 @@ global _AUTOCAST_BY_TOGGLE_DELAY := 100
 global _AUTOCAST_BY_TOGGLE_SECTION_NAME := "autocast by toggle"
 
 global _COMBOS_IN_BETWEEN_DELAY := 200
-global _COMBOS_INITIAL_DELAY := false
+global _COMBOS_INITIAL_DELAY := 0
 global _COMBOS_STOP_ON_RELEASE := false
 global _COMBOS_DOUBLE_PRESS := false
 global _COMBOS_DOUBLE_PRESS_TIME_GAP := 250

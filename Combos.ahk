@@ -13,12 +13,13 @@ class Combos extends Common.ConfigSection
         Common.ConfigSection.__New(config_name, _COMBOS_SECTION_NAME)
         
         this.SectionRead(delay, "delay", _COMBOS_IN_BETWEEN_DELAY)
+        this.SectionRead(initial_delay, "initial_delay", _COMBOS_INITIAL_DELAY)
         
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             this.SectionRead(combo_str, "combo" . A_INDEX)
-            this.SectionRead(delay_override, "delay" . A_INDEX, delay)
-            this.SectionRead(initial_delay, "initial_delay" . A_INDEX, _COMBOS_INITIAL_DELAY)
+            this.SectionRead(delay%A_INDEX%, "delay" . A_INDEX, delay)
+            this.SectionRead(initial_delay%A_INDEX%, "initial_delay" . A_INDEX, initial_delay)
             this.SectionRead(stop_on_release, "stop_on_release" . A_INDEX, _COMBOS_STOP_ON_RELEASE)
             this.SectionRead(double_press, "double_press" . A_INDEX, _COMBOS_DOUBLE_PRESS)
             this.SectionRead(key_native_function
@@ -26,14 +27,13 @@ class Combos extends Common.ConfigSection
                 , _COMBOS_KEY_NATIVE_FUNCTION)
         
             double_press := Common.StrToBool(double_press)
-            initial_delay := Common.StrToBool(initial_delay)
             stop_on_release := Common.StrToBool(stop_on_release)
             key_native_function := Common.StrToBool(key_native_function)
             
             if (!Common.Configured(combo_str
-                , initial_delay
+                , initial_delay%A_INDEX%
                 , stop_on_release
-                , delay_override
+                , delay%A_INDEX%
                 , double_press
                 , key_native_function))
                 continue
@@ -50,9 +50,9 @@ class Combos extends Common.ConfigSection
                 hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
                     , ObjBindMethod(this
                         , "ComboPress"
-                        , delay_override
+                        , delay%A_INDEX%
                         , combo_keys
-                        , initial_delay
+                        , initial_delay%A_INDEX%
                         , A_INDEX
                         , combo_key
                         , stop_on_release))
@@ -68,9 +68,9 @@ class Combos extends Common.ConfigSection
                         , ObjBindMethod(this
                             , "ComboDouble"
                             , double_press_time_gap
-                            , delay_override
+                            , delay%A_INDEX%
                             , combo_keys
-                            , initial_delay
+                            , initial_delay%A_INDEX%
                             , A_INDEX
                             , combo_key
                             , stop_on_release))
@@ -108,7 +108,11 @@ class Combos extends Common.ConfigSection
         {
             first_key := keys.RemoveAt(1)
             Send {%first_key%}
+            
+            next_delay := delay
         }
+        else
+            next_delay := initial_delay
         
         fn := ObjBindMethod(this
             , "ComboTimer"
@@ -117,10 +121,10 @@ class Combos extends Common.ConfigSection
             , key
             , stop_on_release
             , index)
-            
-        SetTimer, %fn%, -%delay%
+        
+        SetTimer, %fn%, -%next_delay%
     }
-
+    
     ComboTimer(delay
         , keys
         , key
