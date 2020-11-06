@@ -11,6 +11,8 @@ class ComboHolds extends Common.ConfigSection
     __New(config_name, hotkeys_collector)
     {
         Common.ConfigSection.__New(config_name, _COMBO_HOLDS_SECTION_NAME)
+        
+        this.SectionRead(initial_delay, "initial_delay", _COMBO_HOLDS_DELAY_FROM_PRESS_TO_HOLD)
     
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
@@ -18,9 +20,9 @@ class ComboHolds extends Common.ConfigSection
         
             this.SectionRead(combo_str, "combo" . A_INDEX)
             
-            this.SectionRead(delay
-                , "delay" . A_INDEX
-                , _COMBO_HOLDS_DELAY_FROM_PRESS_TO_HOLD)
+            this.SectionRead(initial_delay%A_INDEX%
+                , "initial_delay" . A_INDEX
+                , initial_delay)
                 
             this.SectionRead(key_native_function
                 , "key_native_function" . A_INDEX
@@ -35,7 +37,7 @@ class ComboHolds extends Common.ConfigSection
             
             if (!Common.Configured(combo_str
                 , double_press
-                , delay
+                , initial_delay%A_INDEX%
                 , key_native_function))
                 continue
                 
@@ -58,7 +60,7 @@ class ComboHolds extends Common.ConfigSection
                             , "ComboHoldDouble"
                             , combo_keys
                             , double_press_time_gap
-                            , delay
+                            , initial_delay%A_INDEX%
                             , A_INDEX))
             }
             else
@@ -66,7 +68,7 @@ class ComboHolds extends Common.ConfigSection
                     , ObjBindMethod(this
                         , "ComboHold"
                         , combo_keys
-                        , delay
+                        , initial_delay%A_INDEX%
                         , A_INDEX))
 
             hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP"
@@ -76,7 +78,7 @@ class ComboHolds extends Common.ConfigSection
         }
     }
     
-    ComboHold(combo_keys, delay, index)
+    ComboHold(combo_keys, initial_delay, index)
     {
         global game_window_id
         
@@ -88,7 +90,7 @@ class ComboHolds extends Common.ConfigSection
         
         this.hold_states[index] := true
         fn := ObjBindMethod(this, "StillHeld", index, combo_keys)
-        SetTimer, %fn%, -%delay%
+        SetTimer, %fn%, -%initial_delay%
     }
 
     ComboHoldUp(combo_keys, index)
@@ -105,7 +107,7 @@ class ComboHolds extends Common.ConfigSection
         this.spam_prevention[index] := false
     }
 
-    ComboHoldDouble(combo_keys, double_press_time_gap, delay, index)
+    ComboHoldDouble(combo_keys, double_press_time_gap, initial_delay, index)
     {
         global game_window_id
         if (!WinActive(game_window_id))
@@ -118,7 +120,7 @@ class ComboHolds extends Common.ConfigSection
             SetTimer, %fn%, -%double_press_time_gap%
         }
         else
-            this.ComboHold(combo_keys, delay, index)
+            this.ComboHold(combo_keys, initial_delay, index)
 
     }
 
