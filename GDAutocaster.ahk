@@ -49,6 +49,13 @@ if (!Common.Configured(game_window_id))
 IniRead, suspend_key, % config_name, general, suspend_key
 if Common.Configured(suspend_key)
     Hotkey, $%suspend_key%, SuspendHotkeys
+    
+IniRead
+    , kill_on_exit
+    , % config_name
+    , general
+    , kill_on_exit
+    , % _KILL_ON_EXIT
 
 hotkeys_collector := new HotkeysCollector()
 new AutocastByHold(config_name, hotkeys_collector)
@@ -61,9 +68,10 @@ new ComboHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
 
 hotkeys_suspended_by_user := false
+was_ever_ingame := false
 hotkeys_inactive_fix := WinActive(game_window_id)
-SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 
+SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
 {
     global game_window_id
@@ -71,6 +79,8 @@ MainLoop()
     global hotkeys_suspended_by_user
     global hotkeys_inactive_fix
     global tray_instance
+    global kill_on_exit
+    global was_ever_ingame
 
     if (!WinActive(game_window_id))
     {
@@ -81,9 +91,16 @@ MainLoop()
             Hotkey, $%suspend_key%, Off
             
         hotkeys_inactive_fix := false
+        
+        if (kill_on_exit 
+        and was_ever_ingame
+        and !WinExist(game_window_id))
+            ExitApp
     }    
     else
     {
+        was_ever_ingame := true
+    
         if (!hotkeys_inactive_fix)
         {
             fn := ObjBindMethod(tray_instance, "RestartAction")
