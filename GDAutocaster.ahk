@@ -11,6 +11,7 @@ SetWorkingDir %A_ScriptDir%
 
 #Include AutocastByHold.ahk
 #include AutocastByToggle.ahk
+#Include AutomaticCamera.ahk
 #include Camera.ahk
 #Include CenterCasts.ahk
 #Include Clicker.ahk
@@ -60,6 +61,7 @@ IniRead
 hotkeys_collector := new HotkeysCollector()
 new AutocastByHold(config_name, hotkeys_collector)
 autocast_by_toggle := new AutocastByToggle(config_name, hotkeys_collector, autocast_right_away)
+new AutomaticCamera(config_name, hotkeys_collector)
 new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
 new Clicker(config_name, hotkeys_collector)

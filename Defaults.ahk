@@ -17,6 +17,10 @@ global _AUTOCAST_BY_HOLD_SECTION_NAME := "autocast by hold"
 global _AUTOCAST_BY_TOGGLE_DELAY := 100
 global _AUTOCAST_BY_TOGGLE_SECTION_NAME := "autocast by toggle"
 
+global _AUTOMATIC_CAMERA_SECTION_NAME := "automatic camera"
+global _AUTOMATIC_CAMERA_INITIAL_DELAY := 200
+global _AUTOMATIC_CAMERA_DELAY := 100
+
 global _COMBOS_IN_BETWEEN_DELAY := 200
 global _COMBOS_INITIAL_DELAY := 0
 global _COMBOS_STOP_ON_RELEASE := false
