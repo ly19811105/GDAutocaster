@@ -28,11 +28,12 @@ class Common
         return false
     }
     
-    PressButtonsTimer(pressed_keys, inner_delay)
+    PressButtonsTimer(pressed_keys, inner_delay, held_keys)
     {
         global game_window_id
         if(!WinActive(game_window_id)
-        or (pressed_keys.Length() = 0))
+        or (pressed_keys.Length() = 0)
+        or !Common.Pressed(held_keys))
             return
     
         key := pressed_keys.RemoveAt(1)
@@ -49,8 +50,10 @@ class Common
         return true
     }
 
-    PressButtons(pressed_keys, inner_delay := 0)
+    PressButtons(pressed_keys, inner_delay := 0, held_keys := 0)
     {
+        ; [] cannot be a default argument unfortunately, watch out
+    
         if (inner_delay = 0)
             for not_used, key in pressed_keys
                 Send {%key%}
@@ -61,7 +64,12 @@ class Common
             first_key := pressed_keys.RemoveAt(1)
             Send {%first_key%}
             
-            fn := ObjBindMethod(Common, "PressButtonsTimer", pressed_keys, inner_delay)
+            fn := ObjBindMethod(Common
+                , "PressButtonsTimer"
+                , pressed_keys
+                , inner_delay
+                , held_keys)
+                
             SetTimer, %fn%, -%inner_delay%
         }
     }

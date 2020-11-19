@@ -96,7 +96,7 @@ class AutocastByHold extends Common.ConfigSection
         
         if (initial_delay = 0)
         {
-            Common.PressButtons(pressed_keys, inner_delay)
+            Common.PressButtons(pressed_keys, inner_delay, held_keys)
             SetTimer, %fn%, -%delay%
         }
         else
@@ -108,7 +108,7 @@ class AutocastByHold extends Common.ConfigSection
         if (!Common.Pressed(held_keys))
             Return
         
-        Common.PressButtons(pressed_keys, inner_delay)
+        Common.PressButtons(pressed_keys, inner_delay, held_keys)
         
         fn := ObjBindMethod(this
             , "HoldCastTimer"
