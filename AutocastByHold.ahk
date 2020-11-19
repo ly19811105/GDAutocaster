@@ -87,40 +87,37 @@ class AutocastByHold extends Common.ConfigSection
         if (!Common.Pressed(held_keys))
             return
         
+        fn := ObjBindMethod(this
+            , "HoldCastTimer"
+            , pressed_keys
+            , held_keys
+            , delay
+            , inner_delay)
+        
         if (initial_delay = 0)
         {
             Common.PressButtons(pressed_keys, inner_delay)
-            
-            fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys, inner_delay)
-            SetTimer, %fn%, %delay%
+            SetTimer, %fn%, -%delay%
         }
         else
-        {
-            fn := ObjBindMethod(this, "HoldCastInitialTimer", pressed_keys, held_keys, delay, inner_delay)
             SetTimer, %fn%, -%initial_delay%
-        }
     }
     
-    HoldCastInitialTimer(pressed_keys, held_keys, delay, inner_delay)
+    HoldCastTimer(pressed_keys, held_keys, delay, inner_delay)
     {
         if (!Common.Pressed(held_keys))
             Return
         
         Common.PressButtons(pressed_keys, inner_delay)
         
-        fn := ObjBindMethod(this, "HoldCastTimer", pressed_keys, held_keys, inner_delay)
-        SetTimer, %fn%, %delay%
-    }
-    
-    HoldCastTimer(pressed_keys, held_keys, inner_delay)
-    {
-        if (!Common.Pressed(held_keys))
-        {
-            SetTimer,, Off
-            Return
-        }
+        fn := ObjBindMethod(this
+            , "HoldCastTimer"
+            , pressed_keys
+            , held_keys
+            , delay
+            , inner_delay)
         
-        Common.PressButtons(pressed_keys, inner_delay)
+        SetTimer, %fn%, -%delay%
     }
     
     HoldCastUP(index)
