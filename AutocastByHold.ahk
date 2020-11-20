@@ -21,7 +21,12 @@ class AutocastByHold extends Common.ConfigSection
             this.SectionRead(double_press, "double_press" . A_INDEX, _AUTOCAST_BY_HOLD_DOUBLE_PRESS)
             this.SectionRead(inner_delay, "inner_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INNER_DELAY)
             
+            this.SectionRead(key_native_function
+                , "key_native_function" . A_INDEX
+                , _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION)
+            
             double_press := Common.StrToBool(double_press)
+            key_native_function := Common.StrToBool(key_native_function)
             
             if (!Common.Configured(cast_str
                 , initial_delay
@@ -36,9 +41,13 @@ class AutocastByHold extends Common.ConfigSection
             pressed_keys := StrSplit(cast_str[1], ",")
             first_key := held_keys[held_keys.Length()]
             
+            hotkey_modifiers := key_native_function 
+                ? _HOTKEY_MODIFIERS 
+                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
+            
             if (!double_press)
             {
-                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
+                hotkeys_collector.AddHotkey(hotkey_modifiers . first_key
                     , ObjBindMethod(this
                         , "HoldCast"
                         , pressed_keys
@@ -55,7 +64,7 @@ class AutocastByHold extends Common.ConfigSection
                     , _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP)
                 
                 if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key
+                    hotkeys_collector.AddHotkey(hotkey_modifiers . first_key
                         , ObjBindMethod(this
                             , "HoldCastDouble"
                             , double_press_time_gap
@@ -67,7 +76,7 @@ class AutocastByHold extends Common.ConfigSection
                             , inner_delay))
             }
                 
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . first_key . " UP"
+            hotkeys_collector.AddHotkey(hotkey_modifiers . first_key . " UP"
                 , ObjBindMethod(this, "HoldCastUP", A_INDEX))    
             
             this.spam_prevention.Push(0)

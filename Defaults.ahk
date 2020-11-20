@@ -13,6 +13,7 @@ global _AUTOCAST_BY_HOLD_INNER_DELAY := 0
 global _AUTOCAST_BY_HOLD_DOUBLE_PRESS := false
 global _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP := 250
 global _AUTOCAST_BY_HOLD_SECTION_NAME := "autocast by hold"
+global _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION := true
 
 global _AUTOCAST_BY_TOGGLE_DELAY := 100
 global _AUTOCAST_BY_TOGGLE_SECTION_NAME := "autocast by toggle"
@@ -50,5 +51,10 @@ global _CAMERA_SECTION_NAME := "camera"
 global _HIDE_ITEMS_DURATION := 3000
 global _HIDE_ITEMS_SECTION_NAME := "hide items"
 
-global _CLICKER_DELAY := 50
-global _CLICKER_SECTION_NAME := "clicker"
+global _FIXED_CLICKS_DELAY := 25
+global _FIXED_CLICKS_INITIAL_DELAY := 0
+global _FIXED_CLICKS_SECTION_NAME := "fixed clicks"
+global _FIXED_CLICKS_KEY_NATIVE_FUNCTION := true
+global _FIXED_CLICKS_REPEAT := 0
+global _FIXED_CLICKS_TRANSLATION := 0,0
+global _FIXED_CLICKS_GO_BACK := true

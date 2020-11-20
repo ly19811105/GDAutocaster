@@ -14,7 +14,7 @@ SetWorkingDir %A_ScriptDir%
 #Include AutomaticCamera.ahk
 #include Camera.ahk
 #Include CenterCasts.ahk
-#Include Clicker.ahk
+#Include FixedClicks.ahk
 #Include Combos.ahk
 #Include ComboHolds.ahk
 #Include Common.ahk
@@ -64,7 +64,7 @@ autocast_by_toggle := new AutocastByToggle(config_name, hotkeys_collector, autoc
 new AutomaticCamera(config_name, hotkeys_collector)
 new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
-new Clicker(config_name, hotkeys_collector)
+new FixedClicks(config_name, hotkeys_collector)
 new Combos(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
