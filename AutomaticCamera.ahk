@@ -19,7 +19,7 @@ class AutomaticCamera extends Common.ConfigSection
         if (Common.Configured(rotate_left, rotate_right, rotate_key, delay))
         {
         
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . rotate_key
+            hotkeys_collector.AddHotkey(rotate_key
                 , ObjBindMethod(this
                     , "HoldButton"
                     , rotate_left
@@ -28,7 +28,7 @@ class AutomaticCamera extends Common.ConfigSection
                     , rotate_key
                     , delay))
                     
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . rotate_key . " UP"
+            hotkeys_collector.AddHotkey(rotate_key . " UP"
                 , ObjBindMethod(this
                     , "RotateUp"
                     , rotate_left

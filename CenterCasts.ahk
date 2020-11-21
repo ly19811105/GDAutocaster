@@ -30,7 +30,7 @@ class CenterCasts extends Common.ConfigSection
             keys := StrSplit(cast_str, [":", ","])
             key := keys.RemoveAt(1)
             
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key
+            hotkeys_collector.AddHotkey(key
                 , ObjBindMethod(this
                     , "CenterCast"
                     , keys
@@ -40,7 +40,7 @@ class CenterCasts extends Common.ConfigSection
                     , A_INDEX
                     , delay_after_cursor))
             
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key . " UP"
+            hotkeys_collector.AddHotkey(key . " UP"
                 , ObjBindMethod(this, "CenterCastUP", A_INDEX))
             
             this.spam_prevention.Push(0)

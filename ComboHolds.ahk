@@ -44,10 +44,6 @@ class ComboHolds extends Common.ConfigSection
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
             
-            hotkey_modifiers := key_native_function 
-                ? _HOTKEY_MODIFIERS 
-                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
-
             if (double_press)
             {
                 this.SectionRead(double_press_time_gap
@@ -55,24 +51,27 @@ class ComboHolds extends Common.ConfigSection
                     , _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP)
             
                 if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
+                    hotkeys_collector.AddHotkey(combo_key
                         , ObjBindMethod(this
                             , "ComboHoldDouble"
                             , combo_keys
                             , double_press_time_gap
                             , initial_delay%A_INDEX%
-                            , A_INDEX))
+                            , A_INDEX)
+                        , !key_native_function)
             }
             else
-                hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
+                hotkeys_collector.AddHotkey(combo_key
                     , ObjBindMethod(this
                         , "ComboHold"
                         , combo_keys
                         , initial_delay%A_INDEX%
-                        , A_INDEX))
+                        , A_INDEX)
+                    , !key_native_function)
 
-            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP"
-                , ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX))
+            hotkeys_collector.AddHotkey(combo_key . " UP"
+                , ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX)
+                , !key_native_function)
             
             this.spam_prevention.Push(0)
         }

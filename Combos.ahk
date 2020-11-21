@@ -41,13 +41,9 @@ class Combos extends Common.ConfigSection
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
             
-            hotkey_modifiers := key_native_function 
-                ? _HOTKEY_MODIFIERS 
-                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
-            
             if (!double_press)
             {
-                hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
+                hotkeys_collector.AddHotkey(combo_key
                     , ObjBindMethod(this
                         , "ComboPress"
                         , delay%A_INDEX%
@@ -55,7 +51,8 @@ class Combos extends Common.ConfigSection
                         , initial_delay%A_INDEX%
                         , A_INDEX
                         , combo_key
-                        , stop_on_release))
+                        , stop_on_release)
+                    , !key_native_function)
             }
             else
             {
@@ -64,7 +61,7 @@ class Combos extends Common.ConfigSection
                     , _COMBOS_DOUBLE_PRESS_TIME_GAP)
             
                 if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key
+                    hotkeys_collector.AddHotkey(combo_key
                         , ObjBindMethod(this
                             , "ComboDouble"
                             , double_press_time_gap
@@ -73,11 +70,13 @@ class Combos extends Common.ConfigSection
                             , initial_delay%A_INDEX%
                             , A_INDEX
                             , combo_key
-                            , stop_on_release))
+                            , stop_on_release)
+                        , !key_native_function)
             }
                 
-            hotkeys_collector.AddHotkey(hotkey_modifiers . combo_key . " UP"
-                , ObjBindMethod(this, "ComboPressUP", A_INDEX))
+            hotkeys_collector.AddHotkey(combo_key . " UP"
+                , ObjBindMethod(this, "ComboPressUP", A_INDEX)
+                , !key_native_function)
                 
             this.spam_protection.Push(0)
             this.just_pressed.Push(false)

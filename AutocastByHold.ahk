@@ -41,13 +41,9 @@ class AutocastByHold extends Common.ConfigSection
             pressed_keys := StrSplit(cast_str[1], ",")
             first_key := held_keys[held_keys.Length()]
             
-            hotkey_modifiers := key_native_function 
-                ? _HOTKEY_MODIFIERS 
-                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
-            
             if (!double_press)
             {
-                hotkeys_collector.AddHotkey(hotkey_modifiers . first_key
+                hotkeys_collector.AddHotkey(first_key
                     , ObjBindMethod(this
                         , "HoldCast"
                         , pressed_keys
@@ -55,7 +51,8 @@ class AutocastByHold extends Common.ConfigSection
                         , held_keys
                         , A_INDEX
                         , initial_delay
-                        , inner_delay))
+                        , inner_delay)
+                    , !key_native_function)
             }
             else
             {
@@ -64,7 +61,7 @@ class AutocastByHold extends Common.ConfigSection
                     , _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP)
                 
                 if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(hotkey_modifiers . first_key
+                    hotkeys_collector.AddHotkey(first_key
                         , ObjBindMethod(this
                             , "HoldCastDouble"
                             , double_press_time_gap
@@ -73,16 +70,17 @@ class AutocastByHold extends Common.ConfigSection
                             , held_keys
                             , A_INDEX
                             , initial_delay
-                            , inner_delay))
+                            , inner_delay)
+                        , !key_native_function)
             }
                 
-            hotkeys_collector.AddHotkey(hotkey_modifiers . first_key . " UP"
-                , ObjBindMethod(this, "HoldCastUP", A_INDEX))    
+            hotkeys_collector.AddHotkey(first_key . " UP"
+                , ObjBindMethod(this, "HoldCastUP", A_INDEX)
+                , !key_native_function)    
             
             this.spam_prevention.Push(0)
             this.just_pressed.Push(false)
         }
-
     }
     
     HoldCast(pressed_keys, delay, held_keys, index, initial_delay, inner_delay)

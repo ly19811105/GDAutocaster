@@ -23,14 +23,16 @@ class AutocastByToggle extends Common.ConfigSection
             toggle_key := StrSplit(cast_str, ":")[1]
             key_pressed := StrSplit(cast_str, ":")[2]
             
-            not_hold_keys := Common.Configured(not_hold_keys_str) ? StrSplit(not_hold_keys_str, ",") : []
+            not_hold_keys := Common.Configured(not_hold_keys_str) 
+                ? StrSplit(not_hold_keys_str, ",") 
+                : []
             
             if (Common.Configured(delay%A_INDEX%, not_hold_keys, toggle_key, key_pressed))
             {
-                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . toggle_key, ObjBindMethod(this, "ToggleTimer", A_INDEX))
+                hotkeys_collector.AddHotkey(toggle_key, ObjBindMethod(this, "ToggleTimer", A_INDEX))
                     
                 if (Common.Configured(reset_key))
-                    hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . reset_key, ObjBindMethod(this, "ResetTimer", A_INDEX))
+                    hotkeys_collector.AddHotkey(reset_key, ObjBindMethod(this, "ResetTimer", A_INDEX))
                 
                 timer := {}
                 timer.function := ObjBindMethod(this, "PressButton", key_pressed, not_hold_keys)

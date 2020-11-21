@@ -20,14 +20,14 @@ class Camera extends Common.ConfigSection
             , rotation_key
             , camera_sleep)
         {
-            hotkeys_collector.AddHotkey("*" . counter_clockwise
+            hotkeys_collector.AddHotkey(counter_clockwise
                 , ObjBindMethod(this
                     , "Counterclock"
                     , camera_sleep
                     , rotation_key
                     , angle))
                     
-            hotkeys_collector.AddHotkey("*" . clockwise
+            hotkeys_collector.AddHotkey(clockwise
                 , ObjBindMethod(this
                     , "Clock"
                     , camera_sleep

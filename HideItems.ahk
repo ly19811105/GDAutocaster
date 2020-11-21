@@ -18,7 +18,7 @@ class HideItems extends Common.ConfigSection
         
         if Common.Configured(hiding_buttons, ingame_hide_button, hide_duration)
             for not_used, key in hiding_buttons
-                hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . key
+                hotkeys_collector.AddHotkey(key
                     , ObjBindMethod(this, "Hide", ingame_hide_button, hide_duration))
         
         this.showFunction := ObjBindMethod(this

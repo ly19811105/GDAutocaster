@@ -60,13 +60,9 @@ class FixedClicks extends Clicker
                 , translation))
                 continue
             
-            hotkey_modifiers := key_native_function 
-                ? _HOTKEY_MODIFIERS 
-                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
-            
             this.spam_protection.Push(0)
             
-            hotkeys_collector.AddHotkey(hotkey_modifiers . button
+            hotkeys_collector.AddHotkey(button
                 , ObjBindMethod(this
                     , "StartClicking"
                     , clicks
@@ -75,10 +71,12 @@ class FixedClicks extends Clicker
                     , repeat
                     , translation
                     , A_INDEX
-                    , go_back))
+                    , go_back)
+                , !key_native_function)
             
-            hotkeys_collector.AddHotkey(hotkey_modifiers . button . " UP"
-                , ObjBindMethod(this, "ClickingUP", A_INDEX))
+            hotkeys_collector.AddHotkey(button . " UP"
+                , ObjBindMethod(this, "ClickingUP", A_INDEX)
+                , !key_native_function)
         }
     }
     

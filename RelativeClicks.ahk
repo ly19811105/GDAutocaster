@@ -28,16 +28,10 @@ class RelativeClicks extends Clicker
 
             this.spam_protection.Push(0)
                 
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . button . " UP"
+            hotkeys_collector.AddHotkey(button . " UP"
                 , ObjBindMethod(this, "ClickingUP", A_INDEX))
 
-            
-            hotkey_modifiers := key_native_function 
-                ? _HOTKEY_MODIFIERS 
-                : _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED
-            
-            
-            hotkeys_collector.AddHotkey(_HOTKEY_MODIFIERS . button
+            hotkeys_collector.AddHotkey(button
                 , ObjBindMethod(this
                     , "StartClicking"
                     , delay
