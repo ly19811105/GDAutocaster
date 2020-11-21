@@ -10,7 +10,7 @@ SetTitleMatchMode, 3
 SetWorkingDir %A_ScriptDir%
 
 #Include AutocastByHold.ahk
-#include AutocastByToggle.ahk
+#Include AutocastByToggle.ahk
 #Include AutomaticCamera.ahk
 #include Camera.ahk
 #Include CenterCasts.ahk
@@ -21,7 +21,8 @@ SetWorkingDir %A_ScriptDir%
 #Include Defaults.ahk
 #Include HideItems.ahk
 #Include HotkeysCollector.ahk
-#include Tray.ahk
+#Include RelativeClicks.ahk
+#Include Tray.ahk
 
 tray_instance := new Tray()
 
@@ -68,6 +69,7 @@ new FixedClicks(config_name, hotkeys_collector)
 new Combos(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
+new RelativeClicks(config_name, hotkeys_collector)
 
 hotkeys_suspended_by_user := false
 was_ever_ingame := false

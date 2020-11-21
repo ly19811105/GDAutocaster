@@ -58,3 +58,6 @@ global _FIXED_CLICKS_KEY_NATIVE_FUNCTION := true
 global _FIXED_CLICKS_REPEAT := 0
 global _FIXED_CLICKS_TRANSLATION := 0,0
 global _FIXED_CLICKS_GO_BACK := true
+
+global _RELATIVE_CLICKS_SECTION_NAME := "relative clicks"
+global _RELATIVE_CLICKS_DELAY := 25
