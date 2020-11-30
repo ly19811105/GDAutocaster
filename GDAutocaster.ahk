@@ -6,7 +6,6 @@
 #SingleInstance Force
 #Warn ClassOverwrite
 
-SetTitleMatchMode, 3
 SetWorkingDir %A_ScriptDir%
 
 #Include AutocastByHold.ahk
@@ -40,6 +39,9 @@ If (!FileExist(config_name))
 }
 
 tray_instance.DisplayConfigName()
+
+IniRead, title_match_mode, % config_name, general, title_match_mode, % _TITLE_MATCH_MODE
+SetTitleMatchMode, % title_match_mode
 
 IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
 if (!Common.Configured(game_window_id))

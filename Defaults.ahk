@@ -2,6 +2,7 @@ global _GAME_WINDOW_ID := "ahk_exe Grim Dawn.exe"
 global _CONFIG_FILE_EXTENSION := "ini"
 global _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY := 1000
 global _KILL_ON_EXIT := false
+global _TITLE_MATCH_MODE := 3
 
 global _HOTKEY_MODIFIERS := "~*$"
 global _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED := "*$"
