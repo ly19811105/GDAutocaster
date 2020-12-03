@@ -41,15 +41,15 @@ class Tray
         global config_name, autocast_by_toggle
         
         if (config_name = "")
-        {
             this.LoadConfigAction()
-            ExitApp
-        }
-        
-        if (autocast_by_toggle.any_timer_on)
+            
+        else if (autocast_by_toggle.any_timer_on)
             Run, %A_ScriptFullPath% "%config_name%" any_argument_starts_autocast_by_toggle
+            
         else
             Run, %A_ScriptFullPath% "%config_name%"
+            
+        ExitApp
     }
 
     ExitAction()

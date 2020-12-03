@@ -111,6 +111,7 @@ MainLoop()
         {
             fn := ObjBindMethod(tray_instance, "RestartAction")
             SetTimer, %fn%, -3000
+            hotkeys_inactive_fix := true
         }
         
         if Common.Configured(suspend_key)
