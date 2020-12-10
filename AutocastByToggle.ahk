@@ -21,13 +21,14 @@ class AutocastByToggle extends Common.ConfigSection
             this.SectionRead(reset_key, "reset_key" . A_INDEX)
         
             toggle_key := StrSplit(cast_str, ":")[1]
-            key_pressed := StrSplit(cast_str, ":")[2]
+            keys_pressed := StrSplit(cast_str, ":")[2]
+            keys_pressed := StrSplit(keys_pressed, ",")
             
             not_hold_keys := Common.Configured(not_hold_keys_str) 
                 ? StrSplit(not_hold_keys_str, ",") 
                 : []
             
-            if (Common.Configured(delay%A_INDEX%, not_hold_keys, toggle_key, key_pressed))
+            if (Common.Configured(delay%A_INDEX%, not_hold_keys, toggle_key, keys_pressed))
             {
                 hotkeys_collector.AddHotkey(toggle_key, ObjBindMethod(this, "ToggleTimer", A_INDEX))
                     
@@ -35,7 +36,7 @@ class AutocastByToggle extends Common.ConfigSection
                     hotkeys_collector.AddHotkey(reset_key, ObjBindMethod(this, "ResetTimer", A_INDEX))
                 
                 timer := {}
-                timer.function := ObjBindMethod(this, "PressButton", key_pressed, not_hold_keys)
+                timer.function := ObjBindMethod(this, "PressButton", keys_pressed, not_hold_keys)
                 timer.delay := delay%A_INDEX%
                 this.timers.Push(timer)
             }
@@ -64,12 +65,12 @@ class AutocastByToggle extends Common.ConfigSection
             
     }
 
-    PressButton(key_pressed, not_hold_keys)
+    PressButton(keys_pressed, not_hold_keys)
     {
         global game_window_id
         if (WinActive(game_window_id)
         and (not_hold_keys.Length() = 0 or !Common.AnyPressed(not_hold_keys)))
-            send {%key_pressed%}
+            Common.PressButtons(keys_pressed)
     }
     
     toggleAllTimers()
