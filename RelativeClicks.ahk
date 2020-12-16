@@ -50,8 +50,8 @@ class RelativeClicks extends Clicker
         , height
         , index)
     {
-        global game_window_id
-        if(!WinActive(game_window_id)
+        global window_ids
+        if(!Common.IfActive(window_ids)
         or this.spam_protection[index])
             return
             

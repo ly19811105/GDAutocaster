@@ -54,9 +54,9 @@ class CenterCasts extends Common.ConfigSection
         , index
         , delay_after_cursor)
     {
-        global game_window_id
+        global window_ids
         
-        if (!WinActive(game_window_id)
+        if (!Common.IfActive(window_ids)
         or this.spam_prevention[index]
         or this.mouse_moving)
             return

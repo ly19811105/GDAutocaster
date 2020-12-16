@@ -30,8 +30,8 @@ class Common
     
     PressButtonsTimer(pressed_keys, inner_delay, held_keys)
     {
-        global game_window_id
-        if(!WinActive(game_window_id)
+        global window_ids
+        if(!Common.IfActive(window_ids)
         or (pressed_keys.Length() = 0)
         or !Common.Pressed(held_keys))
             return
@@ -92,5 +92,23 @@ class Common
             return 0
             
         return str_bool
+    }
+    
+    IfActive(window_ids)
+    {
+        for not_used, id in window_ids
+            if (WinActive(id))
+                return true
+                
+        return false
+    }
+    
+    IfExist(window_ids)
+    {
+        for not_used, id in window_ids
+            if (WinExist(id))
+                return true
+                
+        return false
     }
 }

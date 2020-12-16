@@ -38,15 +38,15 @@ class Camera extends Common.ConfigSection
 
     Counterclock(camera_sleep, rotation_key, angle)
     {
-        global game_window_id
-        if(WinActive(game_window_id))
+        global window_ids
+        if(Common.IfActive(window_ids))
             this.Rotate(camera_sleep, rotation_key, angle)
     }
 
     Clock(camera_sleep, rotation_key, angle)
     {
-        global game_window_id
-        if(WinActive(game_window_id))
+        global window_ids
+        if(Common.IfActive(window_ids))
             this.Rotate(camera_sleep, rotation_key, -angle)
     }
 

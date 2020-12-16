@@ -91,9 +91,9 @@ class Combos extends Common.ConfigSection
         , key
         , stop_on_release)
     {
-        global game_window_id
+        global window_ids
         
-        if(!WinActive(game_window_id)
+        if(!Common.IfActive(window_ids)
         or this.spam_protection[index]
         or this.combo_in_progress[index])
             return
@@ -130,9 +130,9 @@ class Combos extends Common.ConfigSection
         , stop_on_release
         , index)
     {   
-        global game_window_id
+        global window_ids
         
-        if (!WinActive(game_window_id)
+        if (!Common.IfActive(window_ids)
         or (keys.Length() = 0)
         or (stop_on_release and !GetKeyState(key, "P")))
         {
@@ -158,8 +158,8 @@ class Combos extends Common.ConfigSection
         , key
         , stop_on_release)
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
+        global window_ids
+        if (!Common.IfActive(window_ids))
             return
             
         if (!this.just_pressed[index])

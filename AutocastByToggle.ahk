@@ -48,8 +48,8 @@ class AutocastByToggle extends Common.ConfigSection
     
     ToggleTimer(index)
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
+        global window_ids
+        if (!Common.IfActive(window_ids))
             return
 
         bit_mask := 2**index
@@ -67,16 +67,16 @@ class AutocastByToggle extends Common.ConfigSection
 
     PressButton(keys_pressed, not_hold_keys)
     {
-        global game_window_id
-        if (WinActive(game_window_id)
+        global window_ids
+        if (Common.IfActive(window_ids)
         and (not_hold_keys.Length() = 0 or !Common.AnyPressed(not_hold_keys)))
             Common.PressButtons(keys_pressed)
     }
     
     toggleAllTimers()
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
+        global window_ids
+        if (!Common.IfActive(window_ids))
             return
         
         if (this.any_timer_on)

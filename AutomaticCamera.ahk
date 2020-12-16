@@ -42,8 +42,8 @@ class AutomaticCamera extends Common.ConfigSection
         , rotate_key
         , delay)
     {
-        global game_window_id
-        if (!WinActive(game_window_id)
+        global window_ids
+        if (!Common.IfActive(window_ids)
         or this.spam_protection)
             return
 
@@ -61,8 +61,8 @@ class AutomaticCamera extends Common.ConfigSection
 
     Rotate(rotate_left, rotate_right, rotate_key, delay)
     {
-        global game_window_id
-        if (!WinActive(game_window_id)
+        global window_ids
+        if (!Common.IfActive(window_ids)
         or !GetKeyState(rotate_key, "P"))
         {
             SetTimer,, Off

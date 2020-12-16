@@ -85,8 +85,9 @@ class AutocastByHold extends Common.ConfigSection
     
     HoldCast(pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
     {
-        global game_window_id
-        if(!WinActive(game_window_id) or this.spam_prevention[index])
+        global window_ids
+        if(!Common.IfActive(window_ids)
+        or this.spam_prevention[index])
             return
             
         this.spam_prevention[index] := 1
@@ -134,8 +135,8 @@ class AutocastByHold extends Common.ConfigSection
     
     HoldCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
+        global window_ids
+        if (!Common.IfActive(window_ids))
             return
             
         if (!this.just_pressed[index])

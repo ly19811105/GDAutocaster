@@ -43,12 +43,13 @@ tray_instance.DisplayConfigName()
 IniRead, title_match_mode, % config_name, general, title_match_mode, % _TITLE_MATCH_MODE
 SetTitleMatchMode, % title_match_mode
 
-IniRead, game_window_id, % config_name, general, game_window_id, % _GAME_WINDOW_ID
-if (!Common.Configured(game_window_id))
+IniRead, window_ids, % config_name, general, game_window_id, % _GAME_WINDOW_ID
+if (!Common.Configured(window_ids))
 {
     MsgBox, Missing "game_window_id" in the config, i.e. game_window_id=ahk_exe Grim Dawn.exe in [general] section.
     ExitApp
 }
+window_ids := StrSplit(window_ids, ",")
 
 IniRead, suspend_key, % config_name, general, suspend_key
 if Common.Configured(suspend_key)
@@ -75,12 +76,12 @@ new RelativeClicks(config_name, hotkeys_collector)
 
 hotkeys_suspended_by_user := false
 was_ever_ingame := false
-hotkeys_inactive_fix := WinActive(game_window_id)
+hotkeys_inactive_fix := Common.IfActive(window_ids)
 
 SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
 {
-    global game_window_id
+    global window_ids
     global suspend_key
     global hotkeys_suspended_by_user
     global hotkeys_inactive_fix
@@ -88,7 +89,7 @@ MainLoop()
     global kill_on_exit
     global was_ever_ingame
 
-    if (!WinActive(game_window_id))
+    if (!Common.IfActive(window_ids))
     {
         if (!A_IsSuspended)
             Suspend, On
@@ -100,7 +101,7 @@ MainLoop()
         
         if (kill_on_exit 
         and was_ever_ingame
-        and !WinExist(game_window_id))
+        and !Common.IfExist(window_ids))
             ExitApp
     }    
     else

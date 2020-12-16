@@ -80,10 +80,17 @@ class FixedClicks extends Clicker
         }
     }
     
-    StartClicking(clicks, delay, initial_delay, repeat, translation, index, go_back)
+    StartClicking(clicks
+        , delay
+        , initial_delay
+        , repeat
+        , translation
+        , index
+        , go_back)
     {
-        global game_window_id
-        if(!WinActive(game_window_id) or this.spam_protection[index])
+        global window_ids
+        if(!Common.IfActive(window_ids)
+        or this.spam_protection[index])
             return
             
         this.spam_protection[index] := 1

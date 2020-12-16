@@ -79,9 +79,9 @@ class ComboHolds extends Common.ConfigSection
     
     ComboHold(combo_keys, initial_delay, index)
     {
-        global game_window_id
+        global window_ids
         
-        if (!WinActive(game_window_id)
+        if (!Common.IfActive(window_ids)
         or this.spam_prevention[index])
             return
             
@@ -94,8 +94,8 @@ class ComboHolds extends Common.ConfigSection
 
     ComboHoldUp(combo_keys, index)
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
+        global window_ids
+        if (!Common.IfActive(window_ids))
             return
         
         this.hold_states[index] := false
@@ -108,8 +108,8 @@ class ComboHolds extends Common.ConfigSection
 
     ComboHoldDouble(combo_keys, double_press_time_gap, initial_delay, index)
     {
-        global game_window_id
-        if (!WinActive(game_window_id))
+        global window_ids
+        if (!Common.IfActive(window_ids))
             return
             
         if (!ComboHolds.just_pressed)

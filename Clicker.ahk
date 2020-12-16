@@ -23,8 +23,8 @@ class Clicker extends Common.ConfigSection
         , return_point
         , total_translation)
     {
-        global game_window_id
-        if(!WinActive(game_window_id))
+        global window_ids
+        if(!Common.IfActive(window_ids))
             return
         
         click := clicks_copy.RemoveAt(1)
