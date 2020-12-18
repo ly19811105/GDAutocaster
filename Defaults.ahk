@@ -62,3 +62,8 @@ global _FIXED_CLICKS_GO_BACK := true
 
 global _RELATIVE_CLICKS_SECTION_NAME := "relative clicks"
 global _RELATIVE_CLICKS_DELAY := 25
+
+global _HACKER_SECTION_NAME := "hacker"
+global _HACKER_PROGRAM_NAME := "GDHacker.exe"
+global _HACKER_SPEED_CODE := 0
+global _HACKER_DEFAULT_SPEEDS := "2,1"

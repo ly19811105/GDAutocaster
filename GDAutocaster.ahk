@@ -18,6 +18,7 @@ SetWorkingDir %A_ScriptDir%
 #Include ComboHolds.ahk
 #Include Common.ahk
 #Include Defaults.ahk
+#Include Hacker.ahk
 #Include HideItems.ahk
 #Include HotkeysCollector.ahk
 #Include RelativeClicks.ahk
@@ -73,6 +74,7 @@ new Combos(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
 new RelativeClicks(config_name, hotkeys_collector)
+new Hacker(config_name, hotkeys_collector)
 
 hotkeys_suspended_by_user := false
 was_ever_ingame := false
