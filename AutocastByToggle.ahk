@@ -43,7 +43,7 @@ class AutocastByToggle extends Common.ConfigSection
         }
         
         if (autocast_right_away)
-            this.toggleAllTimers()
+            this.ToggleAllTimers()
     }
     
     ToggleTimer(index)
@@ -73,7 +73,7 @@ class AutocastByToggle extends Common.ConfigSection
             Common.PressButtons(keys_pressed)
     }
     
-    toggleAllTimers()
+    ToggleAllTimers()
     {
         global window_ids
         if (!Common.IfActive(window_ids))

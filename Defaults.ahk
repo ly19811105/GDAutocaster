@@ -67,3 +67,5 @@ global _HACKER_SECTION_NAME := "hacker"
 global _HACKER_PROGRAM_NAME := "GDHacker.exe"
 global _HACKER_SPEED_CODE := 0
 global _HACKER_DEFAULT_SPEEDS := "2,1"
+global _HACKER_FREEZE_TRIBUTES := false
+global _HACKER_FREEZE_CODE := 1

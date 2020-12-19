@@ -15,23 +15,33 @@ class Hacker extends Common.ConfigSection
         this.SectionRead(speeds_str, "speeds", _HACKER_DEFAULT_SPEEDS)
         this.SectionRead(hacker_dir, "hacker_dir", A_ScriptDir)
         
-        if (Common.Configured(key, speeds_str, hacker_dir))
+        this.SectionRead(freeze_tributes, "freeze_tributes", _FREEZE_TRIBUTES)
+        freeze_tributes := Common.StrToBool(freeze_tributes)
+        
+        if (!Common.Configured(hacker_dir))
+            return
+        
+        if (Common.Configured(key, speeds_str))
         {
             speeds := StrSplit(speeds_str, ",")
             
             hotkeys_collector.AddHotkey(key
                 , ObjBindMethod(this
-                    , "toggleSpeed"
+                    , "ToggleSpeed"
                     , speeds
                     , hacker_dir))
                     
             hotkeys_collector.AddHotkey(key . " UP"
-                , ObjBindMethod(this, "toggleSpeedUP"))
+                , ObjBindMethod(this, "ToggleSpeedUP"))
         }
+        
+        if (Common.Configured(freeze_tributes)
+        and freeze_tributes)
+            this.FreezeTributes(hacker_dir)
         
     }
     
-    toggleSpeed(speeds, hacker_dir)
+    ToggleSpeed(speeds, hacker_dir)
     {
         global window_ids
         if (!Common.IfActive(window_ids)
@@ -48,8 +58,17 @@ class Hacker extends Common.ConfigSection
             this.speed_index := 1
     }
     
-    toggleSpeedUP()
+    ToggleSpeedUP()
     {
         this.spam_prevention := false
+    }
+    
+    FreezeTributes(hacker_dir)
+    {
+        global window_ids
+        if (!Common.IfActive(window_ids))
+            return
+    
+        RunWait, %hacker_dir%\%_HACKER_PROGRAM_NAME% %_HACKER_FREEZE_CODE%,,Hide
     }
 }
