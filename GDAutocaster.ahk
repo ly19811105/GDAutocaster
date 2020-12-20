@@ -5,6 +5,7 @@
 #NoEnv
 #SingleInstance Force
 #Warn ClassOverwrite
+#Persistent
 
 SetWorkingDir %A_ScriptDir%
 
