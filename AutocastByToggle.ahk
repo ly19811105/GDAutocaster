@@ -19,7 +19,15 @@ class AutocastByToggle extends Common.ConfigSection
             this.SectionRead(delay%A_INDEX%, "delay" . A_INDEX, delay)
             this.SectionRead(not_hold_keys_str, "not_hold_keys" . A_INDEX)
             this.SectionRead(reset_key, "reset_key" . A_INDEX)
+            
+            if (!autocast_right_away)
+            {
+                this.SectionRead(autocast_right_away
+                    , "autocast_right_away"
+                    , _AUTOCAST_BY_TOGGLE_RIGHT_AWAY)
         
+                autocast_right_away := Common.StrToBool(autocast_right_away)
+            }
             toggle_key := StrSplit(cast_str, ":")[1]
             keys_pressed := StrSplit(cast_str, ":")[2]
             keys_pressed := StrSplit(keys_pressed, ",")
