@@ -5,7 +5,7 @@
 class AutocastByToggle extends Common.ConfigSection
 {
     any_timer_on := 0
-    timers := []
+    timers := {}
     
     __New(config_name, hotkeys_collector, autocast_right_away)
     {
@@ -46,7 +46,7 @@ class AutocastByToggle extends Common.ConfigSection
                 timer := {}
                 timer.function := ObjBindMethod(this, "PressButton", keys_pressed, not_hold_keys)
                 timer.delay := delay%A_INDEX%
-                this.timers.Push(timer)
+                this.timers[A_INDEX] := timer
             }
         }
         

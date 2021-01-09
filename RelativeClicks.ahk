@@ -26,7 +26,7 @@ class RelativeClicks extends Clicker
                 , height))
                 continue
 
-            this.spam_protection.Push(0)
+            this.spam_protection[A_INDEX] := false
                 
             hotkeys_collector.AddHotkey(button . " UP"
                 , ObjBindMethod(this, "ClickingUP", A_INDEX))
@@ -55,7 +55,7 @@ class RelativeClicks extends Clicker
         or this.spam_protection[index])
             return
             
-        this.spam_protection[index] := 1
+        this.spam_protection[index] := true
         
         MouseGetPos, xpos, ypos
         

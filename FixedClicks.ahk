@@ -60,7 +60,7 @@ class FixedClicks extends Clicker
                 , translation))
                 continue
             
-            this.spam_protection.Push(0)
+            this.spam_protection[A_INDEX] := false
             
             hotkeys_collector.AddHotkey(button
                 , ObjBindMethod(this
@@ -93,7 +93,7 @@ class FixedClicks extends Clicker
         or this.spam_protection[index])
             return
             
-        this.spam_protection[index] := 1
+        this.spam_protection[index] := true
         
         if (go_back)
         {

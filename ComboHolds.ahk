@@ -4,9 +4,9 @@
 
 class ComboHolds extends Common.ConfigSection
 {
-    just_pressed := false
-    hold_states := []
-    spam_prevention := []
+    just_pressed := {}
+    hold_states := {}
+    spam_prevention := {}
     
     __New(config_name, hotkeys_collector)
     {
@@ -16,8 +16,6 @@ class ComboHolds extends Common.ConfigSection
     
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
-            this.hold_states.Push(false)
-        
             this.SectionRead(combo_str, "combo" . A_INDEX)
             
             this.SectionRead(initial_delay%A_INDEX%
@@ -43,6 +41,10 @@ class ComboHolds extends Common.ConfigSection
                 
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
+            
+            this.just_pressed[A_INDEX] := false
+            this.hold_states[A_INDEX] := false
+            this.spam_prevention[A_INDEX] := false
             
             if (double_press)
             {
@@ -72,8 +74,6 @@ class ComboHolds extends Common.ConfigSection
             hotkeys_collector.AddHotkey(combo_key . " UP"
                 , ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX)
                 , !key_native_function)
-            
-            this.spam_prevention.Push(0)
         }
     }
     
@@ -112,9 +112,9 @@ class ComboHolds extends Common.ConfigSection
         if (!Common.IfActive(window_ids))
             return
             
-        if (!ComboHolds.just_pressed)
+        if (!ComboHolds.just_pressed[index])
         {
-            ComboHolds.just_pressed := true
+            ComboHolds.just_pressed[index] := true
             fn := ObjBindMethod(this, "ComboHoldDoubleTimer")
             SetTimer, %fn%, -%double_press_time_gap%
         }
@@ -125,7 +125,7 @@ class ComboHolds extends Common.ConfigSection
 
     ComboHoldDoubleTimer()
     {
-        ComboHolds.just_pressed := false
+        ComboHolds.just_pressed[index] := false
     }
     
     StillHeld(index, combo_keys)

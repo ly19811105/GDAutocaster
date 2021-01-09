@@ -4,8 +4,8 @@
 
 class AutocastByHold extends Common.ConfigSection
 {
-    spam_prevention := []
-    just_pressed := []
+    spam_prevention := {}
+    just_pressed := {}
 
     __New(config_name, hotkeys_collector)
     {
@@ -41,6 +41,9 @@ class AutocastByHold extends Common.ConfigSection
             pressed_keys := StrSplit(cast_str[1], ",")
             first_key := held_keys[held_keys.Length()]
             
+            this.spam_prevention[A_INDEX] := false
+            this.just_pressed[A_INDEX] := false
+            
             if (!double_press)
             {
                 hotkeys_collector.AddHotkey(first_key
@@ -73,13 +76,10 @@ class AutocastByHold extends Common.ConfigSection
                             , inner_delay)
                         , !key_native_function)
             }
-                
+            
             hotkeys_collector.AddHotkey(first_key . " UP"
                 , ObjBindMethod(this, "HoldCastUP", A_INDEX)
                 , !key_native_function)    
-            
-            this.spam_prevention.Push(0)
-            this.just_pressed.Push(false)
         }
     }
     
@@ -90,7 +90,7 @@ class AutocastByHold extends Common.ConfigSection
         or this.spam_prevention[index])
             return
             
-        this.spam_prevention[index] := 1
+        this.spam_prevention[index] := true
         
         if (!Common.Pressed(held_keys))
             return
@@ -130,7 +130,7 @@ class AutocastByHold extends Common.ConfigSection
     
     HoldCastUP(index)
     {
-        this.spam_prevention[index] := 0
+        this.spam_prevention[index] := false
     }
     
     HoldCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay, inner_delay)

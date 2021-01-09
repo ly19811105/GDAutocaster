@@ -4,7 +4,7 @@
 
 class CenterCasts extends Common.ConfigSection
 {
-    spam_prevention := []
+    spam_prevention := {}
     mouse_moving := false
 
     __New(config_name, hotkeys_collector)
@@ -30,6 +30,8 @@ class CenterCasts extends Common.ConfigSection
             keys := StrSplit(cast_str, [":", ","])
             key := keys.RemoveAt(1)
             
+            this.spam_prevention[A_INDEX] := false
+            
             hotkeys_collector.AddHotkey(key
                 , ObjBindMethod(this
                     , "CenterCast"
@@ -42,8 +44,6 @@ class CenterCasts extends Common.ConfigSection
             
             hotkeys_collector.AddHotkey(key . " UP"
                 , ObjBindMethod(this, "CenterCastUP", A_INDEX))
-            
-            this.spam_prevention.Push(0)
         }
     }
     
@@ -61,7 +61,7 @@ class CenterCasts extends Common.ConfigSection
         or this.mouse_moving)
             return
     
-        this.spam_prevention[index] := 1
+        this.spam_prevention[index] := true
     
         keys := keys.Clone()
         if (initial_delay > 0)
@@ -165,6 +165,6 @@ class CenterCasts extends Common.ConfigSection
     
     CenterCastUP(index)
     {
-        this.spam_prevention[index] := 0
+        this.spam_prevention[index] := false
     }
 }
