@@ -82,6 +82,6 @@ class Camera extends Common.ConfigSection
     
     CalculateX(angle, width)
     {
-        return (Abs(angle) - angle) * width/360
+        return (Abs(angle) - angle) * 3.491666
     }
 }
