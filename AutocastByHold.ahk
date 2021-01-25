@@ -1,11 +1,12 @@
 #include Common.ahk
 #Include Defaults.ahk
+#Include DPActivator.ahk 
 #Include HotkeysCollector.ahk
 
 class AutocastByHold extends Common.ConfigSection
 {
     spam_prevention := {}
-    just_pressed := {}
+    dp_activators := {}
 
     __New(config_name, hotkeys_collector)
     {
@@ -42,48 +43,54 @@ class AutocastByHold extends Common.ConfigSection
             first_key := held_keys[held_keys.Length()]
             
             this.spam_prevention[A_INDEX] := false
-            this.just_pressed[A_INDEX] := false
+            
+            hold_cast := ObjBindMethod(this
+                , "HoldCast"
+                , pressed_keys
+                , delay%A_INDEX%
+                , held_keys
+                , A_INDEX
+                , initial_delay
+                , inner_delay)
+                
+            hold_cast_up := ObjBindMethod(this, "HoldCastUP", A_INDEX)
             
             if (!double_press)
             {
                 hotkeys_collector.AddHotkey(first_key
-                    , ObjBindMethod(this
-                        , "HoldCast"
-                        , pressed_keys
-                        , delay%A_INDEX%
-                        , held_keys
-                        , A_INDEX
-                        , initial_delay
-                        , inner_delay)
+                    , hold_cast
+                    , !key_native_function)
+                    
+                hotkeys_collector.AddHotkey(first_key . " UP"
+                    , hold_cast_up
                     , !key_native_function)
             }
-            else
+            else 
             {
-                this.SectionRead(double_press_time_gap
-                    , "double_press" . A_INDEX . "_time_gap"
-                    , _AUTOCAST_BY_HOLD_DOUBLE_PRESS_TIME_GAP)
-                
-                if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(first_key
-                        , ObjBindMethod(this
-                            , "HoldCastDouble"
-                            , double_press_time_gap
-                            , pressed_keys
-                            , delay%A_INDEX%
-                            , held_keys
-                            , A_INDEX
-                            , initial_delay
-                            , inner_delay)
-                        , !key_native_function)
-            }
+                this.SectionRead(time_gap
+                    , "double_press_time_gap" . A_INDEX
+                    , _DOUBLE_PRESS_TIME_GAP)
+                    
+                dp_activator := new DPActivator(hold_cast, time_gap, hold_cast_up)
+                this.dp_activators[A_INDEX] := dp_activator
             
-            hotkeys_collector.AddHotkey(first_key . " UP"
-                , ObjBindMethod(this, "HoldCastUP", A_INDEX)
-                , !key_native_function)    
+                hotkeys_collector.AddHotkey(first_key
+                    , ObjBindMethod(dp_activator, "Press")
+                    , !key_native_function)
+                    
+                hotkeys_collector.AddHotkey(first_key . " UP"
+                    , ObjBindMethod(dp_activator, "PressUP")
+                    , !key_native_function)
+            }
         }
     }
     
-    HoldCast(pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
+    HoldCast(pressed_keys
+        , delay
+        , held_keys
+        , index
+        , initial_delay
+        , inner_delay)
     {
         global window_ids
         if(!Common.IfActive(window_ids)
@@ -131,26 +138,5 @@ class AutocastByHold extends Common.ConfigSection
     HoldCastUP(index)
     {
         this.spam_prevention[index] := false
-    }
-    
-    HoldCastDouble(double_press_time_gap, pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
-    {
-        global window_ids
-        if (!Common.IfActive(window_ids))
-            return
-            
-        if (!this.just_pressed[index])
-        {
-            this.just_pressed[index] := true
-            fn := ObjBindMethod(this, "HoldCastDoubleTimer", index)
-            SetTimer, %fn%, -%double_press_time_gap%
-        }
-        else
-            this.HoldCast(pressed_keys, delay, held_keys, index, initial_delay, inner_delay)
-    }
-    
-    HoldCastDoubleTimer(index)
-    {
-        this.just_pressed[index] := false
     }
 }

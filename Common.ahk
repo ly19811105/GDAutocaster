@@ -16,6 +16,8 @@ class Common
                 , % this.section_name
                 , % key
                 , % default_value
+                
+            return Common.Configured(output_var)
         }
     }
     

@@ -1,10 +1,11 @@
 #Include Common.ahk
 #Include Defaults.ahk
+#Include DPActivator.ahk
 #Include HotkeysCollector.ahk
 
 class ComboHolds extends Common.ConfigSection
 {
-    just_pressed := {}
+    dp_activators := {}
     hold_states := {}
     spam_prevention := {}
     
@@ -42,38 +43,44 @@ class ComboHolds extends Common.ConfigSection
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
             
-            this.just_pressed[A_INDEX] := false
             this.hold_states[A_INDEX] := false
             this.spam_prevention[A_INDEX] := false
             
-            if (double_press)
-            {
-                this.SectionRead(double_press_time_gap
-                    , "double_press" . A_INDEX . "_time_gap"
-                    , _COMBO_HOLDS_DOUBLE_PRESS_TIME_GAP)
+            combo_hold := ObjBindMethod(this
+                , "ComboHold"
+                , combo_keys
+                , initial_delay%A_INDEX%
+                , A_INDEX)
+                
+            combo_hold_up := ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX)
             
-                if (Common.Configured(double_press_time_gap))
-                    hotkeys_collector.AddHotkey(combo_key
-                        , ObjBindMethod(this
-                            , "ComboHoldDouble"
-                            , combo_keys
-                            , double_press_time_gap
-                            , initial_delay%A_INDEX%
-                            , A_INDEX)
-                        , !key_native_function)
-            }
-            else
+            if (!double_press)
+            {
                 hotkeys_collector.AddHotkey(combo_key
-                    , ObjBindMethod(this
-                        , "ComboHold"
-                        , combo_keys
-                        , initial_delay%A_INDEX%
-                        , A_INDEX)
+                    , combo_hold
                     , !key_native_function)
 
-            hotkeys_collector.AddHotkey(combo_key . " UP"
-                , ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX)
-                , !key_native_function)
+                hotkeys_collector.AddHotkey(combo_key . " UP"
+                    , combo_hold_up
+                    , !key_native_function)
+            }
+            else
+            {
+                this.SectionRead(time_gap
+                    , "double_press_time_gap" . A_INDEX
+                    , _DOUBLE_PRESS_TIME_GAP)
+                    
+                dp_activator := new DPActivator(combo_hold, time_gap, combo_hold_up)
+                this.dp_activators[A_INDEX] := dp_activator
+                
+                hotkeys_collector.AddHotkey(combo_key
+                    , ObjBindMethod(dp_activator, "Press")
+                    , !key_native_function)
+                    
+                hotkeys_collector.AddHotkey(combo_key . " UP"
+                    , ObjBindMethod(dp_activator, "PressUP")
+                    , !key_native_function)
+            }
         }
     }
     
@@ -106,28 +113,6 @@ class ComboHolds extends Common.ConfigSection
         this.spam_prevention[index] := false
     }
 
-    ComboHoldDouble(combo_keys, double_press_time_gap, initial_delay, index)
-    {
-        global window_ids
-        if (!Common.IfActive(window_ids))
-            return
-            
-        if (!ComboHolds.just_pressed[index])
-        {
-            ComboHolds.just_pressed[index] := true
-            fn := ObjBindMethod(this, "ComboHoldDoubleTimer")
-            SetTimer, %fn%, -%double_press_time_gap%
-        }
-        else
-            this.ComboHold(combo_keys, initial_delay, index)
-
-    }
-
-    ComboHoldDoubleTimer()
-    {
-        ComboHolds.just_pressed[index] := false
-    }
-    
     StillHeld(index, combo_keys)
     {
         if (!this.hold_states[index])
