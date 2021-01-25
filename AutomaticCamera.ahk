@@ -1,5 +1,6 @@
 #Include Common.ahk
 #Include Defaults.ahk
+#Include DelayedActivator.ahk
 #Include HotkeysCollector.ahk
 
 class AutomaticCamera extends Common.ConfigSection
@@ -30,79 +31,63 @@ class AutomaticCamera extends Common.ConfigSection
             , "ignore_segment_angle"
             , _AUTOMATIC_CAMERA_IGNORE_SEGMENT_ANGLE)
         
-        if (Common.Configured(rotate_left
+        if (!Common.Configured(rotate_left
             , rotate_right
             , rotate_key
             , delay
             , ignore_area_shape
             , ignore_area_size
-            , ignore_segment_angle))
-        {
+            , ignore_segment_angle
+            , initial_delay))
+            return
         
-            hotkeys_collector.AddHotkey(rotate_key
-                , ObjBindMethod(this
-                    , "HoldButton"
-                    , rotate_left
-                    , rotate_right
-                    , initial_delay
-                    , rotate_key
-                    , delay
-                    , ignore_area_shape
-                    , ignore_area_size
-                    , ignore_segment_angle))
-                    
-            hotkeys_collector.AddHotkey(rotate_key . " UP"
-                , ObjBindMethod(this
-                    , "RotateUp"
-                    , rotate_left
-                    , rotate_right))
+        this.hold_rotate := ObjBindMethod(this
+                , "HoldRotate"
+                , rotate_left
+                , rotate_right
+                , rotate_key
+                , delay
+                , ignore_area_shape
+                , ignore_area_size
+                , ignore_segment_angle
+                , false)
+
+        first_function := this.hold_rotate
+        first_function_up := ObjBindMethod(this
+            , "HoldRotateUP"
+            , rotate_left
+            , rotate_right)
+        
+        if (initial_delay > 0)
+        {
+            this.delayed_activator := new DelayedActivator(first_function
+                , initial_delay
+                , first_function_up)
+                
+            first_function := ObjBindMethod(this.delayed_activator, "Press")
+            first_function_up := ObjBindMethod(this.delayed_activator, "KillPressUP")
         }
+    
+        hotkeys_collector.AddHotkey(rotate_key, first_function)
+        hotkeys_collector.AddHotkey(rotate_key . " UP", first_function_up)
     }
     
-    HoldButton(rotate_left
+    HoldRotate(rotate_left
         , rotate_right
-        , initial_delay
         , rotate_key
         , delay
         , ignore_area_shape
         , ignore_area_size
-        , ignore_segment_angle)
+        , ignore_segment_angle
+        , ongoing)
     {
         global window_ids
         if (!Common.IfActive(window_ids)
-        or this.spam_protection)
+        or (!ongoing and this.spam_protection)
+        or !GetKeyState(rotate_key, "P"))
             return
 
         this.spam_protection := true
-        
-        fn := ObjBindMethod(this
-            , "Rotate"
-            , rotate_left
-            , rotate_right
-            , rotate_key
-            , delay
-            , ignore_area_shape
-            , ignore_area_size
-            , ignore_segment_angle)
-        
-        SetTimer, %fn%, -%initial_delay%
-    }
-
-    Rotate(rotate_left
-        , rotate_right
-        , rotate_key
-        , delay
-        , ignore_area_shape
-        , ignore_area_size
-        , ignore_segment_angle)
-    {
-        global window_ids
-        if (!Common.IfActive(window_ids)
-        or !GetKeyState(rotate_key, "P"))
-        {
-            SetTimer,, Off
-            return
-        }
         
         Send {%rotate_left% UP}
         Send {%rotate_right% UP}
@@ -128,10 +113,27 @@ class AutomaticCamera extends Common.ConfigSection
                 Send {%rotate_left% down}
         }
         
-        SetTimer,, -%delay%
+        
+        if (ongoing)
+            SetTimer,, -%delay%
+        else
+        {
+            fn := ObjBindMethod(this
+                , "HoldRotate"
+                , rotate_left
+                , rotate_right
+                , rotate_key
+                , delay
+                , ignore_area_shape
+                , ignore_area_size
+                , ignore_segment_angle
+                , true)
+                
+            SetTimer, %fn%, -%delay%
+        }
     }
 
-    RotateUp(rotate_left, rotate_right)
+    HoldRotateUP(rotate_left, rotate_right)
     {
         Send {%rotate_left% up}
         Send {%rotate_right% up}

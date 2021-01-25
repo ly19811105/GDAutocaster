@@ -1,11 +1,13 @@
 #Include Common.ahk
 #Include Defaults.ahk
+#Include DelayedActivator.ahk
 #Include HotkeysCollector.ahk
 
 class CenterCasts extends Common.ConfigSection
 {
     spam_prevention := {}
     mouse_moving := false
+    delayed_activators := {}
 
     __New(config_name, hotkeys_collector)
     {
@@ -14,17 +16,29 @@ class CenterCasts extends Common.ConfigSection
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             this.SectionRead(cast_str, "cast" . A_INDEX)
-            this.SectionRead(off_center, "off_center", _CENTER_CASTS_OFF_CENTER)
-            this.SectionRead(initial_delay, "initial_delay", _CENTER_CASTS_INITIAL_DELAY)
-            this.SectionRead(delay, "delay", _CENTER_CASTS_DELAY)
-            this.SectionRead(delay_after_cursor, "delay_after_cursor", _CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR)
+            this.SectionRead(off_center
+                , "off_center" . A_INDEX
+                , _CENTER_CASTS_OFF_CENTER)
+                
+            this.SectionRead(initial_delay
+                , "initial_delay" . A_INDEX
+                , _CENTER_CASTS_INITIAL_DELAY)
+                
+            this.SectionRead(delay
+                , "delay" . A_INDEX
+                , _CENTER_CASTS_DELAY)
+                
+            this.SectionRead(delay_after_cursor
+                , "delay_after_cursor" . A_INDEX
+                , _CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR)
         
             off_center := Common.StrToBool(off_center)
             
             if (!Common.Configured(cast_str
                 , off_center
                 , initial_delay
-                , delay))
+                , delay
+                , delay_after_cursor))
                 continue
               
             keys := StrSplit(cast_str, [":", ","])
@@ -32,64 +46,49 @@ class CenterCasts extends Common.ConfigSection
             
             this.spam_prevention[A_INDEX] := false
             
-            hotkeys_collector.AddHotkey(key
-                , ObjBindMethod(this
-                    , "CenterCast"
-                    , keys
-                    , off_center
-                    , initial_delay
-                    , delay
-                    , A_INDEX
-                    , delay_after_cursor))
+            first_function := ObjBindMethod(this
+                , "CenterCast"
+                , keys
+                , off_center
+                , delay
+                , A_INDEX
+                , delay_after_cursor)
+                
+            first_function_up := ObjBindMethod(this, "CenterCastUP", A_INDEX)
             
-            hotkeys_collector.AddHotkey(key . " UP"
-                , ObjBindMethod(this, "CenterCastUP", A_INDEX))
+            if (initial_delay > 0)
+            {
+                delayed_activator := new DelayedActivator(first_function
+                    , initial_delay
+                    , first_function_up)
+                    
+                this.delayed_activators[A_INDEX] := delayed_activator
+                
+                first_function := ObjBindMethod(delayed_activator, "Press")
+                first_function_up := ObjBindMethod(delayed_activator, "PressUP")
+            }
+            
+            hotkeys_collector.AddHotkey(key, first_function)
+            hotkeys_collector.AddHotkey(key . " UP", first_function_up)
         }
     }
     
     CenterCast(keys
         , off_center
-        , initial_delay
         , delay
         , index
         , delay_after_cursor)
     {
         global window_ids
-        
         if (!Common.IfActive(window_ids)
         or this.spam_prevention[index]
         or this.mouse_moving)
             return
     
         this.spam_prevention[index] := true
+        this.mouse_moving := true
     
         keys := keys.Clone()
-        if (initial_delay > 0)
-        {
-            fn := ObjBindMethod(this
-                , "CenterCast2"
-                , keys
-                , off_center
-                , index
-                , delay
-                , delay_after_cursor)
-                
-            SetTimer, %fn%, -%initial_delay%
-        }
-        else
-            this.CenterCast2(keys
-                , off_center
-                , index
-                , delay
-                , delay_after_cursor)
-    }
-    
-    CenterCast2(keys, off_center, index, delay, delay_after_cursor)
-    {
-        if (this.mouse_moving)
-            return
-            
-        this.mouse_moving := true
     
         static resolution_read := false
         static Width
@@ -124,42 +123,39 @@ class CenterCasts extends Common.ConfigSection
     
         if (delay_after_cursor > 0)
         {
-            fn := ObjBindMethod(this, "CenterCast2b", keys, xpos, ypos, delay, index)
+            fn := ObjBindMethod(this, "CenterCast2", keys, xpos, ypos, delay, index)
             SetTimer, %fn%, -%delay_after_cursor%
         }
         else
-            this.CenterCast2b(keys, xpos, ypos, delay, index)
+            this.CenterCast2(keys, xpos, ypos, delay, index)
     }
     
-    CenterCast2b(keys, xpos, ypos, delay, index)
+    CenterCast2(keys, xpos, ypos, delay, index, ongoing = false)
     {
         key := keys.RemoveAt(1)
         Send {%key%}
         
         if (keys.Length() = 0)
         {
+            if (ongoing)
+                SetTimer,, Off
+            
             MouseMove, xpos, ypos, 0
             BlockInput, MouseMoveOff
             this.mouse_moving := false
         }
-        else
+        else if (!ongoing)
         {
-            fn := ObjBindMethod(this, "CenterCast3", keys, xpos, ypos, index)
+            fn := ObjBindMethod(this
+                , "CenterCast2"
+                , keys
+                , xpos
+                , ypos
+                , delay
+                , index
+                , true)
+                
             SetTimer, %fn%, %delay%
-        }
-    }
-    
-    CenterCast3(keys, xpos, ypos, index)
-    {
-        key := keys.RemoveAt(1)
-        Send {%key%}
-        
-        if (keys.Length() = 0)
-        {
-            SetTimer,, Off
-            MouseMove, xpos, ypos, 0
-            BlockInput, MouseMoveOff
-            this.mouse_moving := false
         }
     }
     

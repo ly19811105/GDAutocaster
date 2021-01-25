@@ -1,5 +1,6 @@
 #Include Common.ahk
 #Include Defaults.ahk
+#Include DelayedActivator.ahk
 #Include DPActivator.ahk
 #Include HotkeysCollector.ahk
 
@@ -8,6 +9,7 @@ class Combos extends Common.ConfigSection
     spam_protection := {}
     combo_in_progress := {}
     dp_activators := {}
+    delayed_activators := {}
     
     __New(config_name, hotkeys_collector)
     {
@@ -45,106 +47,93 @@ class Combos extends Common.ConfigSection
             this.spam_protection[A_INDEX] := false
             this.combo_in_progress[A_INDEX] := false
             
-            combo_press := ObjBindMethod(this
+            first_function := ObjBindMethod(this
                 , "ComboPress"
                 , delay%A_INDEX%
                 , combo_keys
-                , initial_delay%A_INDEX%
                 , A_INDEX
                 , combo_key
                 , stop_on_release)
                 
-            combo_press_up := ObjBindMethod(this, "ComboPressUP", A_INDEX)
-            
-            if (!double_press)
+            first_function_up := ObjBindMethod(this, "ComboPressUP", A_INDEX)
+                
+            if (initial_delay%A_INDEX% > 0)
             {
-                hotkeys_collector.AddHotkey(combo_key
-                    , combo_press
-                    , !key_native_function)
+                delayed_activator := new DelayedActivator(first_function
+                    , initial_delay%A_INDEX%
+                    , first_function_up)
                     
-                hotkeys_collector.AddHotkey(combo_key . " UP"
-                    , combo_press_up
-                    , !key_native_function)
+                this.delayed_activators[A_INDEX] := delayed_activator
+                
+                first_function := ObjBindMethod(delayed_activator, "Press")
+                first_function_up := ObjBindMethod(delayed_activator, "PressUP")
             }
-            else 
+            
+            if (double_press)
             {
                 this.SectionRead(time_gap
                     , "double_press_time_gap" . A_INDEX
                     , _DOUBLE_PRESS_TIME_GAP)
                     
-                dp_activator := new DPActivator(combo_press, time_gap, combo_press_up)
+                dp_activator := new DPActivator(first_function, time_gap, first_function_up)
                 this.dp_activators[A_INDEX] := dp_activator
                 
-                hotkeys_collector.AddHotkey(combo_key
-                    , ObjBindMethod(dp_activator, "Press")
-                    , !key_native_function)
-                    
-                hotkeys_collector.AddHotkey(combo_key . " UP"
-                    , ObjBindMethod(dp_activator, "PressUP")
-                    , !key_native_function)
+                first_function := ObjBindMethod(dp_activator, "Press")
+                first_function_up := ObjBindMethod(dp_activator, "PressUP")
             }
+            
+            hotkeys_collector.AddHotkey(combo_key
+                , first_function
+                , !key_native_function)
+                
+            hotkeys_collector.AddHotkey(combo_key . " UP"
+                , first_function_up
+                , !key_native_function)
         }
     }
     
     ComboPress(delay
-        , keys
-        , initial_delay
+        , combo_keys
         , index
-        , key
-        , stop_on_release)
+        , combo_key
+        , stop_on_release
+        , ongoing = false)
     {
         global window_ids
-        
         if(!Common.IfActive(window_ids)
-        or this.spam_protection[index]
-        or this.combo_in_progress[index])
-            return
-            
-        this.spam_protection[index] := true
-        this.combo_in_progress[index] := true
-
-        keys := keys.Clone()
-        
-        if (!initial_delay)
-        {
-            first_key := keys.RemoveAt(1)
-            Send {%first_key%}
-            
-            next_delay := delay
-        }
-        else
-            next_delay := initial_delay
-        
-        fn := ObjBindMethod(this
-            , "ComboTimer"
-            , delay
-            , keys
-            , key
-            , stop_on_release
-            , index)
-        
-        SetTimer, %fn%, -%next_delay%
-    }
-    
-    ComboTimer(delay
-        , keys
-        , key
-        , stop_on_release
-        , index)
-    {   
-        global window_ids
-        
-        if (!Common.IfActive(window_ids)
-        or (keys.Length() = 0)
-        or (stop_on_release and !GetKeyState(key, "P")))
+        or (!ongoing and this.spam_protection[index])
+        or (!ongoing and this.combo_in_progress[index])
+        or (combo_keys.Length() = 0)
+        or (stop_on_release and !GetKeyState(combo_key, "P")))
         {
             this.combo_in_progress[index] := false
             return
         }
-        
-        key := keys.RemoveAt(1)
+            
+        this.spam_protection[index] := true
+        this.combo_in_progress[index] := true
+
+        if (!ongoing)
+            combo_keys := combo_keys.Clone()
+            
+        key := combo_keys.RemoveAt(1)
         Send {%key%}
-        SetTimer,, -%delay% 
+        
+        if (ongoing)
+            SetTimer,, -%delay%
+        else
+        {
+            fn := ObjBindMethod(this
+                , "ComboPress"
+                , delay
+                , combo_keys
+                , index
+                , combo_key
+                , stop_on_release
+                , true)
+            
+            SetTimer, %fn%, -%delay%
+        }
     }
 
     ComboPressUP(index)

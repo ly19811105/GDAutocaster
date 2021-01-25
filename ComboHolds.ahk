@@ -1,13 +1,14 @@
 #Include Common.ahk
 #Include Defaults.ahk
+#Include DelayedActivator.ahk
 #Include DPActivator.ahk
 #Include HotkeysCollector.ahk
 
 class ComboHolds extends Common.ConfigSection
 {
     dp_activators := {}
-    hold_states := {}
     spam_prevention := {}
+    delayed_activators := {}
     
     __New(config_name, hotkeys_collector)
     {
@@ -43,85 +44,74 @@ class ComboHolds extends Common.ConfigSection
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
             
-            this.hold_states[A_INDEX] := false
             this.spam_prevention[A_INDEX] := false
             
-            combo_hold := ObjBindMethod(this
+            first_function := ObjBindMethod(this
                 , "ComboHold"
                 , combo_keys
-                , initial_delay%A_INDEX%
                 , A_INDEX)
-                
-            combo_hold_up := ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX)
             
-            if (!double_press)
+            first_function_up := ObjBindMethod(this, "ComboHoldUp", combo_keys, A_INDEX)
+            
+            if (initial_delay%A_INDEX% > 0)
             {
-                hotkeys_collector.AddHotkey(combo_key
-                    , combo_hold
-                    , !key_native_function)
-
-                hotkeys_collector.AddHotkey(combo_key . " UP"
-                    , combo_hold_up
-                    , !key_native_function)
+                delayed_activator := new DelayedActivator(first_function
+                    , initial_delay%A_INDEX%
+                    , first_function_up)
+                    
+                this.delayed_activators[A_INDEX] := delayed_activator
+                
+                first_function := ObjBindMethod(delayed_activator, "Press")
+                first_function_up := ObjBindMethod(delayed_activator, "KillPressUP")
             }
-            else
+            
+            if (double_press)
             {
                 this.SectionRead(time_gap
                     , "double_press_time_gap" . A_INDEX
                     , _DOUBLE_PRESS_TIME_GAP)
                     
-                dp_activator := new DPActivator(combo_hold, time_gap, combo_hold_up)
-                this.dp_activators[A_INDEX] := dp_activator
-                
-                hotkeys_collector.AddHotkey(combo_key
-                    , ObjBindMethod(dp_activator, "Press")
-                    , !key_native_function)
+                dp_activator := new DPActivator(first_function
+                    , time_gap
+                    , first_function_up)
                     
-                hotkeys_collector.AddHotkey(combo_key . " UP"
-                    , ObjBindMethod(dp_activator, "PressUP")
-                    , !key_native_function)
+                this.dp_activators[A_INDEX] := dp_activator
+            
+                first_function := ObjBindMethod(dp_activator, "Press")
+                first_function_up := ObjBindMethod(dp_activator, "PressUP")
             }
+            
+            hotkeys_collector.AddHotkey(combo_key
+                , first_function
+                , !key_native_function)
+
+            hotkeys_collector.AddHotkey(combo_key . " UP"
+                , first_function_up
+                , !key_native_function)
         }
     }
     
-    ComboHold(combo_keys, initial_delay, index)
+    ComboHold(combo_keys, index)
     {
         global window_ids
-        
         if (!Common.IfActive(window_ids)
         or this.spam_prevention[index])
             return
             
         this.spam_prevention[index] := true
         
-        this.hold_states[index] := true
-        fn := ObjBindMethod(this, "StillHeld", index, combo_keys)
-        SetTimer, %fn%, -%initial_delay%
+        for not_used, key in combo_keys
+            Send {%key% down}
     }
 
     ComboHoldUp(combo_keys, index)
     {
-        global window_ids
-        if (!Common.IfActive(window_ids))
-            return
-        
-        this.hold_states[index] := false
-        
         Loop % combo_keys.Length()
         {
             key := combo_keys[combo_keys.Length() - A_INDEX + 1]
             Send {%key% up}
         }
-            
-        this.spam_prevention[index] := false
-    }
-
-    StillHeld(index, combo_keys)
-    {
-        if (!this.hold_states[index])
-            return
         
-        for not_used, key in combo_keys
-            Send {%key% down}
+        this.spam_prevention[index] := false
     }
 }
