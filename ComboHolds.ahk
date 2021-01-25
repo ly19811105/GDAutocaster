@@ -107,8 +107,11 @@ class ComboHolds extends Common.ConfigSection
         
         this.hold_states[index] := false
         
-        for not_used, key in combo_keys
+        Loop % combo_keys.Length()
+        {
+            key := combo_keys[combo_keys.Length() - A_INDEX + 1]
             Send {%key% up}
+        }
             
         this.spam_prevention[index] := false
     }
