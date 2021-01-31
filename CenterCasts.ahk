@@ -12,6 +12,9 @@ class CenterCasts extends Common.ConfigSection
     __New(config_name, hotkeys_collector)
     {
         Common.ConfigSection.__New(config_name, _CENTER_CASTS_SECTION_NAME)
+        
+        this.SectionRead(screen_width, "screen_width", 0)
+        this.SectionRead(screen_height, "screen_height", 0)
     
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
@@ -38,7 +41,9 @@ class CenterCasts extends Common.ConfigSection
                 , off_center
                 , initial_delay
                 , delay
-                , delay_after_cursor))
+                , delay_after_cursor
+                , screen_width
+                , screen_height))
                 continue
               
             keys := StrSplit(cast_str, [":", ","])
@@ -52,7 +57,9 @@ class CenterCasts extends Common.ConfigSection
                 , off_center
                 , delay
                 , A_INDEX
-                , delay_after_cursor)
+                , delay_after_cursor
+                , screen_width
+                , screen_height)
                 
             first_function_up := ObjBindMethod(this, "CenterCastUP", A_INDEX)
             
@@ -77,7 +84,9 @@ class CenterCasts extends Common.ConfigSection
         , off_center
         , delay
         , index
-        , delay_after_cursor)
+        , delay_after_cursor
+        , screen_width
+        , screen_height)
     {
         global window_ids
         if (!Common.IfActive(window_ids)
@@ -89,17 +98,18 @@ class CenterCasts extends Common.ConfigSection
         this.mouse_moving := true
     
         keys := keys.Clone()
-    
-        static resolution_read := false
-        static Width
-        static Height
         
-        if (!resolution_read)
+        if (screen_width * screen_height = 0)
         {
             WinGetActiveStats, Title, Width, Height, X, Y
-            Height += _CENTER_CASTS_HEIGHT_CORRECTION
-            resolution_read := true
         }
+        else
+        {
+            Width := screen_width
+            Height := screen_height
+        }
+    
+        Height += _CENTER_CASTS_HEIGHT_CORRECTION
         
         MouseGetPos, xpos, ypos
         
