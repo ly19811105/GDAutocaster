@@ -8,11 +8,10 @@ class FixedClicks extends Clicker
     __New(config_name, hotkeys_collector)
     {
         Common.ConfigSection.__New(config_name, _FIXED_CLICKS_SECTION_NAME)
+        
         this.SectionRead(delay, "delay", _FIXED_CLICKS_DELAY)
         this.SectionRead(initial_delay, "initial_delay", _FIXED_CLICKS_INITIAL_DELAY)
-        
         this.SectionRead(go_back, "go_back", _FIXED_CLICKS_GO_BACK)
-        go_back := Common.StrToBool(go_back)
     
         Loop % _MAX_NUMBER_OF_COMBINATIONS
         {
@@ -28,8 +27,6 @@ class FixedClicks extends Clicker
             this.SectionRead(key_native_function
                 , "key_native_function" . A_INDEX
                 , _FIXED_CLICKS_KEY_NATIVE_FUNCTION)
-            
-            key_native_function := Common.StrToBool(key_native_function)
             
             this.SectionRead(initial_delay%A_INDEX%
                 , "initial_delay" . A_INDEX

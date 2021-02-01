@@ -16,9 +16,7 @@ class Hacker extends Common.ConfigSection
         this.SectionRead(speeds_str, "speeds", _HACKER_DEFAULT_SPEEDS)
         this.SectionRead(hacker_dir, "hacker_dir", A_ScriptDir)
         this.SectionRead(stats_toggle, "stats_toggle")
-        
         this.SectionRead(freeze_tributes, "freeze_tributes", _FREEZE_TRIBUTES)
-        freeze_tributes := Common.StrToBool(freeze_tributes)
         
         if (!Common.Configured(hacker_dir))
             return

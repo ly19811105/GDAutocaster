@@ -17,6 +17,7 @@ class Common
                 , % key
                 , % default_value
                 
+            Common.StrToBool(output_var)
             return Common.Configured(output_var)
         }
     }
@@ -85,15 +86,13 @@ class Common
         return true
     }
     
-    StrToBool(str_bool)
+    StrToBool(ByRef str_bool)
     {
         if (str_bool = "true")
-            return 1
+            str_bool := 1
             
         if (str_bool = "false")
-            return 0
-            
-        return str_bool
+            str_bool := 0
     }
     
     IfActive(window_ids)

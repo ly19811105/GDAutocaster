@@ -28,9 +28,6 @@ class AutocastByHold extends Common.ConfigSection
                 , "key_native_function" . A_INDEX
                 , _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION)
             
-            double_press := Common.StrToBool(double_press)
-            key_native_function := Common.StrToBool(key_native_function)
-            
             if (!Common.Configured(cast_str
                 , initial_delay
                 , delay%A_INDEX%

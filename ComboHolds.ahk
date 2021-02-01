@@ -32,9 +32,6 @@ class ComboHolds extends Common.ConfigSection
                 , "double_press" . A_INDEX
                 , _COMBO_HOLDS_HOLD_ON_DOUBLE_PRESS)
 
-            double_press := Common.StrToBool(double_press)
-            key_native_function := Common.StrToBool(key_native_function)
-            
             if (!Common.Configured(combo_str
                 , double_press
                 , initial_delay%A_INDEX%

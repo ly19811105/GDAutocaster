@@ -25,8 +25,6 @@ class AutocastByToggle extends Common.ConfigSection
                 this.SectionRead(autocast_right_away
                     , "autocast_right_away"
                     , _AUTOCAST_BY_TOGGLE_RIGHT_AWAY)
-        
-                autocast_right_away := Common.StrToBool(autocast_right_away)
             }
             toggle_key := StrSplit(cast_str, ":")[1]
             keys_pressed := StrSplit(cast_str, ":")[2]

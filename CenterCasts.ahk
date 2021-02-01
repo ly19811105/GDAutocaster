@@ -35,8 +35,6 @@ class CenterCasts extends Common.ConfigSection
                 , "delay_after_cursor" . A_INDEX
                 , _CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR)
         
-            off_center := Common.StrToBool(off_center)
-            
             if (!Common.Configured(cast_str
                 , off_center
                 , initial_delay

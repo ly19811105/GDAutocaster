@@ -64,7 +64,7 @@ IniRead
     , kill_on_exit
     , % _KILL_ON_EXIT
     
-kill_on_exit := Common.StrToBool(kill_on_exit)
+Common.StrToBool(kill_on_exit)
 
 hotkeys_collector := new HotkeysCollector()
 new AutocastByHold(config_name, hotkeys_collector)

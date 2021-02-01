@@ -29,10 +29,6 @@ class Combos extends Common.ConfigSection
                 , "key_native_function" . A_INDEX
                 , _COMBOS_KEY_NATIVE_FUNCTION)
         
-            double_press := Common.StrToBool(double_press)
-            stop_on_release := Common.StrToBool(stop_on_release)
-            key_native_function := Common.StrToBool(key_native_function)
-            
             if (!Common.Configured(combo_str
                 , initial_delay%A_INDEX%
                 , stop_on_release
