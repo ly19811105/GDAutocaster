@@ -81,7 +81,8 @@ new Hacker(config_name, hotkeys_collector)
 
 hotkeys_suspended_by_user := false
 was_ever_ingame := false
-hotkeys_inactive_fix := Common.IfActive(window_ids)
+already_restarted := Common.IfActive(window_ids)
+previous_id := ""
 
 SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
@@ -89,12 +90,14 @@ MainLoop()
     global window_ids
     global suspend_key
     global hotkeys_suspended_by_user
-    global hotkeys_inactive_fix
+    global already_restarted
     global tray_instance
     global kill_on_exit
     global was_ever_ingame
+    global previous_id
 
-    if (!Common.IfActive(window_ids))
+    id := Common.IfActive(window_ids)
+    if (!id)
     {
         if (!A_IsSuspended)
             Suspend, On
@@ -102,7 +105,8 @@ MainLoop()
         if Common.Configured(suspend_key)
             Hotkey, $%suspend_key%, Off
             
-        hotkeys_inactive_fix := false
+        already_restarted := false
+        previous_id := ""
         
         if (kill_on_exit 
         and was_ever_ingame
@@ -113,11 +117,13 @@ MainLoop()
     {
         was_ever_ingame := true
     
-        if (!hotkeys_inactive_fix)
+        if (!already_restarted
+        or (previous_id and (id != previous_id)))
         {
             fn := ObjBindMethod(tray_instance, "RestartAction")
             SetTimer, %fn%, -3000
-            hotkeys_inactive_fix := true
+            
+            already_restarted := true
         }
         
         if Common.Configured(suspend_key)
@@ -130,6 +136,8 @@ MainLoop()
         {
             Suspend, Off
         }
+        
+        previous_id := id
     }
 }
 

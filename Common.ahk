@@ -99,9 +99,9 @@ class Common
     {
         for not_used, id in window_ids
             if (WinActive(id))
-                return true
+                return id
                 
-        return false
+        return ""
     }
     
     IfExist(window_ids)
