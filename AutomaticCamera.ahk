@@ -87,7 +87,8 @@ class AutomaticCamera extends Common.ConfigSection
         or !GetKeyState(rotate_key, "P"))
             return
 
-        this.spam_protection := true
+        if (!ongoing)
+            this.spam_protection := true
         
         Send {%rotate_left% UP}
         Send {%rotate_right% UP}

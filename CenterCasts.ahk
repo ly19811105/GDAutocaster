@@ -138,7 +138,7 @@ class CenterCasts extends Common.ConfigSection
             this.CenterCast2(keys, xpos, ypos, delay, index)
     }
     
-    CenterCast2(keys, xpos, ypos, delay, index, ongoing = false)
+    CenterCast2(keys, xpos, ypos, delay, index, ongoing := false)
     {
         key := keys.RemoveAt(1)
         Send {%key%}

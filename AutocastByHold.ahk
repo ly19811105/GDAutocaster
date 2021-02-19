@@ -105,7 +105,8 @@ class AutocastByHold extends Common.ConfigSection
         or !Common.Pressed(held_keys))
             return
             
-        this.spam_prevention[index] := true
+        if (!ongoing)
+            this.spam_prevention[index] := true
             
         Common.PressButtons(pressed_keys, inner_delay, held_keys)
         

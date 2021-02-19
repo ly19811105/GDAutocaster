@@ -92,44 +92,58 @@ class Combos extends Common.ConfigSection
         , combo_keys
         , index
         , combo_key
-        , stop_on_release
-        , ongoing = false)
+        , stop_on_release)
     {
         global window_ids
         if(!Common.IfActive(window_ids)
-        or (!ongoing and this.spam_protection[index])
-        or (!ongoing and this.combo_in_progress[index])
-        or (combo_keys.Length() = 0)
+        or this.spam_protection[index]
+        or this.combo_in_progress[index]
         or (stop_on_release and !GetKeyState(combo_key, "P")))
+        {
+            return
+        }
+
+        this.spam_protection[index] := true
+        this.combo_in_progress[index] := true
+        
+        combo_keys := combo_keys.Clone()
+        key := combo_keys.RemoveAt(1)
+        Send {%key%}
+
+        fn := ObjBindMethod(this
+            , "ComboLoop"
+            , delay
+            , combo_keys
+            , index
+            , combo_key
+            , stop_on_release)
+        
+        SetTimer, %fn%, -%delay%
+}
+    
+    ComboLoop(delay
+        , combo_keys
+        , index
+        , combo_key
+        , stop_on_release)
+    {
+        global window_ids
+        if(!Common.IfActive(window_ids)
+        or (stop_on_release and !GetKeyState(combo_key, "P")))
+        {
+            return
+        }
+
+        key := combo_keys.RemoveAt(1)
+        Send {%key%}
+
+        if (combo_keys.Length() = 0)
         {
             this.combo_in_progress[index] := false
             return
         }
-            
-        this.spam_protection[index] := true
-        this.combo_in_progress[index] := true
-
-        if (!ongoing)
-            combo_keys := combo_keys.Clone()
-            
-        key := combo_keys.RemoveAt(1)
-        Send {%key%}
         
-        if (ongoing)
-            SetTimer,, -%delay%
-        else
-        {
-            fn := ObjBindMethod(this
-                , "ComboPress"
-                , delay
-                , combo_keys
-                , index
-                , combo_key
-                , stop_on_release
-                , true)
-            
-            SetTimer, %fn%, -%delay%
-        }
+        SetTimer,, -%delay%
     }
 
     ComboPressUP(index)
