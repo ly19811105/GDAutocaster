@@ -6,10 +6,11 @@
 
 class Combos extends Common.ConfigSection
 {
-    spam_protection := {}
+    pressed_down := {}
     combo_in_progress := {}
     dp_activators := {}
     delayed_activators := {}
+    spam_protection := {}
     
     __New(config_name, hotkeys_collector)
     {
@@ -39,9 +40,11 @@ class Combos extends Common.ConfigSection
             
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
+            is_wheel := InStr(combo_key, "Wheel")
                 
-            this.spam_protection[A_INDEX] := false
+            this.pressed_down[A_INDEX] := false
             this.combo_in_progress[A_INDEX] := false
+            this.spam_protection[A_INDEX] := !is_wheel
             
             first_function := ObjBindMethod(this
                 , "ComboPress"
@@ -57,7 +60,8 @@ class Combos extends Common.ConfigSection
             {
                 delayed_activator := new DelayedActivator(first_function
                     , initial_delay%A_INDEX%
-                    , first_function_up)
+                    , first_function_up
+                    , !is_wheel)
                     
                 this.delayed_activators[A_INDEX] := delayed_activator
                 
@@ -71,7 +75,10 @@ class Combos extends Common.ConfigSection
                     , "double_press_time_gap" . A_INDEX
                     , _DOUBLE_PRESS_TIME_GAP)
                     
-                dp_activator := new DPActivator(first_function, time_gap, first_function_up)
+                dp_activator := new DPActivator(first_function
+                    , time_gap
+                    , first_function_up
+                    , !is_wheel)
                 this.dp_activators[A_INDEX] := dp_activator
                 
                 first_function := ObjBindMethod(dp_activator, "Press")
@@ -96,14 +103,14 @@ class Combos extends Common.ConfigSection
     {
         global window_ids
         if(!Common.IfActive(window_ids)
-        or this.spam_protection[index]
+        or (this.spam_protection[index] and this.pressed_down[index])
         or this.combo_in_progress[index]
         or (stop_on_release and !GetKeyState(combo_key, "P")))
         {
             return
         }
 
-        this.spam_protection[index] := true
+        this.pressed_down[index] := true
         this.combo_in_progress[index] := true
         
         combo_keys := combo_keys.Clone()
@@ -148,7 +155,7 @@ class Combos extends Common.ConfigSection
 
     ComboPressUP(index)
     {
-        this.spam_protection[index] := false
+        this.pressed_down[index] := false
     }
 }
 

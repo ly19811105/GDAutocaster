@@ -2,22 +2,26 @@
 
 class DelayedActivator
 {
-    __New(function, delay, function_up)
+    __New(function
+        , delay
+        , function_up
+        , spam_protection := true)
     {
         this.function := function
         this.function_up := function_up
         this.delay := delay
-        this.spam_prevention := false
+        this.pressed_down := false
+        this.spam_protection := spam_protection
     }
         
     Press()
     {
         global window_ids
         if (!Common.IfActive(window_ids)
-        or this.spam_prevention)
+        or (this.spam_protection and this.pressed_down))
             return
             
-        this.spam_prevention := true
+        this.pressed_down := true
             
         fn := this.function
         SetTimer, %fn%, % -this.delay
@@ -26,7 +30,7 @@ class DelayedActivator
     PressUP()
     {
         this.function_up.Call()
-        this.spam_prevention := false
+        this.pressed_down := false
     }
     
     KillPressUP()

@@ -42,16 +42,7 @@ class HideItems extends Common.ConfigSection
     
     Show(hiding_buttons, ingame_hide_button, hide_duration)
     {
-        any_button_pressed := false
-        
-        for not_used, key in hiding_buttons
-        if (GetKeyState(key, "P"))
-        {
-            any_button_pressed := true
-            break
-        }
-        
-        if (any_button_pressed)
+        if (Common.AnyPressed(hiding_buttons))
         {
             fn := this.showFunction
             SetTimer, %fn%, -%hide_duration%

@@ -5,6 +5,8 @@
 
 class RelativeClicks extends Clicker
 {
+    spam_protection := {}
+
     __New(config_name, hotkeys_collector)
     {
         Common.ConfigSection.__New(config_name, _RELATIVE_CLICKS_SECTION_NAME)
@@ -26,7 +28,9 @@ class RelativeClicks extends Clicker
                 , height))
                 continue
 
-            this.spam_protection[A_INDEX] := false
+            is_wheel := InStr(button, "Wheel")
+            this.spam_protection[A_INDEX] := !is_wheel
+            this.pressed_down[A_INDEX] := false
                 
             hotkeys_collector.AddHotkey(button . " UP"
                 , ObjBindMethod(this, "ClickingUP", A_INDEX))
@@ -52,10 +56,10 @@ class RelativeClicks extends Clicker
     {
         global window_ids
         if(!Common.IfActive(window_ids)
-        or this.spam_protection[index])
+        or (this.spam_protection[index] and this.pressed_down[index]))
             return
             
-        this.spam_protection[index] := true
+        this.pressed_down[index] := true
         
         MouseGetPos, xpos, ypos
         

@@ -4,9 +4,13 @@
 
 class Hacker extends Common.ConfigSection
 {
-    spam_prevention := false
     speed_index := 1
+    speed_spam_protection := true
+    speed_toggle_down := false
+    
     stats_state := 0
+    stats_spam_protection := true
+    stats_toggle_down := false
 
     __New(config_name, hotkeys_collector)
     {
@@ -23,6 +27,9 @@ class Hacker extends Common.ConfigSection
         
         if (Common.Configured(speed_toggle, speeds_str))
         {
+            is_wheel := InStr(speed_toggle, "Wheel")
+            this.speed_spam_protection := !is_wheel
+                    
             speeds := StrSplit(speeds_str, ",")
             
             hotkeys_collector.AddHotkey(speed_toggle
@@ -32,7 +39,7 @@ class Hacker extends Common.ConfigSection
                     , hacker_dir))
                     
             hotkeys_collector.AddHotkey(speed_toggle . " UP"
-                , ObjBindMethod(this, "ButtonUP"))
+                , ObjBindMethod(this, "ToggleSpeedUp"))
         }
         
         if (Common.Configured(freeze_tributes) and freeze_tributes)
@@ -40,11 +47,14 @@ class Hacker extends Common.ConfigSection
             
         if (Common.Configured(stats_toggle))
         {
+            is_wheel := InStr(stats_toggle, "Wheel")
+            this.stats_spam_protection := !is_wheel
+            
             hotkeys_collector.AddHotkey(stats_toggle
                 , ObjBindMethod(this, "ToggleStats", hacker_dir))
                 
             hotkeys_collector.AddHotkey(stats_toggle . " UP"
-                , ObjBindMethod(this, "ButtonUP"))
+                , ObjBindMethod(this, "ToggleStatsUP"))
         }
     }
     
@@ -52,10 +62,10 @@ class Hacker extends Common.ConfigSection
     {
         global window_ids
         if (!Common.IfActive(window_ids)
-        or this.spam_prevention)
+        or (this.speed_spam_protection and this.speed_toggle_down))
             return
     
-        this.spam_prevention := true
+        this.speed_toggle_down := true
         
         speed := speeds[this.speed_index]
         RunWait, %hacker_dir%\%_HACKER_PROGRAM_NAME% %_HACKER_SPEED_CODE% %speed%,,Hide
@@ -78,18 +88,23 @@ class Hacker extends Common.ConfigSection
     {
         global window_ids
         if (!Common.IfActive(window_ids)
-        or this.spam_prevention)
+        or (this.stats_spam_protection and this.stats_toggle_down))
             return
     
-        this.spam_prevention := true
+        this.stats_toggle_down := true
         
         this.stats_state ^= 1
         stats_state := this.stats_state
         RunWait, %hacker_dir%\%_HACKER_PROGRAM_NAME% %_HACKER_STATS_CODE% %stats_state%,,Hide
     }
     
-    ButtonUP()
+    ToggleSpeedUp()
     {
-        this.spam_prevention := false
+        this.speed_toggle_down := false
+    }
+    
+    ToggleStatsUP()
+    {
+        this.stats_toggle_down := false
     }
 }

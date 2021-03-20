@@ -2,7 +2,7 @@
 
 class Clicker extends Common.ConfigSection
 {
-    spam_protection := {}
+    pressed_down := {}
 
     class Click
     {
@@ -66,6 +66,6 @@ class Clicker extends Common.ConfigSection
     
     ClickingUP(index)
     {
-        this.spam_protection[index] := false
+        this.pressed_down[index] := false
     }
 }

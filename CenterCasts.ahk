@@ -5,7 +5,8 @@
 
 class CenterCasts extends Common.ConfigSection
 {
-    spam_prevention := {}
+    pressed_down := {}
+    spam_protection := {}
     mouse_moving := false
     delayed_activators := {}
 
@@ -47,7 +48,9 @@ class CenterCasts extends Common.ConfigSection
             keys := StrSplit(cast_str, [":", ","])
             key := keys.RemoveAt(1)
             
-            this.spam_prevention[A_INDEX] := false
+            is_wheel := InStr(key, "Wheel")
+            this.spam_protection[A_INDEX] := !is_wheel
+            this.pressed_down[A_INDEX] := false
             
             first_function := ObjBindMethod(this
                 , "CenterCast"
@@ -65,7 +68,8 @@ class CenterCasts extends Common.ConfigSection
             {
                 delayed_activator := new DelayedActivator(first_function
                     , initial_delay
-                    , first_function_up)
+                    , first_function_up
+                    , !is_wheel)
                     
                 this.delayed_activators[A_INDEX] := delayed_activator
                 
@@ -88,11 +92,11 @@ class CenterCasts extends Common.ConfigSection
     {
         global window_ids
         if (!Common.IfActive(window_ids)
-        or this.spam_prevention[index]
+        or (this.spam_protection[index] and this.pressed_down[index])
         or this.mouse_moving)
             return
     
-        this.spam_prevention[index] := true
+        this.pressed_down[index] := true
         this.mouse_moving := true
     
         keys := keys.Clone()
@@ -169,6 +173,6 @@ class CenterCasts extends Common.ConfigSection
     
     CenterCastUP(index)
     {
-        this.spam_prevention[index] := false
+        this.pressed_down[index] := false
     }
 }
