@@ -40,7 +40,7 @@ class Combos extends Common.ConfigSection
             
             combo_keys := StrSplit(combo_str, [":", ","])
             combo_key := combo_keys.RemoveAt(1)
-            is_wheel := InStr(combo_key, "Wheel")
+            is_wheel := InStr(combo_key, _WHEEL_ID)
                 
             this.pressed_down[A_INDEX] := false
             this.combo_in_progress[A_INDEX] := false

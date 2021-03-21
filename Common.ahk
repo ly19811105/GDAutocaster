@@ -1,3 +1,5 @@
+#Include Defaults.ahk
+
 class Common
 {
     class ConfigSection
@@ -25,7 +27,7 @@ class Common
     AnyPressed(keys)
     {
         for not_used, key in keys
-            if (!InStr(key, "Wheel") and GetKeyState(key, "P"))
+            if (!InStr(key, _WHEEL_ID) and GetKeyState(key, "P"))
                 return true
         
         return false
@@ -80,7 +82,7 @@ class Common
     Pressed(keys)
     {
         for not_used, key in keys
-            if (!InStr(key, "Wheel") and !GetKeyState(key, "P"))
+            if (!InStr(key, _WHEEL_ID) and !GetKeyState(key, "P"))
                 return false
         
         return true

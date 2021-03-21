@@ -27,7 +27,7 @@ class Hacker extends Common.ConfigSection
         
         if (Common.Configured(speed_toggle, speeds_str))
         {
-            is_wheel := InStr(speed_toggle, "Wheel")
+            is_wheel := InStr(speed_toggle, _WHEEL_ID)
             this.speed_spam_protection := !is_wheel
                     
             speeds := StrSplit(speeds_str, ",")
@@ -47,7 +47,7 @@ class Hacker extends Common.ConfigSection
             
         if (Common.Configured(stats_toggle))
         {
-            is_wheel := InStr(stats_toggle, "Wheel")
+            is_wheel := InStr(stats_toggle, _WHEEL_ID)
             this.stats_spam_protection := !is_wheel
             
             hotkeys_collector.AddHotkey(stats_toggle

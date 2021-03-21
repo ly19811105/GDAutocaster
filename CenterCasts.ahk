@@ -48,7 +48,7 @@ class CenterCasts extends Common.ConfigSection
             keys := StrSplit(cast_str, [":", ","])
             key := keys.RemoveAt(1)
             
-            is_wheel := InStr(key, "Wheel")
+            is_wheel := InStr(key, _WHEEL_ID)
             this.spam_protection[A_INDEX] := !is_wheel
             this.pressed_down[A_INDEX] := false
             

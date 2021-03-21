@@ -7,6 +7,7 @@ global _TITLE_MATCH_MODE := 3
 global _HOTKEY_MODIFIERS := "~*$"
 global _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED := "*$"
 global _MAX_NUMBER_OF_COMBINATIONS := 20
+global _WHEEL_ID := "Wheel"
 
 global _AUTOCAST_BY_HOLD_IN_BETWEEN_DELAY := 100
 global _AUTOCAST_BY_HOLD_INITIAL_DELAY := 0
@@ -51,6 +52,7 @@ global _COMBO_HOLDS_SECTION_NAME := "combo holds"
 global _CAMERA_ANGLE := 60
 global _CAMERA_DELAY := 40
 global _CAMERA_SECTION_NAME := "camera"
+global _CAMERA_WIDTH_ANGLE_RATIO := 3.491666
 
 global _DOUBLE_PRESS_TIME_GAP := 250
 

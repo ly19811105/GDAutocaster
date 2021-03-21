@@ -28,7 +28,7 @@ class RelativeClicks extends Clicker
                 , height))
                 continue
 
-            is_wheel := InStr(button, "Wheel")
+            is_wheel := InStr(button, _WHEEL_ID)
             this.spam_protection[A_INDEX] := !is_wheel
             this.pressed_down[A_INDEX] := false
                 
