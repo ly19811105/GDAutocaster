@@ -114,24 +114,21 @@ class CenterCasts extends Common.ConfigSection
         Height += _CENTER_CASTS_HEIGHT_CORRECTION
         
         MouseGetPos, xpos, ypos
+        dist := sqrt((xpos - Width/2)**2 + (ypos - Height/2)**2)
         
-        if (off_center)
+        if (off_center and dist != 0)
         {
-            dist := sqrt((xpos - Width/2)**2 + (ypos - Height/2)**2)
-            BlockInput, MouseMove
-            
-            if (dist = 0)
-                MouseMove, Width/2, Height/2, 0
-            else
-                MouseMove, Width/2 + _CENTER_CASTS_DISTANCE * (xpos - Width/2) / dist
-                         , Height/2 + _CENTER_CASTS_DISTANCE * (ypos - Height/2) / dist
-                         , 0
+            center_x := Width/2 + _CENTER_CASTS_DISTANCE * (xpos - Width/2) / dist
+            center_y := Height/2 + _CENTER_CASTS_DISTANCE * (ypos - Height/2) / dist
         }
         else
         {
-            BlockInput, MouseMove
-            MouseMove, Width/2, Height/2, 0
+            center_x := Width/2
+            center_y := Height/2
         }
+        
+        BlockInput, MouseMove
+        MouseMove, center_x, center_y, 0
     
         if (delay_after_cursor > 0)
         {
