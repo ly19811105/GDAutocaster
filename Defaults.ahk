@@ -49,6 +49,11 @@ global _COMBO_HOLDS_HOLD_ON_DOUBLE_PRESS := false
 global _COMBO_HOLDS_KEY_NATIVE_FUNCTION := true
 global _COMBO_HOLDS_SECTION_NAME := "combo holds"
 
+global _TOGGLE_HOLDS_SECTION_NAME := "toggle holds"
+global _TOGGLE_HOLDS_KEY_NATIVE_FUNCTION := true
+global _TOGGLE_HOLDS_INITIAL_DELAY := 0
+global _TOGGLE_HOLDS_ON_DOUBLE_PRESS := false
+
 global _CAMERA_ANGLE := 60
 global _CAMERA_DELAY := 40
 global _CAMERA_SECTION_NAME := "camera"

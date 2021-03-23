@@ -23,6 +23,7 @@ SetWorkingDir %A_ScriptDir%
 #Include HideItems.ahk
 #Include HotkeysCollector.ahk
 #Include RelativeClicks.ahk
+#Include ToggleHolds.ahk
 #Include Tray.ahk
 
 tray_instance := new Tray()
@@ -75,6 +76,7 @@ new CenterCasts(config_name, hotkeys_collector)
 new FixedClicks(config_name, hotkeys_collector)
 new Combos(config_name, hotkeys_collector)
 new ComboHolds(config_name, hotkeys_collector)
+new ToggleHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
 new RelativeClicks(config_name, hotkeys_collector)
 new Hacker(config_name, hotkeys_collector)
