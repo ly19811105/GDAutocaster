@@ -15,6 +15,9 @@ class AutocastByHold extends Common.ConfigSection
         Common.ConfigSection.__New(config_name, _AUTOCAST_BY_HOLD_SECTION_NAME)
         
         this.SectionRead(delay, "delay", _AUTOCAST_BY_HOLD_IN_BETWEEN_DELAY)
+        this.SectionRead(key_native_function
+            , "key_native_function"
+            , _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION)
         
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
@@ -24,9 +27,9 @@ class AutocastByHold extends Common.ConfigSection
             this.SectionRead(double_press, "double_press" . A_INDEX, _AUTOCAST_BY_HOLD_DOUBLE_PRESS)
             this.SectionRead(inner_delay, "inner_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INNER_DELAY)
             
-            this.SectionRead(key_native_function
+            this.SectionRead(key_native_function%A_INDEX%
                 , "key_native_function" . A_INDEX
-                , _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION)
+                , key_native_function)
             
             if (!Common.Configured(cast_str
                 , initial_delay
@@ -84,11 +87,11 @@ class AutocastByHold extends Common.ConfigSection
             
             hotkeys_collector.AddHotkey(first_key
                 , first_function
-                , !key_native_function)
+                , !key_native_function%A_INDEX%)
                 
             hotkeys_collector.AddHotkey(first_key . " UP"
                 , first_function_up
-                , !key_native_function)
+                , !key_native_function%A_INDEX%)
         }
     }
     
