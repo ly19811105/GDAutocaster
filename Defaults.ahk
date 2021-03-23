@@ -15,6 +15,7 @@ global _AUTOCAST_BY_HOLD_INNER_DELAY := 0
 global _AUTOCAST_BY_HOLD_DOUBLE_PRESS := false
 global _AUTOCAST_BY_HOLD_SECTION_NAME := "autocast by hold"
 global _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION := true
+global _AUTOCAST_BY_HOLD_TIME_OUT := 0
 
 global _AUTOCAST_BY_TOGGLE_DELAY := 100
 global _AUTOCAST_BY_TOGGLE_SECTION_NAME := "autocast by toggle"

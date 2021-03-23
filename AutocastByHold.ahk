@@ -9,6 +9,7 @@ class AutocastByHold extends Common.ConfigSection
     spam_prevention := {}
     dp_activators := {}
     delayed_activators := {}
+    time_outs := {}
 
     __New(config_name, hotkeys_collector)
     {
@@ -26,6 +27,7 @@ class AutocastByHold extends Common.ConfigSection
             this.SectionRead(initial_delay, "initial_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INITIAL_DELAY)
             this.SectionRead(double_press, "double_press" . A_INDEX, _AUTOCAST_BY_HOLD_DOUBLE_PRESS)
             this.SectionRead(inner_delay, "inner_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INNER_DELAY)
+            this.SectionRead(time_out, "time_out" . A_INDEX, _AUTOCAST_BY_HOLD_TIME_OUT)
             
             this.SectionRead(key_native_function%A_INDEX%
                 , "key_native_function" . A_INDEX
@@ -35,7 +37,8 @@ class AutocastByHold extends Common.ConfigSection
                 , initial_delay
                 , delay%A_INDEX%
                 , double_press
-                , inner_delay))
+                , inner_delay
+                , time_out))
                 continue
                 
             cast_str := StrSplit(cast_str, ":")
@@ -45,6 +48,7 @@ class AutocastByHold extends Common.ConfigSection
             first_key := held_keys[held_keys.Length()]
             
             this.spam_prevention[A_INDEX] := false
+            this.time_outs[A_INDEX] := false
             
             first_function := ObjBindMethod(this
                 , "HoldCast"
@@ -53,7 +57,8 @@ class AutocastByHold extends Common.ConfigSection
                 , held_keys
                 , A_INDEX
                 , inner_delay
-                , false)
+                , false
+                , time_out)
                 
             first_function_up := ObjBindMethod(this, "HoldCastUP", A_INDEX)
             
@@ -100,7 +105,8 @@ class AutocastByHold extends Common.ConfigSection
         , held_keys
         , index
         , inner_delay
-        , ongoing)
+        , ongoing
+        , time_out)
     {
         global window_ids
         if(!Common.IfActive(window_ids)
@@ -111,7 +117,17 @@ class AutocastByHold extends Common.ConfigSection
         if (!ongoing)
             this.spam_prevention[index] := true
             
-        Common.PressButtons(pressed_keys, inner_delay, held_keys)
+        if (time_out = 0)
+            Common.PressButtons(pressed_keys, inner_delay, held_keys)
+        else if (!this.time_outs[index])
+        {
+            this.time_outs[index] :=true
+            
+            fn := ObjBindMethod(this, "TimeIn", index)
+            SetTimer,  %fn%, -%time_out%
+            
+            Common.PressButtons(pressed_keys, inner_delay, held_keys)
+        }
         
         if (ongoing)
             SetTimer,, -%delay%
@@ -124,7 +140,8 @@ class AutocastByHold extends Common.ConfigSection
                 , held_keys
                 , index
                 , inner_delay
-                , true)
+                , true
+                , time_out)
             
             SetTimer, %fn%, -%delay%
         }
@@ -133,5 +150,10 @@ class AutocastByHold extends Common.ConfigSection
     HoldCastUP(index)
     {
         this.spam_prevention[index] := false
+    }
+    
+    TimeIn(index)
+    {
+        this.time_outs[index] := false
     }
 }
