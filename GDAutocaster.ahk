@@ -53,10 +53,6 @@ if (!Common.Configured(window_ids))
     ExitApp
 }
 window_ids := StrSplit(window_ids, ",")
-
-IniRead, suspend_key, % config_name, general, suspend_key
-if Common.Configured(suspend_key)
-    Hotkey, $%suspend_key%, SuspendHotkeys
     
 IniRead
     , kill_on_exit
@@ -66,6 +62,18 @@ IniRead
     , % _KILL_ON_EXIT
     
 Common.StrToBool(kill_on_exit)
+
+IniRead, suspend_keys, % config_name, general, suspend_keys
+if (!Common.Configured(suspend_keys))
+    IniRead, suspend_keys, % config_name, general, suspend_key
+    
+if (!Common.Configured(suspend_keys))
+    suspend_keys := []
+else
+    suspend_keys := StrSplit(suspend_keys, ",")
+
+for not_used, key in suspend_keys
+    Hotkey, $%key%, SuspendHotkeys
 
 hotkeys_collector := new HotkeysCollector()
 new AutocastByHold(config_name, hotkeys_collector)
@@ -90,7 +98,7 @@ SetTimer, MainLoop, % _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY
 MainLoop()
 {
     global window_ids
-    global suspend_key
+    global suspend_keys
     global hotkeys_suspended_by_user
     global already_restarted
     global tray_instance
@@ -104,8 +112,8 @@ MainLoop()
         if (!A_IsSuspended)
             Suspend, On
         
-        if Common.Configured(suspend_key)
-            Hotkey, $%suspend_key%, Off
+        for not_used, key in suspend_keys
+            Hotkey, $%key%, Off
             
         already_restarted := false
         previous_id := ""
@@ -128,9 +136,11 @@ MainLoop()
             already_restarted := true
         }
         
-        if Common.Configured(suspend_key)
+        if Common.Configured(suspend_keys)
         {
-            Hotkey, $%suspend_key%, On
+            for not_used, key in suspend_keys
+                Hotkey, $%key%, On
+                
             if (!hotkeys_suspended_by_user)
                 Suspend, Off
         }
