@@ -1,0 +1,834 @@
+*Tired of begging for builds that use few skills?*
+*Didn't have piano lessons as a child?*
+*Suffering from rheumatism or tendinitis?*
+*Maybe even missing a few fingers?*
+*Don't worry, we have a solution...*
+
+<font size=4, color='ff8c00'>
+GDAutocaster
+</font>- have the piano play for you!
+
+Credits to @klasperstanze, @ncience, @Garfunkel, @Dlightfull @Danut, @Nico_Pootato, @GaeanC, @tippytam, @CaiusMartius, @wulunzun  and others from AHK threads
+<font color="15171D">.</font>
+
+************************************************************************************************
+![Screenshot%20(232)|433x500,50%](upload://iPYkCDB4aDbCOSNr1t0tL7UXPAm.png) 
+************************************************************************************************
+**Main features:**
+- controls [GDHacker](https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005) that can currently
+   - freeze Tributes
+   - toggle game speed 
+   - show DPS / Stats window
+- designed to work with all games
+- making 10 buttons piano builds into 3 buttons builds without using DPS / efficiency
+- automatic camera rotation following the character
+- fast manual camera rotation (one button press -> i.e. 60 degrees rotation)
+- autocasting skills like Blood of Dreeg / Pneumatic Burst / Wind Devils
+- combos (press one button for multiple debuffs / casting all pets / permabuffs)
+- spamming multiple cooldown skills while holding one button
+- holding one button to have other buttons held
+- press one button to have button(s) held
+- centered Inquisitor Seal and other skills
+- automatic hiding of items
+- prevent autocasting while you're holding some button(s)
+- clicking multiple points on the screen by pressing a button
+  - you can make 1-button summoning + changing behavior to aggressive combo with this
+  - you can generate 20 rings in GDStash with one press of a button
+- binding skill to buttons that are not normally possible
+- skills spam or combos on double LMB press / hold
+- merging all these things together so that i.e. when you press and hold RMB
+  - first your 2 debuffs fire
+  - than inquisitor seal
+  - than spamming of your cooldown skills starts and channeling of continuous skill
+
+**Some clever usage samples**:
+- using skills actively from the 2nd hotbar
+- ensuring you don't lose casts because of Grim Dawn skill interruption 
+  - your skill not registering / buffering while other skills animations are in progress
+- multiple movements skills while holding one button
+- World Map instead of just Local Map with one button press
+- Aether Ray on LMB
+- making a (movement) skill use Force Move automatically so that it doesn't lock on enemies
+- pick up all items around by holding a button instead of pressing it repeatedly 
+- drop item from inventory with one button press (clicking with mouse not needed)
+************************************************************************************************
+**Only Left Mouse Button was used in the video but there's moving and 5 skills used!**
+https://www.youtube.com/watch?v=fNbFa0tsE3U
+************************************************************************************************
+**<font size=5>[>> Download GDAutocaster! <<](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.exe) </font>**
+************************************************************************************************
+<font size=4 color='orange'>Last major update  [u]23-03-21[/u]:</font>
+https://github.com/kowariantny/GDAutocaster/commit/61c01c795a6c396701a879543cf780aea6b8c994
+************************************************************************************************
+<font size=4>[GDAutocaster.ini](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.ini) (excessive showcase config file)</font>
+<font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
+************************************************************************************************
+ <font size=5, color='ff8c00'>[u]Documentation - excessive config explained[/u]</font>
+
+**How to use it:**
+- launch [u]GDAutocaster.exe[/u]
+
+- load a config file
+    - needs to have **.ini** extension to be visible
+    - make sure [your Windows displays extensions](https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/)
+
+- launch / un-minimize [u]Grim Dawn[/u]
+  - or other game if configured properly
+  - the program starts working after ~3 seconds
+
+- you don't need to reload the config after you make changes to it
+  - the program reloads it automatically
+
+    - because  it restarts every time you go back to the game
+
+<font size=3>[How to make the program start automaically with Windows](https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005/2)</font>
+
+The program reads [u]command line[/u] / [u]shortcut[/u] arguments
+*GDAutocaster.exe config.ini* &nbsp;&nbsp;&nbsp; (reads *config.ini* and skips file selection dialog)
+*GDAutocaster.exe config.ini whatever* &nbsp;&nbsp;&nbsp; (reads *config.ini*, skips file selection dialog, starts all autocasts on toggle automatically)
+
+**List of buttons to use in the config / what their names are**: [Key List](https://www.autohotkey.com/docs/KeyList.htm)
+ 
+*********
+```
+All sections and individual settings in this extensive config are optional.
+
+[general]
+game_window_id=ahk_exe Grim Dawn.exe
+suspend_key=Tab
+kill_on_exit=false
+title_match_mode=3
+
+[autocast by toggle]
+autocast_right_away=false
+delay=1000
+
+cast1=`:2,4,5
+delay1=3000
+
+cast2=`:6
+not_hold_keys2=LButton,RButton
+delay2=500
+
+cast3=`:1
+delay3=18000
+reset_key3=1
+
+[combo presses]
+delay=300
+initial_delay=0
+
+combo1=j:7,3,6
+
+combo2=h:t,1,2,t
+delay2=200
+initial_delay2=200
+
+combo3=Space:1,1,1,1,1
+delay3=2000
+stop_on_release3=true
+
+combo4=RButton:1,2
+delay4=200
+double_press4=true
+double_press_time_gap4=300
+
+combo5=CapsLock:m
+key_native_function5=false
+
+[autocast by hold]
+delay=100
+key_native_function=true
+
+cast1=RButton:0,9
+delay1=200
+
+cast2=Space:2
+initial_delay2=500
+
+cast3=LButton:1
+delay3=500
+double_press3=true
+double_press_time_gap3=300
+
+cast4=Shift,A:1
+
+cast5=CapsLock:5
+key_native_function5=false
+
+cast6=RButton:7,7,7,7
+delay6=4000
+inner_delay6=200
+
+cast7=RButton:1,1,1
+delay7=100
+time_out7=4000
+inner_delay7=100
+
+[combo holds]
+initial_delay=0
+
+combo1=LButton:7
+initial_delay1=150
+double_press1=true
+double_press_time_gap1=300
+
+combo2=RButton:6
+initial_delay2=0
+
+combo3=CapsLock:m
+key_native_function3=false
+
+[toggle holds]
+key_native_function=true
+initial_delay=0
+
+toggle1=Q:1
+toggle2=Q:2
+
+toggle3=A:1,2
+key_native_function3=false
+
+toggle4=LButton:7
+initial_delay4=150
+double_press4=true
+double_press_time_gap4=300
+
+[center casts]
+screen_width=1920
+screen_height=1280
+
+cast1=RButton:7,6
+initial_delay1=0
+delay1=200
+delay_after_cursor1=40
+off_center1=false
+
+[fixed clicks]
+delay=25
+initial_delay=0
+go_back=true
+
+clicks1=(75,165)(80,90)[234,234]
+delay1=25
+initial_delay1=0
+repeat1=5
+translation1=200,200
+button1=CapsLock
+key_native_function1=false
+
+[relative clicks]
+delay=0
+
+button1=1
+rows1=2
+columns1=10
+width1=32
+height1=32
+
+button2=2
+rows2=2
+columns2=5
+width2=64
+height2=64
+
+button3=3
+rows3=2
+columns3=5
+width3=64
+height3=96
+
+[hide items]
+hiding_buttons=RButton
+ingame_hide_button=Space
+hide_duration=3000
+
+[camera]
+angle=60
+counter_clockwise=a
+clockwise=d
+rotation_key=k
+delay=40
+
+[automatic camera]
+rotate_left=b
+rotate_right=n
+initial_delay=200
+rotate_key=LButton
+delay=200
+ignore_area_shape=circle
+ignore_area_size=30
+ignore_segment_angle=20
+
+[hacker]
+speeds=2,1
+speed_toggle=Q
+freeze_tributes=true
+stats_toggle=Tab
+```
+
+*********
+
+<font size=4>**Click sections below to show specific documentations for them**</font>
+
+<details><summary><font size=4, color='ff8c00'>general settings</font></summary>
+
+```
+[general]
+game_window_id=ahk_exe Grim Dawn.exe
+suspend_key=Tab
+kill_on_exit=false
+title_match_mode=3
+```
+- **game_window_id** *[optional] {**ahk_exe Grim Dawn.exe** by default}*
+   - the default value is **ahk_exe Grim Dawn.exe**
+     - this identifies the window by process that's attached to it
+
+   - you need to change it if you'd like to use the program in other games
+    - can also identify by just window's name: **game_window_id=Grim Dawn**
+  
+  - multiple identifiers / games are supported with the use of comma:
+    - **game_window_id=Grim Dawn,Diablo 3**
+
+- **suspend_key** *[optional]*
+
+  - turns off/on all the hotkeys except itself
+
+  - doesn't turn off/on [u]Autocast by toggle[/u] feature just hotkeys that do it
+
+  - you can also have multiple **Suspend** keys if you write
+    - **suspend_key=Tab,Enter**
+      or 
+      **suspend_keys=Tab,Enter**
+
+- **kill_on_exit** *[optional]*
+  - kills the program after you exit the game
+
+  - **false** by default 
+
+- **title_match_mode** *[optional]*
+  - see https://www.autohotkey.com/docs/commands/SetTitleMatchMode.htm
+
+    **1** : A window's title must start with the specified *WinTitle* to be a match.
+**2** : A window's title can contain *WinTitle* anywhere inside it to be a match.
+**3** : A window's title must exactly match *WinTitle* to be a match.
+</details>
+
+<details><summary><font size=4, color='ff8c00'>autocast by toggle</font></summary> 
+
+- only option for autocasting without touching the keyboard/mouse for skills like [u]Blood of Dreeg[/u] all the time or for skills like [u]Storm Totem[/u] when you don't hold any buttons
+
+  - for fighting when I hold [u]RMB[/u] I usually disable it with [u]not_hold_keys[/u] and spam it with [u]Autocast by Hold[/u] instead because it has more options like [u]initial_delay[/u]</font>
+
+    - which allows you to squeeze in some debuffs with a certainty that they are not interrupted by your autocasts
+
+- **Warning!** [u]Autocasting on toggle[/u] interrupts cinematics.
+
+*********
+```
+[autocast by toggle]
+autocast_right_away=false
+delay=1000
+```
+
+- **delay** *[optional]*
+  - global delay in-between button presses for all the buttons/autocasts unless overridden by **delayX** for a specific button what I usually do
+
+  - **100 ms** is the **default** if you don't specify it **IIRC**
+    - it may be an overkill over spamming skills, maybe **200 ms** is better
+    - for skills like **Blood of Dreeg** asap cast maybe use **1s**
+
+- **autocast_right_away** *[optional]*
+  - starts autocasting right away
+  - it can also be done by a command line argument (see the beginning of documentation)
+
+    - but then it overrules the config entry
+*********
+
+```
+cast1=`:2,4,5
+delay1=3000
+```
+- skills bound to **2, 4, 5** in-game (i.e. **Wind Devil** on 2 on hotbar) cast every **3000 ms** by themselves
+  
+- turned on/off by **`** (button over Tab)
+
+    - **`** toggle button is a hotkey and thus it can be turned off/on by **suspend_key**
+
+*********
+
+```
+cast2=`:6
+not_hold_keys2=LButton,RButton
+delay2=500
+```
+
+- skill bound to **6** in-game i.e. **Ring of Steel** cast automatically by itself every **0.5s** if you pressed **`**
+
+- press it again to stop autocasting 
+
+- **not_hold_keys** -  this autocast is disabled if you're holding **LButton** or **RButton**
+
+  - I used it often to disable autocasting while I hold for example **RMB** and enable it then with different feature [u]Autocast by Hold[/u] which has more options like [u]initial_delay[/u] (time gap) to not interrupt other spells I'd like to cast just after pressing down [u]RMB[/u]
+
+```
+cast3=`:1
+delay3=18000
+reset_key3=1
+```
+  - I explained [u]reset_key[/u] in detail [in the following post](https://forums.crateentertainment.com/t/tool-gdautocaster-autocasting-faster-camera-hiding-items-on-the-ground-and-more/95616/209).
+</details>
+
+<details><summary><font size=4, color='ff8c00'>combo presses</font></summary>
+
+- sequences of button presses / clicks, rebinding the key
+
+- I combine it with **[autocast by hold], [combo holds] and [center casts]** in the same button using **initial_delay**, usually [u]200 ms[/u] per button press
+
+
+```
+[combo presses]
+delay=300
+initial_delay=0
+
+combo1=j:7,3,6
+
+combo2=h:t,1,2,t
+delay2=200
+initial_delay2=200
+
+combo3=Space:1,1,1,1,1
+delay3=2000
+stop_on_release3=true
+
+combo4=RButton:1,2
+delay4=200
+double_press4=true
+double_press_time_gap4=300
+
+combo5=CapsLock:m
+key_native_function5=false
+```
+- string of buttons presses activated by a button pressed
+
+- sample usages
+  - casting all your permabuffs & pets with 1 button press, even if some of them are on the 2nd hotbar
+
+  - casting multiple debuffs with i.e RMB before your other RMB (possibly) delayed spamming starts
+
+  - actively casting a skill from the second hotbar (by *swap, button, swap* combo)
+
+  - making a drop item button that doesn't require you to pick an item before hands
+
+- **delay** *[optional]*
+   - global delay in-between button presses for all the **comboX** unless overridden by **delayX** for a specific combo
+
+- **initial_delay** *[optional]*
+   - global initial_delay before the combo starts for all the **comboX** unless overridden by **initial_delayX** for a specific combo
+
+- **combo1=j:7,3,6**
+  - after pressing **J**, buttons **7, 3, 6** are pressed
+
+    - **7** intstantly
+    - **3** after 300 ms
+    - **7** after another 300 ms (600ms in total from the start)
+
+- **stop_on_release3=true** *[optional]*
+  - makes the **3rd** combo stop if you release the button
+  - you just make a short press, probably only the 1st press from the combo will be made
+
+- **double_press4=true** *[optional]*
+  - activates the combo on a double press, useful for i.e. Pet Attack, Movement skills
+
+- **double_press_time_gap4=300** *[optional]*
+  - the time window you give yourself for the 2nd click/press after the 1st one to activate the combo
+
+- **key_native_function5=false** *[optional]*
+  - blocks the key native function 
+
+  - I advise not to use it in general because you won't block skills from Hotbars / in-game mouse action anyway I think
+
+  - I used it here for Capslock to not light up when I use it for showing/hiding the map
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>autocast by hold</font></summary>
+
+- your default spamming / autocasting while holding some button(s)
+
+- combine it with **[combo presses], [combo holds] and [center casts]** in the same button using **initial_delay**, usually [u]200 ms[/u] per button press
+
+```
+[autocast by hold]
+delay=100
+key_native_function=true
+
+cast1=RButton:0,9
+delay1=200
+
+cast2=Space:2
+initial_delay2=500
+
+cast3=LButton:1
+delay3=500
+double_press3=true
+double_press_time_gap3=300
+
+cast4=Shift,A:1
+
+cast5=CapsLock:5
+key_native_function5=false
+
+cast6=RButton:7,7,7,7
+delay6=4000
+inner_delay6=200
+
+cast7=RButton:1,1,1
+delay7=100
+time_out7=4000
+inner_delay7=100
+```
+- your default autocasting while holding some buttons
+
+- first press is instant which might not be the case for [X] autocasting holding version
+
+- here the **delay** is not in between separate buttons but in-between full spams of multiple butons (will be explained below)
+
+- **delay=100** *[optional*
+  - the default delay 100 for spamming ASAP if I remember correctly
+  - is overridden by **delayK** for specific **castK**
+
+- **key_native_function=true** *[optional]*
+  - turn it off if for example you have [u]Skill 1[/u] bound to [u]A[/u] in [u]Grim Dawn[/u]
+    and you want some [u]autocast by hold[/u] bound to it in [u]GDAutocaster[/u]
+    yet you don't want [u]Skill 1 [/u] to activate 
+ 
+  - I don't think you can turn if off for LMB / RMB in Grim Dawn
+  - this is global option for the whole section,
+    you can override it for specific casts, see below
+
+- **cast1=RButton:0,9**
+
+  - when you press **RMB**, the buttons **0**, **9** are instantly pressed
+
+    - but in that order, so if for example they are movement skills, **0** will have higher priority
+
+  - if you continue to hold **RMB**
+
+- **initial_delay2=500**
+
+  - spamming starts with 500 ms delay with a default frequency of 100 ms
+
+- **double_press3=true** *[optional]*
+  - activates the spam cast after a double press + holds
+
+- **double_press_time_gap3=300** *[optional]*
+  - the time window you give yourself for the 2nd click/press after the 1st one to activate the cast
+
+- **cast4=Shift,A:1**
+
+  - you can also demand holding multiple buttons but I personally never use it
+
+- **key_native_function5=false** *[optional]*
+  - blocks the key native function 
+
+  - I used it here for Capslock to not light up when I use it for showing/hiding the map
+
+```
+cast6=RButton:7,7,7,7
+delay6=4000
+inner_delay6=200
+```
+- the new **inner_delay** option allows you to insert time delays between button sets of button presses
+
+- I use it i.e. to cast **Amarasta** only once per 4 seconds (not more often) but make multiple timed presses instead of one for the duration of 1 second for example to ensure it's never interrupted by another skill animation (such interruption may or may not be possible depending on your config) 
+
+- **time_out7** is used for perfect ABB-Lethal Assault / Bone Harvest-Soul Harvest casts
+    it's described [in the following post](https://forums.crateentertainment.com/t/tool-gdautocaster-play-piano-builds-with-ease-autocasting-of-skills-combos-faster-automatic-camera-autohiding-of-items-centered-inquisitor-seal-and-more-for-all-games/95616/449) 
+</details>
+
+<details><summary><font size=4, color='ff8c00'>combo holds</font></summary>
+
+- holds down a button to have another button(s) held
+
+- combine it with **[combo presses], [autocast by hold] and [center casts]** in the same button using **initial_delay**, usually [u]200 ms[/u] per button press
+
+```
+[combo holds]
+initial_delay=0
+
+combo1=LButton:7
+initial_delay1=150
+double_press1=true
+double_press_time_gap1=300
+
+combo2=RButton:6
+initial_delay2=0
+
+combo3=CapsLock:m
+key_native_function3=false
+```
+- literally holds the button down
+
+- in the first combo
+
+  - 7 is held if you hold LMB
+
+  - some delay for pressing and holding **7** down is sometimes needed for it to work
+    - for example for Aether Ray on LMB
+
+- but sometimes not, especially if you want non-skills to be held, i.e. Force Move, Stationary Attack
+
+- also the 1st combo was made to start working on the 2nd click + hold which has to be no more than 300 ms after the 1 click 
+
+- hold after single button press is the default option
+
+- multiple buttons can be held IIRC
+
+- **initial_delay=0** *[optional]* 
+  - is global for all the cast unless overridden by i.e. initial_delay1=300
+
+- **key_native_function3=false** *[optional]*
+  - blocks the key native function 
+
+  - I advise not to use it in general because you won't block skills from Hotbars / in-game mouse action anyway I think
+
+  - I used it here for Capslock to not light up when I use it for showing/hiding the map
+</details>
+
+<details><summary><font size=4, color='ff8c00'>toggle holds</font></summary>
+
+- press a button once to have some button(s) held
+- press it again to release
+
+```
+[toggle holds]
+key_native_function=true
+initial_delay=0
+
+toggle1=Q:1
+toggle2=Q:2
+
+toggle3=A:1,2
+key_native_function3=false
+
+toggle4=LButton:7
+initial_delay4=150
+double_press4=true
+double_press_time_gap4=300
+```
+
+It works similarly to other features. Please check them for details.
+</details>
+
+<details><summary><font size=4, color='ff8c00'>center casts</font></summary>
+
+- like **Combo Press** but also moves your cursor under your character's feet for i.e. Inquisitor Seal
+
+- combine it with **[combo presses], [autocast by hold] and [combo holds]** in the same button using **initial_delay**, usually [u]200 ms[/u] per button press
+
+```
+[center casts]
+screen_width=1920
+screen_height=1280
+
+cast1=RButton:7,6
+initial_delay1=0
+delay1=200
+delay_after_cursor1=40
+off_center1=false
+```
+- **screen_width**,  **screen_height** *[optional]*
+  - not needed because dimensions should be read correctly dynamically
+    but some users has issues with it and it's a potential fix
+
+- **cast1=RButton:7,6**
+  - user's mouse movement is blocked
+
+  - cursor moves to the center of the screen
+
+  - **7** and **6** are pressed with **200 ms** delay in-between them
+
+  -  cursor goes back after that
+
+  - user's mouse movement is unlocked
+
+- **delay_after_cursor1=40**
+  - should be as low as possible
+
+- **off_center1=false**
+  - I normally use it with **true**
+
+    - which makes cursor not go to the center but slightly further from it so that the character's rotation is not changing randomly which can sometimes happen with **false**
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>camera</font></summary>
+
+```
+[camera]
+angle=60
+counter_clockwise=a
+clockwise=d
+rotation_key=k
+delay=40
+```
+ - see https://forums.crateentertainment.com/t/tool-faster-camera-rotation-using-keyboard-or-scroll-wheel/92420
+- hotkeys responsible for **(counter) clockwise** rotations are turned on/off by **suspend_key**
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>fixed clicks</font></summary>
+
+```
+delay=25
+initial_delay=0
+go_back=true
+
+clicks1=(75,165)(80,90)[234,234]
+delay1=25
+initial_delay1=0
+repeat1=5
+translation1=200,200
+button1=CapsLock
+key_native_function1=false
+```
+- multiple clicks combos for changing pets to aggressive for example; can be combined with summoning them in 1 button
+  - here's an example [SUMMONING PETS EXAMPLE VIDEO + CONFIG](https://forums.crateentertainment.com/t/tool-gdautocaster-play-piano-builds-with-ease-autocasting-of-skills-combos-faster-automatic-camera-autohiding-of-items-centered-inquisitor-seal-and-more-for-all-games/95616/250?u=tqfan)
+
+- **()** means LMB click
+
+- **[]** means RMB click
+
+- **go_back** - moves cursor to initial position after the combo is finished
+
+- **repeat** - repeat the clicks from **clicks** that many times with optional **translation**
+
+- **delay** - time gap between clicks
+  - increasing it might be needed if it doesn't work properly
+
+- **initial_delay** - time gap before the whole combo starts
+  - two combine it with summoning in 1 button
+
+- **translation** - next set of clicks (see **repeat**) is translated by this vector
+  - this accumulates with multiple repeatings
+
+- **button** - press this to activate the combo
+
+
+- **key_native_function3=false** *[optional]*
+  - blocks the key native function 
+
+  - I advise not to use it in general because you won't block skills from Hotbars / in-game mouse action anyway I think
+
+  - I used it here for Capslock to not light up when I use it for showing/hiding the map
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>hide items</font></summary>
+
+```
+[hide items]
+hiding_buttons=RButton
+ingame_hide_button=Space
+hide_duration=3000
+```
+ - hides items on the ground after you press one of the [u]hiding_buttons[/u] for [u]hide_duration[/u] ms
+
+- hiding is maintained if you continue to press one of the hiding buttons or hold them
+
+- **ingame_hide_button** is the key from GD Keybinding called **Toggle Hide All Items**
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>automatic camera</font></summary>
+
+```
+[automatic camera]
+rotate_left=b
+rotate_right=n
+initial_delay=200
+rotate_key=LButton
+delay=200
+ignore_area_shape=circle
+ignore_area_size=30
+ignore_segment_angle=20
+```
+- **rotate_left** *[mandatory]*
+  - in-game button resposible for left camera rotation
+
+- **rotate_right** *[mandatory]*
+  - in-game button reponsible for right camera rotation
+
+-  **initial_delay** *[optional] {200 by default}*
+   - rotation starts this many milliseconds after you hold the **rotate_key**
+
+- **rotate_key** *[mandatory]*
+  - rotation activates when you hold this button
+
+- **delay** *[optional] {100 by default}*
+  - cursor position is checked every this many milliseconds
+
+- **ignore_area_shape** *[optional]*
+  - **circle** *[default]* or **rectangle**
+  - shape of area centered at the middle of the screen where rotation doesn't take place
+
+- **ignore_area_size** *[optional] {50 by default}*
+  - this percentage of maximum area
+    - which is either the whole screen
+      - in case of **rectangle**
+
+    - or the biggest circle than can be fit on the screen
+      - in case of **circle**   
+
+- **ignore_segment_angle** *[optional] {20 by default}*
+  - half of the radius of a circular segment around 12 o'clock where rotations doesn't take place
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>relative clicks</font></summary>
+
+```
+[relative clicks]
+delay=0
+
+button1=1
+rows1=2
+columns1=10
+width1=32
+height1=32
+
+button2=2
+rows2=2
+columns2=5
+width2=64
+height2=64
+
+button3=3
+rows3=2
+columns3=5
+width3=64
+height3=96
+```
+- for generating items in GDStash
+- better explained [here](https://forums.crateentertainment.com/t/tool-gdautocaster-play-piano-builds-with-ease-autocasting-of-skills-combos-faster-automatic-camera-autohiding-of-items-centered-inquisitor-seal-and-more-for-all-games/95616/253?u=tqfan)
+</details>
+
+
+<details><summary><font size=4, color='ff8c00'>hacker</font></summary>
+
+```
+[hacker]
+speeds=2,1
+speed_toggle=Q
+freeze_tributes=true
+```
+https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005
+</details>
+
+
+<font size=3, color='ff8c00'>[u]Write if you[/u]</font>
+- need help with specific config (or just describe how you play and I'll propose a config)
+- would like some additional features
+- something doesn't work as expected
+<font color="15171D">.</font>
