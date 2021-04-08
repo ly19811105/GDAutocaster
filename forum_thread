@@ -56,9 +56,9 @@ Credits to @klasperstanze, @ncience, @Garfunkel, @Dlightfull @Danut, @Nico_Poota
 https://www.youtube.com/watch?v=fNbFa0tsE3U
 ************************************************************************************************
 **<font size=5>[>> Download GDAutocaster! <<](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.exe) </font>**
-************************************************************************************************
-<font size=4 color='orange'>Last major update  [u]23-03-21[/u]:</font>
-https://github.com/kowariantny/GDAutocaster/commit/61c01c795a6c396701a879543cf780aea6b8c994
+
+<font size=4 color='orange'>Last major update  [u]08-04-21[/u]:</font>
+<font size=4>A few logic bug fixes - I highly recommend redownload!</font>
 ************************************************************************************************
 <font size=4>[GDAutocaster.ini](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.ini) (excessive showcase config file)</font>
 <font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
@@ -84,9 +84,21 @@ https://github.com/kowariantny/GDAutocaster/commit/61c01c795a6c396701a879543cf78
 <font size=3>[How to make the program start automaically with Windows](https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005/2)</font>
 
 The program reads [u]command line[/u] / [u]shortcut[/u] arguments
+************
 *GDAutocaster.exe config.ini* &nbsp;&nbsp;&nbsp; (reads *config.ini* and skips file selection dialog)
-*GDAutocaster.exe config.ini whatever* &nbsp;&nbsp;&nbsp; (reads *config.ini*, skips file selection dialog, starts all autocasts on toggle automatically)
-
+***********
+*GDAutocaster.exe config.ini BIT_MASK*
+- reads *config.ini*
+- skips file selection dialog
+- BIT_MASK
+  - first bit is for whether keys are Suspended after you first launch the game
+  - second bit is for whether Autocasts on Toggle are started when you first launch the game
+  - if BIT_MASK=
+    - 0 it means none of the bits are set
+    - 1 it means 1st bit it set
+    - 2 it means 2nd bit is set
+    - 3 it means both bits are set
+***********
 **List of buttons to use in the config / what their names are**: [Key List](https://www.autohotkey.com/docs/KeyList.htm)
  
 *********

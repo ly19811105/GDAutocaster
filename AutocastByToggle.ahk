@@ -96,15 +96,8 @@ class AutocastByToggle extends Common.ConfigSection
         }
         else
         {
-            this.any_timer_on := 2 ** (_MAX_NUMBER_OF_COMBINATIONS + 1) - 1
-            
-            for not_used, timer in this.timers
-            {
-                timer_function := timer.function
-                timer_delay := timer.delay
-                
-                SetTimer, % timer_function, % timer_delay
-            }
+            for index, not_used in this.timers
+                this.ToggleTimer(index)
         }
             
     }
