@@ -13,9 +13,6 @@ class Tray
         load_config_action := this.load_config_action
         Menu, Tray, Add, Load Config, % load_config_action
         
-        restart_action := this.restart_action
-        Menu, Tray, Add, Restart, % restart_action
-        
         exit_action := this.exit_action
         Menu, Tray, Add, Exit, % exit_action
         
