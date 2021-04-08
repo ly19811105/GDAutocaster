@@ -68,7 +68,6 @@ class AutocastByToggle extends Common.ConfigSection
             SetTimer, % timer_function, % timer_delay
         else
             SetTimer, % timer_function, Off
-            
     }
 
     PressButton(keys_pressed, not_hold_keys)
@@ -112,8 +111,16 @@ class AutocastByToggle extends Common.ConfigSection
     
     ResetTimer(index)
     {
-        timer_function := this.timers[index].function
-        SetTimer, % timer_function, Off
-        SetTimer, % timer_function, On
+        global window_ids
+        if (!Common.IfActive(window_ids))
+            return
+
+        bit_mask := 2**index
+        if (this.any_timer_on & bit_mask)
+        {
+            timer_function := this.timers[index].function
+            SetTimer, % timer_function, Off
+            SetTimer, % timer_function, On
+        }
     }
 }
