@@ -33,7 +33,13 @@ if (A_Args.Length() > 0)
 else
     FileSelectFile, config_name,,,Select Config File,Configs (*.ini)
 
-autocast_right_away := (A_Args.Length() > 1)
+hotkeys_suspended_by_user := false
+autocast_right_away := false
+if (A_Args.Length() > 1)
+{
+    hotkeys_suspended_by_user := A_Args[2] & 1
+    autocast_right_away := A_Args[2] & 2
+}
 
 If (!FileExist(config_name))
 {
@@ -46,7 +52,10 @@ tray_instance.DisplayConfigName()
 IniRead, title_match_mode, % config_name, general, title_match_mode, % _TITLE_MATCH_MODE
 SetTitleMatchMode, % title_match_mode
 
-IniRead, window_ids, % config_name, general, game_window_id, % _GAME_WINDOW_ID
+IniRead, window_ids, % config_name, general, game_window_ids
+if (!Common.Configured(window_ids))
+    IniRead, window_ids, % config_name, general, game_window_id, % _GAME_WINDOW_ID
+
 if (!Common.Configured(window_ids))
 {
     MsgBox, Missing "game_window_id" in the config, i.e. game_window_id=ahk_exe Grim Dawn.exe in [general] section.
@@ -89,8 +98,7 @@ new HideItems(config_name, hotkeys_collector)
 new RelativeClicks(config_name, hotkeys_collector)
 new Hacker(config_name, hotkeys_collector)
 
-hotkeys_suspended_by_user := false
-was_ever_ingame := false
+was_ingame := false
 already_restarted := Common.IfActive(window_ids)
 previous_id := ""
 
@@ -103,7 +111,7 @@ MainLoop()
     global already_restarted
     global tray_instance
     global kill_on_exit
-    global was_ever_ingame
+    global was_ingame
     global previous_id
 
     id := Common.IfActive(window_ids)
@@ -119,14 +127,12 @@ MainLoop()
         previous_id := ""
         
         if (kill_on_exit 
-        and was_ever_ingame
+        and was_ingame
         and !Common.IfExist(window_ids))
             ExitApp
     }    
     else
     {
-        was_ever_ingame := true
-    
         if (!already_restarted
         or (previous_id and (id != previous_id)))
         {
@@ -136,20 +142,17 @@ MainLoop()
             already_restarted := true
         }
         
-        if Common.Configured(suspend_keys)
+        if (!was_ingame and Common.Configured(suspend_keys))
         {
             for not_used, key in suspend_keys
                 Hotkey, $%key%, On
                 
-            if (!hotkeys_suspended_by_user)
-                Suspend, Off
-        }
-        else
-        {
-            Suspend, Off
+            if (hotkeys_suspended_by_user)
+                Suspend, On
         }
         
         previous_id := id
+        was_ingame := true
     }
 }
 
@@ -157,5 +160,5 @@ SuspendHotkeys()
 {
     Suspend
     global hotkeys_suspended_by_user
-    hotkeys_suspended_by_user ^= true
+    hotkeys_suspended_by_user := A_IsSuspended
 }

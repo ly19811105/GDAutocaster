@@ -38,16 +38,20 @@ class Tray
     
     RestartAction()
     {
-        global config_name, autocast_by_toggle
+        global config_name
+        global autocast_by_toggle
+        global hotkeys_suspended_by_user
         
         if (config_name = "")
             this.LoadConfigAction()
             
-        else if (autocast_by_toggle.any_timer_on)
-            Run, %A_ScriptFullPath% "%config_name%" any_argument_starts_autocast_by_toggle
-            
         else
-            Run, %A_ScriptFullPath% "%config_name%"
+        {
+            bit_mask := 2 * (autocast_by_toggle.any_timer_on > 0)
+                + hotkeys_suspended_by_user
+                
+            Run, %A_ScriptFullPath% "%config_name%" %bit_mask%
+        }
             
         ExitApp
     }
