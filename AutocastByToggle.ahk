@@ -6,12 +6,20 @@ class AutocastByToggle extends Common.ConfigSection
 {
     any_timer_on := 0
     timers := {}
+    autocast_on_launch := false
     
-    __New(config_name, hotkeys_collector, autocast_right_away)
+    __New(config_name
+        , hotkeys_collector
+        , autocast_right_away
+        , autocast_prev_state)
     {
         Common.ConfigSection.__New(config_name, _AUTOCAST_BY_TOGGLE_SECTION_NAME)
-    
         this.SectionRead(delay, "delay", _AUTOCAST_BY_TOGGLE_DELAY)
+        this.SectionRead(autocast_on_launch
+            , "autocast_on_launch"
+            , _AUTOCAST_BY_TOGGLE_ON_LAUNCH)
+            
+        this.autocast_on_launch := autocast_on_launch
         
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
@@ -19,13 +27,7 @@ class AutocastByToggle extends Common.ConfigSection
             this.SectionRead(delay%A_INDEX%, "delay" . A_INDEX, delay)
             this.SectionRead(not_hold_keys_str, "not_hold_keys" . A_INDEX)
             this.SectionRead(reset_key, "reset_key" . A_INDEX)
-            
-            if (!autocast_right_away)
-            {
-                this.SectionRead(autocast_right_away
-                    , "autocast_right_away"
-                    , _AUTOCAST_BY_TOGGLE_RIGHT_AWAY)
-            }
+                    
             toggle_key := StrSplit(cast_str, ":")[1]
             keys_pressed := StrSplit(cast_str, ":")[2]
             keys_pressed := StrSplit(keys_pressed, ",")
@@ -48,7 +50,7 @@ class AutocastByToggle extends Common.ConfigSection
             }
         }
         
-        if (autocast_right_away)
+        if (autocast_right_away or autocast_prev_state)
             this.ToggleAllTimers()
     }
     

@@ -38,7 +38,8 @@ autocast_right_away := false
 if (A_Args.Length() > 1)
 {
     hotkeys_suspended_by_user := A_Args[2] & 1
-    autocast_right_away := A_Args[2] & 2
+    autocast_prev_state := A_Args[2] & 2
+    autocast_right_away := A_Args[2] & 4
 }
 
 If (!FileExist(config_name))
@@ -86,7 +87,6 @@ for not_used, key in suspend_keys
 
 hotkeys_collector := new HotkeysCollector()
 new AutocastByHold(config_name, hotkeys_collector)
-autocast_by_toggle := new AutocastByToggle(config_name, hotkeys_collector, autocast_right_away)
 new AutomaticCamera(config_name, hotkeys_collector)
 new Camera(config_name, hotkeys_collector)
 new CenterCasts(config_name, hotkeys_collector)
@@ -97,6 +97,10 @@ new ToggleHolds(config_name, hotkeys_collector)
 new HideItems(config_name, hotkeys_collector)
 new RelativeClicks(config_name, hotkeys_collector)
 new Hacker(config_name, hotkeys_collector)
+autocast_by_toggle := new AutocastByToggle(config_name
+    , hotkeys_collector
+    , autocast_right_away
+    , autocast_prev_state)
 
 was_ingame := false
 already_restarted := Common.IfActive(window_ids)
@@ -126,17 +130,20 @@ MainLoop()
         already_restarted := false
         previous_id := ""
         
-        if (kill_on_exit 
-        and was_ingame
-        and !Common.IfExist(window_ids))
-            ExitApp
+        if (!Common.IfExist(window_ids))
+        {
+            if (was_ingame and kill_on_exit)
+                ExitApp
+                
+            was_ingame := false
+        }
     }    
     else
     {
         if (!already_restarted
         or (previous_id and (id != previous_id)))
         {
-            fn := ObjBindMethod(tray_instance, "RestartAction")
+            fn := ObjBindMethod(tray_instance, "RestartAction", was_ingame)
             SetTimer, %fn%, -3000
             
             already_restarted := true

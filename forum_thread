@@ -112,7 +112,7 @@ kill_on_exit=false
 title_match_mode=3
 
 [autocast by toggle]
-autocast_right_away=false
+autocast_on_launch=false
 delay=1000
 
 cast1=`:2,4,5
@@ -339,7 +339,7 @@ title_match_mode=3
 *********
 ```
 [autocast by toggle]
-autocast_right_away=false
+autocast_on_launch=false
 delay=1000
 ```
 
@@ -350,11 +350,9 @@ delay=1000
     - it may be an overkill over spamming skills, maybe **200 ms** is better
     - for skills like **Blood of Dreeg** asap cast maybe use **1s**
 
-- **autocast_right_away** *[optional]*
+- **autocast_on_launch** *[optional]*
   - starts autocasting right away
-  - it can also be done by a command line argument (see the beginning of documentation)
-
-    - but then it overrules the config entry
+  - done once by game launch, after that it's in state you leave it in
 *********
 
 ```

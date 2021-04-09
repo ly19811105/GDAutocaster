@@ -1,7 +1,6 @@
 class Tray
 {
     load_config_action := ObjBindMethod(this, "LoadConfigAction")
-    restart_action := ObjBindMethod(this, "RestartAction")
     exit_action := ObjBindMethod(this, "ExitAction")
     config_label := ObjBindMethod(this, "ConfigLabel")
 
@@ -33,7 +32,7 @@ class Tray
         ExitApp
     }
     
-    RestartAction()
+    RestartAction(was_ingame)
     {
         global config_name
         global autocast_by_toggle
@@ -44,7 +43,8 @@ class Tray
             
         else
         {
-            bit_mask := 2 * (autocast_by_toggle.any_timer_on > 0)
+            bit_mask := 4 * (autocast_by_toggle.autocast_on_launch & (!was_ingame))
+                + 2 * (autocast_by_toggle.any_timer_on > 0)
                 + hotkeys_suspended_by_user
                 
             Run, %A_ScriptFullPath% "%config_name%" %bit_mask%
