@@ -18,6 +18,7 @@ class CenterCasts extends Common.ConfigSection
         
         this.SectionRead(screen_width, "screen_width", 0)
         this.SectionRead(screen_height, "screen_height", 0)
+        this.SectionRead(off_center, "off_center", _CENTER_CASTS_OFF_CENTER)
         
         this.SectionRead(center_str, "center")
         if (Common.Configured(center_str))
@@ -29,9 +30,9 @@ class CenterCasts extends Common.ConfigSection
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
             this.SectionRead(cast_str, "cast" . A_INDEX)
-            this.SectionRead(off_center
+            this.SectionRead(off_center%A_INDEX%
                 , "off_center" . A_INDEX
-                , _CENTER_CASTS_OFF_CENTER)
+                , off_center)
                 
             this.SectionRead(initial_delay
                 , "initial_delay" . A_INDEX
@@ -46,7 +47,7 @@ class CenterCasts extends Common.ConfigSection
                 , _CENTER_CASTS_PAUSE_AFTER_MOVING_CURSOR)
         
             if (!Common.Configured(cast_str
-                , off_center
+                , off_center%A_INDEX%
                 , initial_delay
                 , delay
                 , delay_after_cursor
@@ -64,7 +65,7 @@ class CenterCasts extends Common.ConfigSection
             first_function := ObjBindMethod(this
                 , "CenterCast"
                 , keys
-                , off_center
+                , off_center%A_INDEX%
                 , delay
                 , A_INDEX
                 , delay_after_cursor

@@ -211,6 +211,7 @@ double_press_time_gap4=300
 center=500,500
 screen_width=1920
 screen_height=1280
+off_center=true
 
 cast1=RButton:7,6
 initial_delay1=0
@@ -644,6 +645,7 @@ It works similarly to other features. Please check them for details.
 center=500,500
 screen_width=1920
 screen_height=1280
+off_center=true
 
 cast1=RButton:7,6
 initial_delay1=0
@@ -651,11 +653,14 @@ delay1=200
 delay_after_cursor1=40
 off_center1=false
 ```
-- **center** - only use if needed, normally center of the screen should be calculated automatically
+- **center** *[optional]* - only use if needed, normally center of the screen should be calculated automatically
 
 - **screen_width**,  **screen_height** *[optional]*
   - not needed because dimensions should be read correctly dynamically
     but some users has issues with it and it's a potential fix
+
+- **off_center=true** *[optional]*
+  - similar to the option **off_center1** explain below but it's global for a section and overwritten by **off_center1**
 
 - **cast1=RButton:7,6**
   - user's mouse movement is blocked
