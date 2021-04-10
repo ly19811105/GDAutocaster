@@ -128,7 +128,7 @@ class CenterCasts extends Common.ConfigSection
         }
         
         BlockInput, MouseMove
-        MouseMove, center_x, center_y, 0
+        Common.MoveMouse(center_x, center_y)
     
         if (delay_after_cursor > 0)
         {
@@ -149,7 +149,7 @@ class CenterCasts extends Common.ConfigSection
             if (ongoing)
                 SetTimer,, Off
             
-            MouseMove, xpos, ypos, 0
+            Common.MoveMouse(xpos, ypos)  
             BlockInput, MouseMoveOff
             this.mouse_moving := false
         }

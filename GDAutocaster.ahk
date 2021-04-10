@@ -7,6 +7,7 @@
 #Warn ClassOverwrite
 #Persistent
 
+CoordMode, Mouse, Screen
 SetWorkingDir %A_ScriptDir%
 
 #Include AutocastByHold.ahk

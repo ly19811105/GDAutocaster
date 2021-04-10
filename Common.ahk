@@ -114,4 +114,9 @@ class Common
                 
         return false
     }
+    
+    MoveMouse(X, Y)
+    {
+        DllCall("SetCursorPos", "int", X, "int", Y)
+    }
 }
