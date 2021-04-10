@@ -9,6 +9,8 @@ class CenterCasts extends Common.ConfigSection
     spam_protection := {}
     mouse_moving := false
     delayed_activators := {}
+    center_x := 0
+    center_y := 0
 
     __New(config_name, hotkeys_collector)
     {
@@ -16,6 +18,13 @@ class CenterCasts extends Common.ConfigSection
         
         this.SectionRead(screen_width, "screen_width", 0)
         this.SectionRead(screen_height, "screen_height", 0)
+        
+        this.SectionRead(center_str, "center")
+        if (Common.Configured(center_str))
+        {
+            this.center_x := StrSplit(center_str, ",")[1]
+            this.center_y := StrSplit(center_str, ",")[2]
+        }
     
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
@@ -100,31 +109,39 @@ class CenterCasts extends Common.ConfigSection
         this.mouse_moving := true
     
         keys := keys.Clone()
-        
-        if (screen_width * screen_height = 0)
-        {
-            WinGetActiveStats, Title, Width, Height, X, Y
-        }
-        else
-        {
-            Width := screen_width
-            Height := screen_height
-        }
-    
-        Height += _CENTER_CASTS_HEIGHT_CORRECTION
-        
         MouseGetPos, xpos, ypos
-        dist := sqrt((xpos - Width/2)**2 + (ypos - Height/2)**2)
         
-        if (off_center and dist != 0)
+        if (this.center_x != 0 or this.center_y != 0)
         {
-            center_x := Width/2 + _CENTER_CASTS_DISTANCE * (xpos - Width/2) / dist
-            center_y := Height/2 + _CENTER_CASTS_DISTANCE * (ypos - Height/2) / dist
+            center_x := this.center_x
+            center_y := this.center_y
         }
         else
         {
+            if (screen_width * screen_height = 0)
+            {
+                WinGetActiveStats, Title, Width, Height, X, Y
+            }
+            else
+            {
+                Width := screen_width
+                Height := screen_height
+            }
+        
+            Height += _CENTER_CASTS_HEIGHT_CORRECTION
+            
             center_x := Width/2
             center_y := Height/2
+        }
+ 
+        if (off_center)
+        {
+            dist := sqrt((xpos - center_x)**2 + (ypos - center_y)**2)
+            if (dist != 0)
+            {
+                center_x += _CENTER_CASTS_DISTANCE * (xpos - center_x) / dist
+                center_y += _CENTER_CASTS_DISTANCE * (ypos - center_y) / dist
+            }
         }
         
         BlockInput, MouseMove

@@ -64,6 +64,7 @@ https://www.youtube.com/watch?v=fNbFa0tsE3U
 <font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
 ************************************************************************************************
  <font size=5, color='ff8c00'>[u]Documentation - excessive config explained[/u]</font>
+[>> History <<](https://github.com/kowariantny/GDAutocaster/commits/master/forum_thread)
 
 **How to use it:**
 - launch [u]GDAutocaster.exe[/u]
@@ -207,6 +208,7 @@ double_press4=true
 double_press_time_gap4=300
 
 [center casts]
+center=500,500
 screen_width=1920
 screen_height=1280
 
@@ -639,6 +641,7 @@ It works similarly to other features. Please check them for details.
 
 ```
 [center casts]
+center=500,500
 screen_width=1920
 screen_height=1280
 
@@ -648,6 +651,8 @@ delay1=200
 delay_after_cursor1=40
 off_center1=false
 ```
+- **center** - only use if needed, normally center of the screen should be calculated automatically
+
 - **screen_width**,  **screen_height** *[optional]*
   - not needed because dimensions should be read correctly dynamically
     but some users has issues with it and it's a potential fix
