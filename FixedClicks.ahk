@@ -14,6 +14,7 @@ class FixedClicks extends Clicker
         this.SectionRead(delay, "delay", _FIXED_CLICKS_DELAY)
         this.SectionRead(initial_delay, "initial_delay", _FIXED_CLICKS_INITIAL_DELAY)
         this.SectionRead(go_back, "go_back", _FIXED_CLICKS_GO_BACK)
+        this.SectionRead(cursor_speed, "cursor_speed", _FIXED_CLICKS_CURSOR_SPEED)
     
         Loop % _MAX_NUMBER_OF_COMBINATIONS
         {
@@ -56,7 +57,8 @@ class FixedClicks extends Clicker
                 , initial_delay%A_INDEX%
                 , key_native_function
                 , repeat
-                , translation))
+                , translation
+                , cursor_speed))
                 continue
             
             is_wheel := InStr(button, _WHEEL_ID)
@@ -72,7 +74,8 @@ class FixedClicks extends Clicker
                     , repeat
                     , translation
                     , A_INDEX
-                    , go_back)
+                    , go_back
+                    , cursor_speed)
                 , !key_native_function)
             
             hotkeys_collector.AddHotkey(button . " UP"
@@ -87,7 +90,8 @@ class FixedClicks extends Clicker
         , repeat
         , translation
         , index
-        , go_back)
+        , go_back
+        , cursor_speed)
     {
         global window_ids
         if(!Common.IfActive(window_ids)
@@ -111,7 +115,8 @@ class FixedClicks extends Clicker
             , clicks.Clone()
             , go_back
             , return_point
-            , new this.Click(0, 0))
+            , new this.Click(0, 0)
+            , cursor_speed)
             
         SetTimer, %fn%, -%initial_delay%
     }

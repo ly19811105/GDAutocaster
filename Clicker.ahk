@@ -21,7 +21,8 @@ class Clicker extends Common.ConfigSection
         , clicks_copy
         , go_back
         , return_point
-        , total_translation)
+        , total_translation
+        , cursor_speed := 0)
     {
         global window_ids
         if(!Common.IfActive(window_ids))
@@ -30,14 +31,14 @@ class Clicker extends Common.ConfigSection
         click := clicks_copy.RemoveAt(1)
         MouseClick, % click.is_left ? "Left" : "Right"
             , % click.x + total_translation.x
-            , % click.y + total_translation.y,, 0
+            , % click.y + total_translation.y,, cursor_speed
         
         if (clicks_copy.Length() = 0)
         {
             if (repeat = 0)
             {
                 if (go_back)
-                    MouseMove, return_point.x, return_point.y, 0
+                    MouseMove, return_point.x, return_point.y, cursor_speed
                     
                 Return
             }
@@ -59,7 +60,8 @@ class Clicker extends Common.ConfigSection
             , clicks_copy
             , go_back
             , return_point
-            , total_translation)
+            , total_translation
+            , cursor_speed)
             
         SetTimer, %fn%, -%delay%
     }
