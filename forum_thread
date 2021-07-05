@@ -264,6 +264,7 @@ counter_clockwise=a
 clockwise=d
 rotation_key=k
 delay=40
+drag_delay=0
 
 [automatic camera]
 rotate_left=b
@@ -692,10 +693,15 @@ counter_clockwise=a
 clockwise=d
 rotation_key=k
 delay=40
+drag_delay=0
 ```
  - see https://forums.crateentertainment.com/t/tool-faster-camera-rotation-using-keyboard-or-scroll-wheel/92420
+- **drag_delay** - from **0 [default]** to **100**. Increase it if you need for dragging of the cursor used in this rotation to be slower
+
 - hotkeys responsible for **(counter) clockwise** rotations are turned on/off by **suspend_key**
+
 </details>
+
 
 
 <details><summary><font size=4, color='ff8c00'>fixed clicks</font></summary>

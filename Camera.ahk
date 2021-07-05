@@ -13,44 +13,48 @@ class Camera extends Common.ConfigSection
         this.SectionRead(clockwise, "clockwise")
         this.SectionRead(rotation_key, "rotation_key")
         this.SectionRead(camera_sleep, "delay", _CAMERA_DELAY)
+        this.SectionRead(drag_delay, "drag_delay", _CAMERA_DRAG_DELAY)
     
         if Common.Configured(angle
             , counter_clockwise
             , clockwise
             , rotation_key
-            , camera_sleep)
+            , camera_sleep
+            , drag_delay)
         {
             hotkeys_collector.AddHotkey(counter_clockwise
                 , ObjBindMethod(this
                     , "Counterclock"
                     , camera_sleep
                     , rotation_key
-                    , angle))
+                    , angle
+                    , drag_delay))
                     
             hotkeys_collector.AddHotkey(clockwise
                 , ObjBindMethod(this
                     , "Clock"
                     , camera_sleep
                     , rotation_key
-                    , angle))
+                    , angle
+                    , drag_delay))
         }
     }
 
-    Counterclock(camera_sleep, rotation_key, angle)
+    Counterclock(camera_sleep, rotation_key, angle, drag_delay)
     {
         global window_ids
         if(Common.IfActive(window_ids))
-            this.Rotate(camera_sleep, rotation_key, angle)
+            this.Rotate(camera_sleep, rotation_key, angle, drag_delay)
     }
 
-    Clock(camera_sleep, rotation_key, angle)
+    Clock(camera_sleep, rotation_key, angle, drag_delay)
     {
         global window_ids
         if(Common.IfActive(window_ids))
-            this.Rotate(camera_sleep, rotation_key, -angle)
+            this.Rotate(camera_sleep, rotation_key, -angle, drag_delay)
     }
 
-    Rotate(camera_sleep, rotation_key, angle)
+    Rotate(camera_sleep, rotation_key, angle, drag_delay)
     {
         static resolution_read := false
         static Width
@@ -71,13 +75,13 @@ class Camera extends Common.ConfigSection
         Sleep, %camera_sleep%
         
         Send {%rotation_key% down}
-        MouseMove, this.CalculateX(-angle, Width), Height-1, 0
-        BlockInput, MouseMoveOff
+        MouseMove, this.CalculateX(-angle, Width), Height-1, drag_delay
         
         Sleep, %camera_sleep%
         
         Send {%rotation_key% up}
         MouseMove, xpos, ypos, 0
+        BlockInput, MouseMoveOff
     }
     
     CalculateX(angle, width)

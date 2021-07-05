@@ -59,6 +59,7 @@ global _CAMERA_ANGLE := 60
 global _CAMERA_DELAY := 40
 global _CAMERA_SECTION_NAME := "camera"
 global _CAMERA_WIDTH_ANGLE_RATIO := 3.491666
+global _CAMERA_DRAG_DELAY := 0
 
 global _DOUBLE_PRESS_TIME_GAP := 250
 
