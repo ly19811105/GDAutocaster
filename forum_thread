@@ -8,27 +8,33 @@
 GDAutocaster
 </font>- have the piano play for you!
 
-Credits to @klasperstanze, @ncience, @Garfunkel, @Dlightfull @Danut, @Nico_Pootato, @GaeanC, @tippytam, @CaiusMartius, @wulunzun  and others from AHK threads
+Credits to **klasperstanze**, **ncience**, **Garfunkel**, **Dlightfull**,  **Danut**, **Nico_Pootato**, **GaeanC**, **tippytam**, **CaiusMartius**, **wulunzun**, @Hagritty and others from AHK threads
 <font color="15171D">.</font>
 
 ************************************************************************************************
 ![Screenshot%20(232)|433x500,50%](upload://iPYkCDB4aDbCOSNr1t0tL7UXPAm.png) 
 ************************************************************************************************
+<font size=3, color='ff8c00'>[u]Write if you[/u]</font>
+- need help with specific config (or just describe how you play and I'll propose a config)
+- would like some additional features
+- something doesn't work as expected
+<font color="15171D">.</font>
+**********
 **Main features:**
+- designed to work with all games
+- making 10 buttons piano builds into 3 buttons builds without using DPS / efficiency
+- autocasting skills like Blood of Dreeg / Pneumatic Burst / Wind Devils
+- combos (press one button for multiple debuffs / casting all pets / permabuffs)
+- spamming multiple cooldown skills while holding one button
+- automatic camera rotation following the character
+- fast manual camera rotation (one button press -> i.e. 60 degrees rotation)
+- holding one button to have other buttons held
+- press one button to have button(s) held
+- centered Inquisitor Seal and other skills
 - controls [GDHacker](https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005) that can currently
    - freeze Tributes
    - toggle game speed 
    - show DPS / Stats window
-- designed to work with all games
-- making 10 buttons piano builds into 3 buttons builds without using DPS / efficiency
-- automatic camera rotation following the character
-- fast manual camera rotation (one button press -> i.e. 60 degrees rotation)
-- autocasting skills like Blood of Dreeg / Pneumatic Burst / Wind Devils
-- combos (press one button for multiple debuffs / casting all pets / permabuffs)
-- spamming multiple cooldown skills while holding one button
-- holding one button to have other buttons held
-- press one button to have button(s) held
-- centered Inquisitor Seal and other skills
 - automatic hiding of items
 - prevent autocasting while you're holding some button(s)
 - clicking multiple points on the screen by pressing a button
@@ -57,8 +63,8 @@ https://www.youtube.com/watch?v=fNbFa0tsE3U
 ************************************************************************************************
 **<font size=5>[>> Download GDAutocaster! <<](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.exe) </font>**
 
-<font size=4 color='orange'>Last major update  [u]08-04-21[/u]:</font>
-<font size=4>A few logic bug fixes - I highly recommend redownload!</font>
+<font size=4 color='orange'>Last major update  [u]02-Sep-21[/u]:</font>
+<font size=4>Automatic pressing on toggle that's alternating butons i.e. 1, 2, Tab, 1, 2, Tab. </font>
 ************************************************************************************************
 <font size=4>[GDAutocaster.ini](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.ini) (excessive showcase config file)</font>
 <font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
@@ -126,6 +132,10 @@ delay2=500
 cast3=`:1
 delay3=18000
 reset_key3=1
+
+cast4=T:3,4
+delay4=2000
+alternate4=true
 
 [combo presses]
 delay=300
@@ -384,13 +394,25 @@ delay2=500
 - **not_hold_keys** -  this autocast is disabled if you're holding **LButton** or **RButton**
 
   - I used it often to disable autocasting while I hold for example **RMB** and enable it then with different feature [u]Autocast by Hold[/u] which has more options like [u]initial_delay[/u] (time gap) to not interrupt other spells I'd like to cast just after pressing down [u]RMB[/u]
-
+***
 ```
 cast3=`:1
 delay3=18000
 reset_key3=1
 ```
   - I explained [u]reset_key[/u] in detail [in the following post](https://forums.crateentertainment.com/t/tool-gdautocaster-autocasting-faster-camera-hiding-items-on-the-ground-and-more/95616/209).
+***
+```
+cast4=T:3,4
+delay4=2000
+alternate4=true
+```
+
+  - presses 3
+  - after 2 seconds it presses 4
+  - after 2 seconds it presses 3
+  - etc.
+***
 </details>
 
 <details><summary><font size=4, color='ff8c00'>combo presses</font></summary>
@@ -851,10 +873,3 @@ freeze_tributes=true
 ```
 https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005
 </details>
-
-
-<font size=3, color='ff8c00'>[u]Write if you[/u]</font>
-- need help with specific config (or just describe how you play and I'll propose a config)
-- would like some additional features
-- something doesn't work as expected
-<font color="15171D">.</font>
