@@ -291,6 +291,7 @@ speeds=2,1
 speed_toggle=Q
 freeze_tributes=true
 stats_toggle=Tab
+faster_camera=true
 ```
 
 *********
@@ -685,6 +686,8 @@ off_center1=false
 - **off_center=true** *[optional]*
   - similar to the option **off_center1** explain below but it's global for a section and overwritten by **off_center1**
 
+  ![CAMERA%20CODE|406x342,50%](upload://c5XdIXQ9nxbZJvyd8FpC04jn1k6.png)
+
 - **cast1=RButton:7,6**
   - user's mouse movement is blocked
 
@@ -870,6 +873,10 @@ height3=96
 speeds=2,1
 speed_toggle=Q
 freeze_tributes=true
+stats_toggle=Tab
+faster_camera=true
 ```
 https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005
 </details>
+
+<font size=3> [Donate](https://www.paypal.com/donate/?hosted_button_id=NZ5GW4QTZGRY6)</font>

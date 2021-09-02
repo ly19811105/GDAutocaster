@@ -21,6 +21,7 @@ class Hacker extends Common.ConfigSection
         this.SectionRead(hacker_dir, "hacker_dir", A_ScriptDir)
         this.SectionRead(stats_toggle, "stats_toggle")
         this.SectionRead(freeze_tributes, "freeze_tributes", _FREEZE_TRIBUTES)
+        this.SectionRead(faster_camera, "faster_camera", _HACKER_FASTER_CAMERA)
         
         if (!Common.Configured(hacker_dir))
             return
@@ -56,6 +57,9 @@ class Hacker extends Common.ConfigSection
             hotkeys_collector.AddHotkey(stats_toggle . " UP"
                 , ObjBindMethod(this, "ToggleStatsUP"))
         }
+        
+        if (Common.Configured(faster_camera))
+            this.FasterCamera(hacker_dir)
     }
     
     ToggleSpeed(speeds, hacker_dir)
@@ -106,5 +110,14 @@ class Hacker extends Common.ConfigSection
     ToggleStatsUP()
     {
         this.stats_toggle_down := false
+    }
+    
+    FasterCamera(hacker_dir)
+    {
+        global window_ids
+        if (!Common.IfActive(window_ids))
+            return
+    
+        RunWait, %hacker_dir%\%_HACKER_PROGRAM_NAME% %_HACKER_CAMERA_CODE%,,Hide
     }
 }

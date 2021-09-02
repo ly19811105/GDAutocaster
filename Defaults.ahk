@@ -86,4 +86,6 @@ global _HACKER_DEFAULT_SPEEDS := "2,1"
 global _HACKER_FREEZE_TRIBUTES := false
 global _HACKER_FREEZE_CODE := 1
 global _HACKER_STATS_CODE := 2
+global _HACKER_CAMERA_CODE := 4
+global _HACKER_FASTER_CAMERA := false
 
