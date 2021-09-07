@@ -58,7 +58,7 @@ class Hacker extends Common.ConfigSection
                 , ObjBindMethod(this, "ToggleStatsUP"))
         }
         
-        if (Common.Configured(faster_camera))
+        if (Common.Configured(faster_camera) and faster_camera)
             this.FasterCamera(hacker_dir)
     }
     
