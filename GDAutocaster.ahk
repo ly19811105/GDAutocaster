@@ -78,6 +78,15 @@ IniRead, suspend_keys, % config_name, general, suspend_keys
 if (!Common.Configured(suspend_keys))
     IniRead, suspend_keys, % config_name, general, suspend_key
     
+IniRead
+    , suspend_stops_autocast
+    , % config_name
+    , general
+    , suspend_stops_autocast
+    , % _SUSPEND_STOPS_AUTOCAST
+
+Common.StrToBool(suspend_stops_autocast)
+    
 if (!Common.Configured(suspend_keys))
     suspend_keys := []
 else
@@ -167,6 +176,29 @@ MainLoop()
 SuspendHotkeys()
 {
     Suspend
+    
     global hotkeys_suspended_by_user
+    global suspend_stops_autocast
+    global autocast_by_toggle
+    
+    static autocast_in_progress := false
+
     hotkeys_suspended_by_user := A_IsSuspended
+    
+    if (suspend_stops_autocast)
+    {
+        if (!A_IsSuspended)
+        {
+            if (autocast_in_progress)
+            {
+                autocast_by_toggle.ToggleAllTimers()
+                autocast_in_progress := false
+            }
+        }
+        else if (autocast_by_toggle.any_timer_on)
+        {
+            autocast_in_progress := true
+            autocast_by_toggle.ToggleAllTimers()
+        }
+    }
 }

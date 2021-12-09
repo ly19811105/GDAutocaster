@@ -8,11 +8,12 @@
 GDAutocaster
 </font>- have the piano play for you!
 
-Credits to **klasperstanze**, **ncience**, **Garfunkel**, **Dlightfull**,  **Danut**, **Nico_Pootato**, **GaeanC**, **tippytam**, **CaiusMartius**, **wulunzun**, @Hagritty and others from AHK threads
+Credits to **klasperstanze**, **ncience**, **Garfunkel**, **Dlightfull**,  **Danut**, **Nico_Pootato**, **GaeanC**, **tippytam**, **CaiusMartius**, **wulunzun**, **Hagritty** and others from AHK threads
 <font color="15171D">.</font>
 
 ************************************************************************************************
-![Screenshot%20(232)|433x500,50%](upload://iPYkCDB4aDbCOSNr1t0tL7UXPAm.png) 
+
+![nazwa|size=50x0](https://i.imgur.com/CPzeYkI.gif)  ![Screenshot%20(232)|433x500,50%](upload://iPYkCDB4aDbCOSNr1t0tL7UXPAm.png) 
 ************************************************************************************************
 <font size=3, color='ff8c00'>[u]Write if you[/u]</font>
 - need help with specific config (or just describe how you play and I'll propose a config)
@@ -63,8 +64,8 @@ https://www.youtube.com/watch?v=fNbFa0tsE3U
 ************************************************************************************************
 **<font size=5>[>> Download GDAutocaster! <<](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.exe) </font>**
 
-<font size=4 color='orange'>Last major update  [u]02-Sep-21[/u]:</font>
-<font size=4>Automatic pressing on toggle that's alternating butons i.e. 1, 2, Tab, 1, 2, Tab. </font>
+<font size=4 color='orange'>Last major update  [u]09-Dec-21[/u]:</font>
+<font size=4>add option for Suspend to stop and preserve Autocasts by Toggle</font>
 ************************************************************************************************
 <font size=4>[GDAutocaster.ini](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.ini) (excessive showcase config file)</font>
 <font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
@@ -106,7 +107,7 @@ The program reads [u]command line[/u] / [u]shortcut[/u] arguments
     - 2 it means 2nd bit is set
     - 3 it means both bits are set
 ***********
-**List of buttons to use in the config / what their names are**: [Key List](https://www.autohotkey.com/docs/KeyList.htm)
+**List of buttons to use in the config / what their names are**: **[Key List](https://www.autohotkey.com/docs/KeyList.htm)**
  
 *********
 ```
@@ -117,6 +118,7 @@ game_window_id=ahk_exe Grim Dawn.exe
 suspend_key=Tab
 kill_on_exit=false
 title_match_mode=3
+suspend_stops_autocast=false
 
 [autocast by toggle]
 autocast_on_launch=false
@@ -306,6 +308,7 @@ game_window_id=ahk_exe Grim Dawn.exe
 suspend_key=Tab
 kill_on_exit=false
 title_match_mode=3
+suspend_stops_autocast=false
 ```
 - **game_window_id** *[optional] {**ahk_exe Grim Dawn.exe** by default}*
    - the default value is **ahk_exe Grim Dawn.exe**
@@ -339,6 +342,16 @@ title_match_mode=3
     **1** : A window's title must start with the specified *WinTitle* to be a match.
 **2** : A window's title can contain *WinTitle* anywhere inside it to be a match.
 **3** : A window's title must exactly match *WinTitle* to be a match.
+
+- **suspend_stops_autocast** *[optional]*
+  - if you set it to **true**
+    - autocasts on toggle (i.e. Blood of Dreeg) will stop when you suspend
+       Hotkeys / Features / Combos with Suspend Key (i.e. Tab)
+
+    - it will resume it you press it again
+
+    - however if you **Alt + Tab** after suspending with this option on,
+      autocasts on toggle won't resume and you'll have to turn them on again manually 
 </details>
 
 <details><summary><font size=4, color='ff8c00'>autocast by toggle</font></summary> 
@@ -878,5 +891,3 @@ faster_camera=true
 ```
 https://forums.crateentertainment.com/t/tool-gdhacker-tribute-freeze-game-speed-toggle-from-within-the-game/106005
 </details>
-
-<font size=3> [Donate](https://www.paypal.com/donate/?hosted_button_id=NZ5GW4QTZGRY6)</font>
