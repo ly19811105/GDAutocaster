@@ -16,6 +16,7 @@ class AutocastByToggle extends Common.ConfigSection
     {
         Common.ConfigSection.__New(config_name, _AUTOCAST_BY_TOGGLE_SECTION_NAME)
         this.SectionRead(delay, "delay", _AUTOCAST_BY_TOGGLE_DELAY)
+        this.SectionRead(inner_delay, "inner_delay", _AUTOCAST_BY_TOGGLE_INNER_DELAY)
         this.SectionRead(autocast_on_launch
             , "autocast_on_launch"
             , _AUTOCAST_BY_TOGGLE_ON_LAUNCH)
@@ -28,6 +29,7 @@ class AutocastByToggle extends Common.ConfigSection
             this.SectionRead(delay%A_INDEX%, "delay" . A_INDEX, delay)
             this.SectionRead(not_hold_keys_str, "not_hold_keys" . A_INDEX)
             this.SectionRead(reset_key, "reset_key" . A_INDEX)
+            this.SectionRead(inner_delay%A_INDEX%, "inner_delay" . A_INDEX, inner_delay)
             this.SectionRead(alternate%A_INDEX%
                 , "alternate" . A_INDEX
                 , _AUTOCAST_BY_TOGGLE_ALTERNATE)
@@ -44,7 +46,8 @@ class AutocastByToggle extends Common.ConfigSection
                 , not_hold_keys
                 , toggle_key
                 , keys_pressed
-                , alternate%A_INDEX%))
+                , alternate%A_INDEX%
+                , inner_delay%A_INDEX%))
             {
                 if (alternate%A_INDEX%)
                     this.current_buttons[A_INDEX] := 1
@@ -60,7 +63,8 @@ class AutocastByToggle extends Common.ConfigSection
                     , "PressButton"
                     , keys_pressed
                     , not_hold_keys
-                    , alternate%A_INDEX% ? A_INDEX : 0)
+                    , alternate%A_INDEX% ? A_INDEX : 0
+                    , inner_delay%A_INDEX%)
                     
                 this.timers[A_INDEX] := timer
             }
@@ -88,7 +92,7 @@ class AutocastByToggle extends Common.ConfigSection
             SetTimer, % timer_function, Off
     }
 
-    PressButton(keys_pressed, not_hold_keys, index)
+    PressButton(keys_pressed, not_hold_keys, index, inner_delay)
     {
         global window_ids
         
@@ -103,7 +107,7 @@ class AutocastByToggle extends Common.ConfigSection
                 this.current_buttons[index] := 1 + Mod(this.current_buttons[index], keys_pressed.Length())
             }
             else
-                Common.PressButtons(keys_pressed)
+                Common.PressButtons(keys_pressed, inner_delay)
         }
     }
     

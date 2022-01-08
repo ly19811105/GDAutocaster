@@ -64,8 +64,8 @@ https://www.youtube.com/watch?v=fNbFa0tsE3U
 ************************************************************************************************
 **<font size=5>[>> Download GDAutocaster! <<](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.exe) </font>**
 
-<font size=4 color='orange'>Last major update  [u]09-Dec-21[/u]:</font>
-<font size=4>add option for Suspend to stop and preserve Autocasts by Toggle</font>
+<font size=4 color='orange'>Last major update  [u]08-Jan-22[/u]:</font>
+<font size=4>add option to Autocast by Toggle to have inner_delay / time gaps between button presses</font>
 ************************************************************************************************
 <font size=4>[GDAutocaster.ini](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.ini) (excessive showcase config file)</font>
 <font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
@@ -138,6 +138,9 @@ reset_key3=1
 cast4=T:3,4
 delay4=2000
 alternate4=true
+
+cast5=`:7,7,7,7
+inner_delay5=1000
 
 [combo presses]
 delay=300
@@ -426,6 +429,13 @@ alternate4=true
   - after 2 seconds it presses 4
   - after 2 seconds it presses 3
   - etc.
+***
+```
+cast5=`:7,7,7,7
+inner_delay5=1000
+```
+
+  - presses 7 four times every **delay** but with **inner_delay** time gaps between the presses 
 ***
 </details>
 
