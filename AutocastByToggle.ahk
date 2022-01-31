@@ -55,7 +55,9 @@ class AutocastByToggle extends Common.ConfigSection
                 hotkeys_collector.AddHotkey(toggle_key, ObjBindMethod(this, "ToggleTimer", A_INDEX))
                     
                 if (Common.Configured(reset_key))
-                    hotkeys_collector.AddHotkey(reset_key, ObjBindMethod(this, "ResetTimer", A_INDEX))
+                    hotkeys_collector.AddHotkey(reset_key
+                        , ObjBindMethod(this, "ResetTimer", A_INDEX)
+                        , !_AUTOCAST_BY_TOGGLE_KEY_NATIVE_FUNCTION)
                 
                 timer := {}
                 timer.delay := delay%A_INDEX%
