@@ -20,6 +20,10 @@ class AutocastByToggle extends Common.ConfigSection
         this.SectionRead(autocast_on_launch
             , "autocast_on_launch"
             , _AUTOCAST_BY_TOGGLE_ON_LAUNCH)
+
+        this.SectionRead(key_native_function
+            , "key_native_function"
+            , _AUTOCAST_BY_TOGGLE_KEY_NATIVE_FUNCTION)
             
         this.autocast_on_launch := autocast_on_launch
         
@@ -33,6 +37,10 @@ class AutocastByToggle extends Common.ConfigSection
             this.SectionRead(alternate%A_INDEX%
                 , "alternate" . A_INDEX
                 , _AUTOCAST_BY_TOGGLE_ALTERNATE)
+    
+            this.SectionRead(key_native_function%A_INDEX%
+                , "key_native_function" . A_INDEX
+                , key_native_function)
                     
             toggle_key := StrSplit(cast_str, ":")[1]
             keys_pressed := StrSplit(cast_str, ":")[2]
@@ -57,7 +65,7 @@ class AutocastByToggle extends Common.ConfigSection
                 if (Common.Configured(reset_key))
                     hotkeys_collector.AddHotkey(reset_key
                         , ObjBindMethod(this, "ResetTimer", A_INDEX)
-                        , !_AUTOCAST_BY_TOGGLE_KEY_NATIVE_FUNCTION)
+                        , !key_native_function%A_INDEX%)
                 
                 timer := {}
                 timer.delay := delay%A_INDEX%
