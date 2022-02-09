@@ -119,4 +119,11 @@ class Common
     {
         DllCall("SetCursorPos", "int", X, "int", Y)
     }
+    
+    PressModKeyPair(pair)
+    {
+        modifier := pair[1]
+        key := pair[2]
+        Send %modifier%{%key%}
+    }
 }

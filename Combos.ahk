@@ -38,9 +38,18 @@ class Combos extends Common.ConfigSection
                 , key_native_function))
                 continue
             
-            combo_keys := StrSplit(combo_str, [":", ","])
-            combo_key := combo_keys.RemoveAt(1)
+            combo_keys_tmp := StrSplit(combo_str, [":", ","])
+            combo_key := combo_keys_tmp.RemoveAt(1)
             is_wheel := InStr(combo_key, _WHEEL_ID)
+            
+            combo_keys := []
+            for index, key in combo_keys_tmp
+            {
+                temp_split := StrSplit(key, ["+", "!", "#", "^"])
+                modifiers := SubStr(key, 1, temp_split.Length()-1)
+                trimmed_key := SubStr(key, temp_split.Length())
+                combo_keys.Push([modifiers, trimmed_key])
+            }
                 
             this.pressed_down[A_INDEX] := false
             this.combo_in_progress[A_INDEX] := false
@@ -114,8 +123,7 @@ class Combos extends Common.ConfigSection
         this.combo_in_progress[index] := true
         
         combo_keys := combo_keys.Clone()
-        key := combo_keys.RemoveAt(1)
-        Send {%key%}
+        Common.PressModKeyPair(combo_keys.RemoveAt(1))
 
         fn := ObjBindMethod(this
             , "ComboLoop"
@@ -141,8 +149,7 @@ class Combos extends Common.ConfigSection
             return
         }
 
-        key := combo_keys.RemoveAt(1)
-        Send {%key%}
+        Common.PressModKeyPair(combo_keys.RemoveAt(1))
 
         if (combo_keys.Length() = 0)
         {
