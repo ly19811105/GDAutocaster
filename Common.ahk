@@ -126,4 +126,12 @@ class Common
         key := pair[2]
         Send %modifier%{%key%}
     }
+    
+    LogToFile(lines*)
+    {
+        for index, line in lines
+            FileAppend, %line%`n, % _LOG_PATH
+            
+        FileAppend, `n, % _LOG_PATH 
+    }
 }

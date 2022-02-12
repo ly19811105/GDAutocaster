@@ -4,6 +4,7 @@ global _AUTOMATIC_HOTKEY_SUSPENSION_LOOP_DELAY := 1000
 global _KILL_ON_EXIT := false
 global _TITLE_MATCH_MODE := 3
 global _SUSPEND_STOPS_AUTOCAST := false
+global _LOG_PATH := "GDAutocaster.log"
 
 global _HOTKEY_MODIFIERS := "~*$"
 global _HOTKEY_MODIFIERS_NATIVE_FUNCTION_BLOCKED := "*$"
