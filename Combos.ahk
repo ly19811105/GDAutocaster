@@ -146,6 +146,7 @@ class Combos extends Common.ConfigSection
         if(!Common.IfActive(window_ids)
         or (stop_on_release and !GetKeyState(combo_key, "P")))
         {
+            this.combo_in_progress[index] := false
             return
         }
 
