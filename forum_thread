@@ -8,7 +8,7 @@
 GDAutocaster
 </font>- have the piano play for you!
 
-Credits to **klasperstanze**, **ncience**, **Garfunkel**, **Dlightfull**,  **Danut**, **Nico_Pootato**, **GaeanC**, **tippytam**, **CaiusMartius**, **wulunzun**, **Hagritty** and others from AHK threads
+Credits to **klasperstanze**, **ncience**, **Garfunkel**, **Dlightfull**,  **Danut**, **Nico_Pootato**, **GaeanC**, **tippytam**, **CaiusMartius**, **wulunzun**, **Hagritty**, @Vlad_Ahmedyanov  and others from AHK threads
 <font color="15171D">.</font>
 
 ************************************************************************************************
@@ -64,12 +64,17 @@ https://www.youtube.com/watch?v=fNbFa0tsE3U
 ************************************************************************************************
 **<font size=5>[>> Download GDAutocaster! <<](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.exe) </font>**
 
-<font size=4 color='orange'>Last major updates  [u]9-12 Feb 22[/u]:</font>
-- <font size=4>add option to Combo Presses of pressing buttons with modifiers, i.e.</font>
-  - **combo6=Tab:+LButton,#^!Z**
-    - presses **Shift + LMB** and after that **Windows Key + Ctrl + Alt + Z**
+<font size=4 color='orange'>Last major updates  [u]4 Jun 22[/u]:</font>
+- <font size=4>add periodic interruption to ComboHolds</font>
+```
+combo4=Space:3
+interrupt_delay4=3000
+interrupt_duration4=200
+```
+- **interrupt_delay4=3000**, **interrupt_duration4=200**
+  - pressed buttons are released for 200ms every 3s
 
-- <font size=4>fix a bug causing Combo Presses with Stop_On_Release option and multiple presses to not work after one using them once.</font>
+
 ************************************************************************************************
 <font size=4>[GDAutocaster.ini](https://github.com/kowariantny/GDAutocaster/raw/master/GDAutocaster.ini) (excessive showcase config file)</font>
 <font size=4>[GDAutocaster on GitHub](https://github.com/kowariantny/GDAutocaster)</font>
@@ -212,6 +217,10 @@ initial_delay2=0
 
 combo3=CapsLock:m
 key_native_function3=false
+
+combo4=Space:3
+interrupt_delay4=3000
+interrupt_duration4=200
 
 [toggle holds]
 key_native_function=true
@@ -639,6 +648,10 @@ initial_delay2=0
 
 combo3=CapsLock:m
 key_native_function3=false
+
+combo4=Space:3
+interrupt_delay4=3000
+interrupt_duration4=200
 ```
 - literally holds the button down
 
@@ -666,6 +679,10 @@ key_native_function3=false
   - I advise not to use it in general because you won't block skills from Hotbars / in-game mouse action anyway I think
 
   - I used it here for Capslock to not light up when I use it for showing/hiding the map
+
+- **interrupt_delay4=3000**, **interrupt_duration4=200**
+  - pressed buttons are released for 200ms every 3s
+
 </details>
 
 <details><summary><font size=4, color='ff8c00'>toggle holds</font></summary>
