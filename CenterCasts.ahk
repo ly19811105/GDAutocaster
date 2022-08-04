@@ -2,6 +2,7 @@
 #Include Defaults.ahk
 #Include DelayedActivator.ahk
 #Include HotkeysCollector.ahk
+#Include Timer.ahk
 
 class CenterCasts extends Common.ConfigSection
 {
@@ -9,6 +10,7 @@ class CenterCasts extends Common.ConfigSection
     spam_protection := {}
     mouse_moving := false
     delayed_activators := {}
+    pressing_timers := {}
     center_x := 0
     center_y := 0
 
@@ -62,8 +64,8 @@ class CenterCasts extends Common.ConfigSection
             this.spam_protection[A_INDEX] := !is_wheel
             this.pressed_down[A_INDEX] := false
             
-            first_function := ObjBindMethod(this
-                , "CenterCast"
+            key_pressed_function := ObjBindMethod(this
+                , "MoveToCenter"
                 , keys
                 , off_center%A_INDEX%
                 , delay
@@ -72,27 +74,30 @@ class CenterCasts extends Common.ConfigSection
                 , screen_width
                 , screen_height)
                 
-            first_function_up := ObjBindMethod(this, "CenterCastUP", A_INDEX)
+            key_released_function := ObjBindMethod(this, "PressUP", A_INDEX)
+            
+            this.pressing_timers[A_INDEX] := new Timer(delay
+                , ObjBindMethod(this, "PressButton", keys))
             
             if (initial_delay > 0)
             {
-                delayed_activator := new DelayedActivator(first_function
+                delayed_activator := new DelayedActivator(key_pressed_function
                     , initial_delay
-                    , first_function_up
+                    , key_released_function
                     , !is_wheel)
                     
                 this.delayed_activators[A_INDEX] := delayed_activator
                 
-                first_function := ObjBindMethod(delayed_activator, "Press")
-                first_function_up := ObjBindMethod(delayed_activator, "PressUP")
+                key_pressed_function := ObjBindMethod(delayed_activator, "Press")
+                key_released_function := ObjBindMethod(delayed_activator, "PressUP")
             }
             
-            hotkeys_collector.AddHotkey(key, first_function)
-            hotkeys_collector.AddHotkey(key . " UP", first_function_up)
+            hotkeys_collector.AddHotkey(key, key_pressed_function)
+            hotkeys_collector.AddHotkey(key . " UP", key_released_function)
         }
     }
     
-    CenterCast(keys
+    MoveToCenter(keys
         , off_center
         , delay
         , index
@@ -109,7 +114,6 @@ class CenterCasts extends Common.ConfigSection
         this.pressed_down[index] := true
         this.mouse_moving := true
     
-        keys := keys.Clone()
         MouseGetPos, xpos, ypos
         
         if (this.center_x != 0 or this.center_y != 0)
@@ -147,46 +151,26 @@ class CenterCasts extends Common.ConfigSection
         
         BlockInput, MouseMove
         Common.MoveMouse(center_x, center_y)
-    
-        if (delay_after_cursor > 0)
-        {
-            fn := ObjBindMethod(this, "CenterCast2", keys, xpos, ypos, delay, index)
-            SetTimer, %fn%, -%delay_after_cursor%
-        }
-        else
-            this.CenterCast2(keys, xpos, ypos, delay, index)
+
+        this.pressing_timers[index].Loop(keys.Length()
+            , delay_after_cursor
+            , ObjBindMethod(this, "GoBack", xpos, ypos))
     }
     
-    CenterCast2(keys, xpos, ypos, delay, index, ongoing := false)
+    PressButton(keys, i)
     {
-        key := keys.RemoveAt(1)
+        key := keys[i]
         Send {%key%}
-        
-        if (keys.Length() = 0)
-        {
-            if (ongoing)
-                SetTimer,, Off
-            
-            Common.MoveMouse(xpos, ypos)  
-            BlockInput, MouseMoveOff
-            this.mouse_moving := false
-        }
-        else if (!ongoing)
-        {
-            fn := ObjBindMethod(this
-                , "CenterCast2"
-                , keys
-                , xpos
-                , ypos
-                , delay
-                , index
-                , true)
-                
-            SetTimer, %fn%, %delay%
-        }
     }
     
-    CenterCastUP(index)
+    GoBack(xpos, ypos)
+    {
+        Common.MoveMouse(xpos, ypos)  
+        BlockInput, MouseMoveOff
+        this.mouse_moving := false
+    }
+    
+    PressUP(index)
     {
         this.pressed_down[index] := false
     }

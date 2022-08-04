@@ -3,22 +3,21 @@
 #Include DelayedActivator.ahk
 #Include DPActivator.ahk 
 #Include HotkeysCollector.ahk
+#Include Timer.ahk
 
 class AutocastByHold extends Common.ConfigSection
 {
-    spam_prevention := {}
+    pressing_timers := {}
     dp_activators := {}
     delayed_activators := {}
-    time_outs := {}
+    timed_out := {}
 
     __New(config_name, hotkeys_collector)
     {
         Common.ConfigSection.__New(config_name, _AUTOCAST_BY_HOLD_SECTION_NAME)
         
         this.SectionRead(delay, "delay", _AUTOCAST_BY_HOLD_IN_BETWEEN_DELAY)
-        this.SectionRead(key_native_function
-            , "key_native_function"
-            , _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION)
+        this.SectionRead(key_native_function, "key_native_function", _AUTOCAST_BY_HOLD_KEY_NATIVE_FUNCTION)
         
         Loop, %_MAX_NUMBER_OF_COMBINATIONS%
         {
@@ -28,10 +27,7 @@ class AutocastByHold extends Common.ConfigSection
             this.SectionRead(double_press, "double_press" . A_INDEX, _AUTOCAST_BY_HOLD_DOUBLE_PRESS)
             this.SectionRead(inner_delay, "inner_delay" . A_INDEX, _AUTOCAST_BY_HOLD_INNER_DELAY)
             this.SectionRead(time_out, "time_out" . A_INDEX, _AUTOCAST_BY_HOLD_TIME_OUT)
-            
-            this.SectionRead(key_native_function%A_INDEX%
-                , "key_native_function" . A_INDEX
-                , key_native_function)
+            this.SectionRead(key_native_function%A_INDEX%, "key_native_function" . A_INDEX, key_native_function)
             
             if (!Common.Configured(cast_str
                 , initial_delay
@@ -47,31 +43,34 @@ class AutocastByHold extends Common.ConfigSection
             pressed_keys := StrSplit(cast_str[1], ",")
             first_key := held_keys[held_keys.Length()]
             
-            this.spam_prevention[A_INDEX] := false
-            this.time_outs[A_INDEX] := false
+            this.timed_out[A_INDEX] := false
             
-            first_function := ObjBindMethod(this
-                , "HoldCast"
-                , pressed_keys
-                , delay%A_INDEX%
+            key_pressed_function := ObjBindMethod(this
+                , "Start"
                 , held_keys
-                , A_INDEX
-                , inner_delay
-                , false
-                , time_out)
+                , A_INDEX)
                 
-            first_function_up := ObjBindMethod(this, "HoldCastUP", A_INDEX)
+            this.pressing_timers[A_INDEX] := new Timer(delay%A_INDEX%
+                , ObjBindMethod(this
+                    , "PressingButtons"
+                    , held_keys
+                    , pressed_keys
+                    , inner_delay
+                    , time_out
+                    , A_INDEX))
+            
+            key_released_function := ObjBindMethod(this.pressing_timers[A_INDEX], "Stop")
             
             if (initial_delay > 0)
             {
-                delayed_activator := new DelayedActivator(first_function
+                delayed_activator := new DelayedActivator(key_pressed_function
                     , initial_delay
-                    , first_function_up)
+                    , key_released_function)
                     
                 this.delayed_activators[A_INDEX] := delayed_activator
                 
-                first_function := ObjBindMethod(delayed_activator, "Press")
-                first_function_up := ObjBindMethod(delayed_activator, "KillPressUP")
+                key_pressed_function := ObjBindMethod(delayed_activator, "Press")
+                key_released_function := ObjBindMethod(delayed_activator, "KillPressUP")
             }
             
             if (double_press)
@@ -80,80 +79,61 @@ class AutocastByHold extends Common.ConfigSection
                     , "double_press_time_gap" . A_INDEX
                     , _DOUBLE_PRESS_TIME_GAP)
                     
-                dp_activator := new DPActivator(first_function
+                dp_activator := new DPActivator(key_pressed_function
                     , time_gap
-                    , first_function_up)
+                    , key_released_function)
                     
                 this.dp_activators[A_INDEX] := dp_activator
             
-                first_function := ObjBindMethod(dp_activator, "Press")
-                first_function_up := ObjBindMethod(dp_activator, "PressUP")
+                key_pressed_function := ObjBindMethod(dp_activator, "Press")
+                key_released_function := ObjBindMethod(dp_activator, "PressUP")
             }
             
             hotkeys_collector.AddHotkey(first_key
-                , first_function
+                , key_pressed_function
                 , !key_native_function%A_INDEX%)
                 
             hotkeys_collector.AddHotkey(first_key . " UP"
-                , first_function_up
+                , key_released_function
                 , !key_native_function%A_INDEX%)
         }
     }
     
-    HoldCast(pressed_keys
-        , delay
-        , held_keys
-        , index
-        , inner_delay
-        , ongoing
-        , time_out)
+    Start(held_keys, index)
     {
         global window_ids
         if(!Common.IfActive(window_ids)
-        or (!ongoing and this.spam_prevention[index])
+        or this.pressing_timers[index].isOn
         or !Common.Pressed(held_keys))
             return
-            
-        if (!ongoing)
-            this.spam_prevention[index] := true
-            
-        if (time_out = 0)
-            Common.PressButtons(pressed_keys, inner_delay, held_keys)
-        else if (!this.time_outs[index])
+        
+        this.pressing_timers[index].Start()
+    }
+    
+    PressingButtons(held_keys, pressed_keys, inner_delay, time_out, index)
+    {
+        global window_ids
+        if(!Common.IfActive(window_ids)
+        or !Common.Pressed(held_keys))
+            Return
+    
+        if (time_out <= 0)
         {
-            this.time_outs[index] :=true
+            Common.PressButtons(pressed_keys, inner_delay, held_keys)
+        }
+        else if (!this.timed_out[index])
+        {
+            this.timed_out[index] := true
             
             fn := ObjBindMethod(this, "TimeIn", index)
             SetTimer,  %fn%, -%time_out%
             
             Common.PressButtons(pressed_keys, inner_delay, held_keys)
-        }
-        
-        if (ongoing)
-            SetTimer,, -%delay%
-        else
-        {
-            fn := ObjBindMethod(this
-                , "HoldCast"
-                , pressed_keys
-                , delay
-                , held_keys
-                , index
-                , inner_delay
-                , true
-                , time_out)
-            
-            SetTimer, %fn%, -%delay%
-        }
-    }
-    
-    HoldCastUP(index)
-    {
-        this.spam_prevention[index] := false
+        }   
     }
     
     TimeIn(index)
     {
-        this.time_outs[index] := false
+        this.timed_out[index] := false
     }
 }

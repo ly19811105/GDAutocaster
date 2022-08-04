@@ -4,7 +4,6 @@
 #MaxThreadsPerHotkey 1
 #NoEnv
 #SingleInstance Force
-#Warn ClassOverwrite
 #Persistent
 
 CoordMode, Mouse, Screen

@@ -2,11 +2,10 @@
 #Include Defaults.ahk
 #Include DelayedActivator.ahk
 #Include HotkeysCollector.ahk
+#Include Timer.ahk
 
 class AutomaticCamera extends Common.ConfigSection
 {
-    spam_protection := false
-
     __New(config_name, hotkeys_collector)
     {
         Common.ConfigSection.__New(config_name, _AUTOMATIC_CAMERA_SECTION_NAME)
@@ -41,55 +40,52 @@ class AutomaticCamera extends Common.ConfigSection
             , initial_delay))
             return
         
-        this.hold_rotate := ObjBindMethod(this
-                , "HoldRotate"
+        this.rotate_timer := new Timer(delay
+            , ObjBindMethod(this
+                , "Rotation"
                 , rotate_left
                 , rotate_right
-                , rotate_key
-                , delay
                 , ignore_area_shape
                 , ignore_area_size
-                , ignore_segment_angle
-                , false)
-
-        first_function := this.hold_rotate
-        first_function_up := ObjBindMethod(this
-            , "HoldRotateUP"
+                , ignore_segment_angle))
+        
+        key_pressed_function := ObjBindMethod(this, "Start", rotate_key)
+        key_released_function := ObjBindMethod(this
+            , "RotateButtonUP"
             , rotate_left
             , rotate_right)
         
         if (initial_delay > 0)
         {
-            this.delayed_activator := new DelayedActivator(first_function
+            this.delayed_activator := new DelayedActivator(key_pressed_function
                 , initial_delay
-                , first_function_up)
+                , key_released_function)
                 
-            first_function := ObjBindMethod(this.delayed_activator, "Press")
-            first_function_up := ObjBindMethod(this.delayed_activator, "KillPressUP")
+            key_pressed_function := ObjBindMethod(this.delayed_activator, "Press")
+            key_released_function := ObjBindMethod(this.delayed_activator, "KillPressUP")
         }
     
-        hotkeys_collector.AddHotkey(rotate_key, first_function)
-        hotkeys_collector.AddHotkey(rotate_key . " UP", first_function_up)
+        hotkeys_collector.AddHotkey(rotate_key, key_pressed_function)
+        hotkeys_collector.AddHotkey(rotate_key . " UP", key_released_function)
     }
     
-    HoldRotate(rotate_left
-        , rotate_right
-        , rotate_key
-        , delay
-        , ignore_area_shape
-        , ignore_area_size
-        , ignore_segment_angle
-        , ongoing)
+    Start(rotate_key)
     {
         global window_ids
         if (!Common.IfActive(window_ids)
-        or (!ongoing and this.spam_protection)
+        or this.rotate_timer.isOn
         or !GetKeyState(rotate_key, "P"))
             return
 
-        if (!ongoing)
-            this.spam_protection := true
-        
+        this.rotate_timer.Start()
+    }
+    
+    Rotation(rotate_left
+        , rotate_right
+        , ignore_area_shape
+        , ignore_area_size
+        , ignore_segment_angle)
+    {
         Send {%rotate_left% UP}
         Send {%rotate_right% UP}
         
@@ -113,33 +109,14 @@ class AutomaticCamera extends Common.ConfigSection
             else ;left half of screen -> rotate left
                 Send {%rotate_left% down}
         }
-        
-        
-        if (ongoing)
-            SetTimer,, -%delay%
-        else
-        {
-            fn := ObjBindMethod(this
-                , "HoldRotate"
-                , rotate_left
-                , rotate_right
-                , rotate_key
-                , delay
-                , ignore_area_shape
-                , ignore_area_size
-                , ignore_segment_angle
-                , true)
-                
-            SetTimer, %fn%, -%delay%
-        }
     }
 
-    HoldRotateUP(rotate_left, rotate_right)
+    RotateButtonUP(rotate_left, rotate_right)
     {
         Send {%rotate_left% up}
         Send {%rotate_right% up}
         
-        this.spam_protection := false
+        this.rotate_timer.Stop()
     }
 }
 
